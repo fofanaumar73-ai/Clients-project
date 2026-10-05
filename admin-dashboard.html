@@ -974,6 +974,11 @@
 
 <body>
 
+    <div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+></div>
+    
 <div class="dashboard">
 
     <!-- =====================================================
@@ -2068,6 +2073,102 @@
 
     initializeDashboard();
 
+
+    /* =====================================================
+   MOBILE MENU
+   ===================================================== */
+
+const mobileMenuBtn =
+    document.getElementById(
+        "mobileMenuBtn"
+    );
+
+const sidebar =
+    document.querySelector(
+        ".sidebar"
+    );
+
+const sidebarOverlay =
+    document.getElementById(
+        "sidebarOverlay"
+    );
+
+
+function openMobileMenu() {
+
+    if (sidebar) {
+
+        sidebar.classList.add(
+            "mobile-open"
+        );
+
+    }
+
+    if (sidebarOverlay) {
+
+        sidebarOverlay.classList.add(
+            "mobile-open"
+        );
+
+    }
+
+}
+
+
+function closeMobileMenu() {
+
+    if (sidebar) {
+
+        sidebar.classList.remove(
+            "mobile-open"
+        );
+
+    }
+
+    if (sidebarOverlay) {
+
+        sidebarOverlay.classList.remove(
+            "mobile-open"
+        );
+
+    }
+
+}
+
+
+if (mobileMenuBtn) {
+
+    mobileMenuBtn.addEventListener(
+        "click",
+        openMobileMenu
+    );
+
+}
+
+
+if (sidebarOverlay) {
+
+    sidebarOverlay.addEventListener(
+        "click",
+        closeMobileMenu
+    );
+
+}
+
+
+/* Close menu after clicking a navigation link */
+
+document
+    .querySelectorAll(".nav-item")
+    .forEach(item => {
+
+        item.addEventListener(
+            "click",
+            closeMobileMenu
+        );
+
+    });
+    
 </script>
 
 </body>

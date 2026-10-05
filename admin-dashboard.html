@@ -829,6 +829,145 @@
 
         }
 
+        /* =====================================================
+   MOBILE SIDEBAR
+   ===================================================== */
+
+.mobile-menu-btn {
+    display: none;
+
+    width: 40px;
+    height: 40px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: white;
+    color: var(--text);
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+
+/* Mobile overlay */
+
+.sidebar-overlay {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,.45);
+
+    z-index: 90;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 800px) {
+
+    .mobile-menu-btn {
+        display: flex;
+    }
+
+    .sidebar {
+
+        width: 255px;
+
+        transform:
+            translateX(-100%);
+
+        transition:
+            transform .25s ease;
+
+        z-index: 200;
+
+    }
+
+    .sidebar.mobile-open {
+
+        transform:
+            translateX(0);
+
+    }
+
+    .sidebar-overlay.mobile-open {
+
+        display: block;
+
+    }
+
+    .brand {
+
+        font-size: 19px;
+
+        text-align: left;
+
+        padding-left: 24px;
+        padding-right: 24px;
+
+    }
+
+    .admin-label,
+    .nav-item span,
+    .logout-btn span {
+
+        display: block;
+
+    }
+
+    .nav-item,
+    .logout-btn {
+
+        justify-content: flex-start;
+
+    }
+
+    .main {
+
+        width: 100%;
+
+        margin-left: 0;
+
+    }
+
+    .topbar {
+
+        padding:
+            0 16px;
+
+        gap: 12px;
+
+    }
+
+    .page-title {
+
+        flex: 1;
+
+    }
+
+    .content {
+
+        padding:
+            22px 16px 40px;
+
+    }
+
+    .profile-info {
+
+        display: none;
+
+    }
+
+}
+        
     </style>
 </head>
 
@@ -853,6 +992,14 @@
 
         <nav class="nav">
 
+            <a
+    href="index.html"
+    class="nav-item"
+>
+    <i class="fa-solid fa-arrow-left"></i>
+    <span>Back to Website</span>
+</a>
+            
             <a
                 href="#"
                 class="nav-item active"
@@ -929,6 +1076,14 @@
         <!-- TOPBAR -->
 
         <header class="topbar">
+
+            <button
+    class="mobile-menu-btn"
+    id="mobileMenuBtn"
+    aria-label="Open menu"
+>
+    <i class="fa-solid fa-bars"></i>
+</button>
 
             <div class="page-title">
 
@@ -1262,6 +1417,10 @@
 <script>
 
    <script>
+
+
+       <script>
+
     /* =====================================================
        SUPABASE
        ===================================================== */
@@ -1329,12 +1488,17 @@
     const toast =
         document.getElementById("toast");
 
+    const logoutBtn =
+        document.getElementById("logoutBtn");
+
 
     /* =====================================================
        TOAST
        ===================================================== */
 
     function showToast(message) {
+
+        if (!toast) return;
 
         toast.textContent = message;
 
@@ -1350,7 +1514,7 @@
 
 
     /* =====================================================
-       CHECK ADMIN SESSION
+       CHECK ADMIN ACCESS
        ===================================================== */
 
     async function checkAdminAccess() {
@@ -1361,14 +1525,8 @@
             },
             error: sessionError
         } =
-            await supabaseClient
-                .auth
-                .getSession();
+            await supabaseClient.auth.getSession();
 
-
-        /* ---------------------------------------------
-           NO SESSION
-           --------------------------------------------- */
 
         if (
             sessionError ||
@@ -1381,10 +1539,6 @@
             return null;
         }
 
-
-        /* ---------------------------------------------
-           GET PROFILE
-           --------------------------------------------- */
 
         const {
             data: profile,
@@ -1401,10 +1555,6 @@
                 )
                 .single();
 
-
-        /* ---------------------------------------------
-           SECURITY CHECK
-           --------------------------------------------- */
 
         if (
             profileError ||
@@ -1424,6 +1574,7 @@
 
 
         return profile;
+
     }
 
 
@@ -1433,14 +1584,24 @@
 
     async function loadStores() {
 
+        if (!storesLoading) return;
+
         storesLoading.style.display =
             "block";
 
-        storesTableContainer.style.display =
-            "none";
+        if (storesTableContainer) {
 
-        emptyStores.style.display =
-            "none";
+            storesTableContainer.style.display =
+                "none";
+
+        }
+
+        if (emptyStores) {
+
+            emptyStores.style.display =
+                "none";
+
+        }
 
 
         const {
@@ -1465,7 +1626,7 @@
                 error
             );
 
-            storesLoading.innerHTML =
+            storesLoading.textContent =
                 "Unable to load stores.";
 
             return;
@@ -1481,15 +1642,23 @@
             stores.length === 0
         ) {
 
-            emptyStores.style.display =
-                "block";
+            if (emptyStores) {
+
+                emptyStores.style.display =
+                    "block";
+
+            }
 
             return;
         }
 
 
-        storesTableContainer.style.display =
-            "block";
+        if (storesTableContainer) {
+
+            storesTableContainer.style.display =
+                "block";
+
+        }
 
 
         storesTableBody.innerHTML =
@@ -1588,12 +1757,8 @@
                 <td>
 
                     <button
-                        class="action-btn"
-                        onclick="
-                            viewStore(
-                                '${store.id}'
-                            )
-                        "
+                        class="store-action-btn"
+                        data-store-id="${store.id}"
                     >
                         View
                     </button>
@@ -1608,6 +1773,28 @@
             );
 
         });
+
+
+        /* View buttons */
+
+        document
+            .querySelectorAll(
+                ".store-action-btn"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        viewStore(
+                            button.dataset.storeId
+                        );
+
+                    }
+                );
+
+            });
 
     }
 
@@ -1633,15 +1820,11 @@
 
                 supabaseClient
                     .from("products")
-                    .select(
-                        "id"
-                    ),
+                    .select("id"),
 
                 supabaseClient
                     .from("categories")
-                    .select(
-                        "id"
-                    )
+                    .select("id")
 
             ]);
 
@@ -1730,13 +1913,13 @@
 
     function viewStore(storeId) {
 
-        showToast(
-            "Store management will be connected next."
-        );
-
         console.log(
             "Selected store:",
             storeId
+        );
+
+        showToast(
+            "Store management will be connected next."
         );
 
     }
@@ -1746,11 +1929,15 @@
        CREATE STORE
        ===================================================== */
 
-    document
-        .getElementById(
+    const createStoreBtn =
+        document.getElementById(
             "createStoreBtn"
-        )
-        .addEventListener(
+        );
+
+
+    if (createStoreBtn) {
+
+        createStoreBtn.addEventListener(
             "click",
             () => {
 
@@ -1761,35 +1948,71 @@
             }
         );
 
+    }
+
 
     /* =====================================================
        LOGOUT
        ===================================================== */
 
-    document
-        .getElementById(
-            "logoutBtn"
-        )
-        .addEventListener(
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener(
             "click",
             async () => {
 
+                logoutBtn.disabled =
+                    true;
+
+                logoutBtn.innerHTML = `
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <span>Logging out...</span>
+                `;
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .auth
+                        .signOut();
+
+
+                if (error) {
+
+                    console.error(
+                        "Logout error:",
+                        error
+                    );
+
+                    logoutBtn.disabled =
+                        false;
+
+                    logoutBtn.innerHTML = `
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    `;
+
+                    showToast(
+                        "Unable to logout. Please try again."
+                    );
+
+                    return;
+                }
+
+
                 /*
-                 * THIS is the ONLY place in this
-                 * dashboard where we intentionally
-                 * sign the user out.
+                 * Only an explicit Logout performs
+                 * signOut().
                  */
-
-                await supabaseClient
-                    .auth
-                    .signOut();
-
 
                 window.location.href =
                     "admin-login.html";
 
             }
         );
+
+    }
 
 
     /* =====================================================
@@ -1812,11 +2035,20 @@
             "Super Admin";
 
 
-        adminName.textContent =
-            name;
+        if (adminName) {
 
-        welcomeName.textContent =
-            name;
+            adminName.textContent =
+                name;
+
+        }
+
+
+        if (welcomeName) {
+
+            welcomeName.textContent =
+                name;
+
+        }
 
 
         await Promise.all([

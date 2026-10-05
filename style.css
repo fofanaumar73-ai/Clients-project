@@ -1122,3 +1122,177 @@ img {
     }
 
 }
+
+
+/* ================= SEARCH ================= */
+
+.search-panel {
+    position: fixed;
+    inset: 0;
+
+    z-index: 1800;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: var(--transition);
+}
+
+.search-panel.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.search-panel-inner {
+    width: min(700px, calc(100% - 30px));
+
+    margin: 90px auto 0;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    background: white;
+
+    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+}
+
+.search-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.search-header h2 {
+    font-size: 22px;
+}
+
+.search-header button {
+    width: 38px;
+    height: 38px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: var(--light);
+}
+
+.search-input-wrapper {
+    position: relative;
+}
+
+.search-input-wrapper i {
+    position: absolute;
+
+    left: 18px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #888;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+
+    height: 55px;
+
+    padding: 0 18px 0 48px;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    outline: none;
+
+    font-size: 14px;
+}
+
+.search-input-wrapper input:focus {
+    border-color: var(--primary);
+}
+
+.search-results {
+    max-height: 450px;
+
+    margin-top: 15px;
+
+    overflow-y: auto;
+}
+
+.search-placeholder {
+    padding: 30px;
+
+    text-align: center;
+
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+.search-result {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 12px;
+
+    border-bottom: 1px solid var(--border);
+
+    cursor: pointer;
+
+    transition: var(--transition);
+}
+
+.search-result:hover {
+    background: var(--light);
+}
+
+.search-result-image {
+    width: 65px;
+    height: 65px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: var(--light);
+}
+
+.search-result-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.search-result-info {
+    flex: 1;
+}
+
+.search-result-info h4 {
+    margin-bottom: 4px;
+
+    font-size: 14px;
+}
+
+.search-result-info p {
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+.search-no-results {
+    padding: 35px;
+
+    text-align: center;
+
+    color: var(--muted);
+
+    font-size: 13px;
+}

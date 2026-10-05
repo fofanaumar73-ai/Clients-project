@@ -638,10 +638,11 @@
                     <!-- LOGIN BUTTON -->
 
                     <button
-                        type="submit"
-                        class="login-btn"
-                        id="loginBtn"
-                    >
+    type="button"
+    class="login-btn"
+    id="loginBtn"
+    onclick="testLoginClick()"
+>
                         <span id="loginBtnText">Login</span>
                         <i class="fa-solid fa-arrow-right" id="loginArrow"></i>
                     </button>
@@ -946,6 +947,10 @@
 
 
         checkExistingSession();
+
+        function testLoginClick() {
+    alert("LOGIN BUTTON IS WORKING");
+}
     </script>
 
 </body>

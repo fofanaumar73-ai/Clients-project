@@ -626,3 +626,174 @@ document
 renderProducts();
 
 updateCartUI();
+
+
+/* ================= SEARCH ================= */
+
+const searchBtn =
+    document.getElementById("searchBtn");
+
+const searchPanel =
+    document.getElementById("searchPanel");
+
+const closeSearch =
+    document.getElementById("closeSearch");
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const searchResults =
+    document.getElementById("searchResults");
+
+
+function openSearch() {
+
+    searchPanel.classList.add("active");
+
+    document.body.style.overflow = "hidden";
+
+    setTimeout(() => {
+        searchInput.focus();
+    }, 150);
+
+}
+
+
+function closeSearchPanel() {
+
+    searchPanel.classList.remove("active");
+
+    document.body.style.overflow = "";
+
+    searchInput.value = "";
+
+    searchResults.innerHTML = `
+        <p class="search-placeholder">
+            Start typing to search products.
+        </p>
+    `;
+
+}
+
+
+searchBtn.addEventListener(
+    "click",
+    openSearch
+);
+
+
+closeSearch.addEventListener(
+    "click",
+    closeSearchPanel
+);
+
+
+searchPanel.addEventListener(
+    "click",
+    (event) => {
+
+        if (event.target === searchPanel) {
+            closeSearchPanel();
+        }
+
+    }
+);
+
+
+searchInput.addEventListener(
+    "input",
+    () => {
+
+        const query =
+            searchInput.value
+                .trim()
+                .toLowerCase();
+
+
+        if (!query) {
+
+            searchResults.innerHTML = `
+                <p class="search-placeholder">
+                    Start typing to search products.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        const results =
+            products.filter(product =>
+
+                product.name
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                product.category
+                    .toLowerCase()
+                    .includes(query)
+
+            );
+
+
+        if (!results.length) {
+
+            searchResults.innerHTML = `
+                <div class="search-no-results">
+                    No products found for
+                    "<strong>${searchInput.value}</strong>"
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        searchResults.innerHTML =
+            results.map(product => `
+
+                <div
+                    class="search-result"
+                    onclick="searchAddProduct(${product.id})"
+                >
+
+                    <div class="search-result-image">
+
+                        <img
+                            src="${product.image}"
+                            alt="${product.name}"
+                        >
+
+                    </div>
+
+                    <div class="search-result-info">
+
+                        <h4>
+                            ${product.name}
+                        </h4>
+
+                        <p>
+                            ${formatMoney(product.price)}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            `).join("");
+
+    }
+);
+
+
+function searchAddProduct(productId) {
+
+    addToCart(productId);
+
+    closeSearchPanel();
+
+}

@@ -1261,8 +1261,9 @@
 
 <script>
 
+   <script>
     /* =====================================================
-       SUPABASE CONFIGURATION
+       SUPABASE
        ===================================================== */
 
     const SUPABASE_URL =
@@ -1274,7 +1275,14 @@
     const supabaseClient =
         window.supabase.createClient(
             SUPABASE_URL,
-            SUPABASE_KEY
+            SUPABASE_KEY,
+            {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
+                }
+            }
         );
 
 
@@ -1342,7 +1350,7 @@
 
 
     /* =====================================================
-       CHECK SUPER ADMIN
+       CHECK ADMIN SESSION
        ===================================================== */
 
     async function checkAdminAccess() {
@@ -1350,14 +1358,22 @@
         const {
             data: {
                 session
-            }
+            },
+            error: sessionError
         } =
             await supabaseClient
                 .auth
                 .getSession();
 
 
-        if (!session) {
+        /* ---------------------------------------------
+           NO SESSION
+           --------------------------------------------- */
+
+        if (
+            sessionError ||
+            !session
+        ) {
 
             window.location.href =
                 "admin-login.html";
@@ -1366,9 +1382,13 @@
         }
 
 
+        /* ---------------------------------------------
+           GET PROFILE
+           --------------------------------------------- */
+
         const {
             data: profile,
-            error
+            error: profileError
         } =
             await supabaseClient
                 .from("profiles")
@@ -1382,8 +1402,12 @@
                 .single();
 
 
+        /* ---------------------------------------------
+           SECURITY CHECK
+           --------------------------------------------- */
+
         if (
-            error ||
+            profileError ||
             !profile ||
             profile.role !== "SUPER_ADMIN"
         ) {
@@ -1468,7 +1492,8 @@
             "block";
 
 
-        storesTableBody.innerHTML = "";
+        storesTableBody.innerHTML =
+            "";
 
 
         stores.forEach(store => {
@@ -1749,9 +1774,16 @@
             "click",
             async () => {
 
+                /*
+                 * THIS is the ONLY place in this
+                 * dashboard where we intentionally
+                 * sign the user out.
+                 */
+
                 await supabaseClient
                     .auth
                     .signOut();
+
 
                 window.location.href =
                     "admin-login.html";
@@ -1797,6 +1829,10 @@
 
     }
 
+
+    /* =====================================================
+       START
+       ===================================================== */
 
     initializeDashboard();
 

@@ -576,11 +576,11 @@
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
 
-                <h2>Super Admin Login</h2>
+               <h2>Admin Login</h2>
 
-                <p class="subtitle">
-                    Sign in to access your administration dashboard.
-                </p>
+<p class="subtitle">
+    Sign in to access your administration portal.
+</p>
 
 
                 <form id="adminLoginForm">
@@ -859,32 +859,32 @@
                    SECURITY CHECK
                    ----------------------------------------- */
 
-                if (profile.role !== "SUPER_ADMIN") {
+                // =====================================================
+// ROLE-BASED DASHBOARD ROUTING
+// =====================================================
 
-                    await supabaseClient.auth.signOut();
+if (profile.role === "SUPER_ADMIN") {
 
-                    throw new Error(
-                        "This account does not have Super Admin access."
-                    );
-                }
+    // Your account
+    window.location.href = "admin-dashboard.html";
+
+} else if (profile.role === "STORE_ADMIN") {
+
+    // Client/store owner account
+    window.location.href = "store-dashboard.html";
+
+} else {
+
+    // Customers and unknown roles cannot use this portal
+    await supabaseClient.auth.signOut();
+
+    throw new Error(
+        "This account does not have administrator access."
+    );
+}
 
 
-                /* -----------------------------------------
-                   SUCCESS
-                   ----------------------------------------- */
-
-                showMessage(
-                    "Login successful. Opening dashboard...",
-                    "success"
-                );
-
-
-                setTimeout(() => {
-
-                    window.location.href =
-                        "admin-dashboard.html";
-
-                }, 700);
+              
 
 
             } catch (error) {
@@ -922,40 +922,48 @@
         /* =====================================================
            CHECK EXISTING SESSION
            ===================================================== */
+async function checkExistingSession() {
 
-        async function checkExistingSession() {
+    const {
+        data: { session }
+    } = await supabaseClient.auth.getSession();
 
-            const {
-                data: { session }
-            } = await supabaseClient.auth.getSession();
+    if (!session) {
+        return;
+    }
 
+    const {
+        data: profile,
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
 
-            if (!session) {
-                return;
-            }
+    if (error || !profile) {
+        await supabaseClient.auth.signOut();
+        return;
+    }
 
+    if (profile.role === "SUPER_ADMIN") {
 
-            const {
-                data: profile
-            } = await supabaseClient
-                .from("profiles")
-                .select("role")
-                .eq("id", session.user.id)
-                .single();
+        window.location.href =
+            "admin-dashboard.html";
 
+    } else if (profile.role === "STORE_ADMIN") {
 
-            if (profile?.role === "SUPER_ADMIN") {
+        window.location.href =
+            "store-dashboard.html";
 
-                window.location.href =
-                    "admin-dashboard.html";
+    } else {
 
-            }
+        await supabaseClient.auth.signOut();
 
-        }
+    }
+}
 
-
-        checkExistingSession();
-
+checkExistingSession();
     
     </script>
 

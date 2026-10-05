@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login | BUSINESS NAME</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* =====================================================
+           ADMIN LOGIN
+           ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #080808;
+            --dark: #111111;
+            --dark-card: #151515;
+            --border: rgba(255, 255, 255, 0.10);
+            --white: #ffffff;
+            --muted: #9b9b9b;
+            --primary: #ff5a1f;
+            --primary-dark: #d9430b;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--black);
+            color: var(--white);
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* =====================================================
+           BACKGROUND
+           ===================================================== */
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-page::before {
+            content: "";
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 90, 31, 0.08);
+            border-radius: 50%;
+            filter: blur(100px);
+            top: -200px;
+            left: -150px;
+            pointer-events: none;
+        }
+
+        .login-page::after {
+            content: "";
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            background: rgba(255, 255, 255, 0.025);
+            border-radius: 50%;
+            filter: blur(100px);
+            bottom: -200px;
+            right: -150px;
+            pointer-events: none;
+        }
+
+        /* =====================================================
+           LEFT SIDE
+           ===================================================== */
+
+        .login-info {
+            width: 52%;
+            min-height: 100vh;
+            padding: 70px 7%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand {
+            position: absolute;
+            top: 40px;
+            left: 7%;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .info-content {
+            max-width: 560px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 28px;
+            height: 1px;
+            background: var(--primary);
+        }
+
+        .info-content h1 {
+            font-size: clamp(42px, 5vw, 72px);
+            line-height: 1.02;
+            letter-spacing: -3px;
+            margin-bottom: 25px;
+        }
+
+        .info-content h1 span {
+            color: var(--primary);
+        }
+
+        .info-content > p {
+            max-width: 500px;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 42px;
+        }
+
+        /* =====================================================
+           FEATURES
+           ===================================================== */
+
+        .features {
+            display: grid;
+            gap: 20px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .feature-icon {
+            width: 46px;
+            height: 46px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .feature h3 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .feature p {
+            color: #777;
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           RIGHT SIDE
+           ===================================================== */
+
+        .login-side {
+            width: 48%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 470px;
+            background: var(--dark-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        .login-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            background: rgba(255, 90, 31, 0.10);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 28px;
+        }
+
+        .login-card h2 {
+            font-size: 30px;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .login-card .subtitle {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        /* =====================================================
+           FORM
+           ===================================================== */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper > i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            height: 54px;
+            background: #0d0d0d;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 12px;
+            color: white;
+            padding: 0 48px;
+            outline: none;
+            font-size: 14px;
+            transition: 0.25s ease;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #555;
+        }
+
+        .input-wrapper input:focus {
+            border-color: rgba(255, 90, 31, 0.65);
+            box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.08);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .password-toggle:hover {
+            color: white;
+        }
+
+        /* =====================================================
+           LOGIN BUTTON
+           ===================================================== */
+
+        .login-btn {
+            width: 100%;
+            height: 54px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* =====================================================
+           MESSAGE
+           ===================================================== */
+
+        .login-message {
+            display: none;
+            margin-top: 18px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .login-message.error {
+            display: block;
+            background: rgba(255, 60, 60, 0.08);
+            border: 1px solid rgba(255, 60, 60, 0.20);
+            color: #ff8b8b;
+        }
+
+        .login-message.success {
+            display: block;
+            background: rgba(50, 200, 100, 0.08);
+            border: 1px solid rgba(50, 200, 100, 0.20);
+            color: #7ee2a1;
+        }
+
+        /* =====================================================
+           BACK TO WEBSITE
+           ===================================================== */
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 25px;
+            color: #777;
+            font-size: 13px;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        /* =====================================================
+           LOADING
+           ===================================================== */
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .login-page {
+                display: block;
+            }
+
+            .login-info {
+                width: 100%;
+                min-height: auto;
+                padding: 100px 25px 35px;
+            }
+
+            .brand {
+                left: 25px;
+            }
+
+            .info-content h1 {
+                font-size: 46px;
+                letter-spacing: -2px;
+            }
+
+            .info-content > p {
+                margin-bottom: 30px;
+            }
+
+            .features {
+                display: none;
+            }
+
+            .login-side {
+                width: 100%;
+                min-height: auto;
+                padding: 20px 20px 50px;
+            }
+
+            .login-card {
+                padding: 32px 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .info-content h1 {
+                font-size: 38px;
+            }
+
+            .login-card {
+                border-radius: 18px;
+                padding: 28px 20px;
+            }
+
+            .login-card h2 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="login-page">
+
+        <!-- =================================================
+             LEFT SIDE
+             ================================================= -->
+
+        <section class="login-info">
+
+            <div class="brand">
+                BUSINESS<span> NAME.</span>
+            </div>
+
+            <div class="info-content">
+
+                <div class="eyebrow">
+                    Multi-Store System
+                </div>
+
+                <h1>
+                    Manage all your
+                    <span>stores.</span>
+                </h1>
+
+                <p>
+                    Your central control panel for creating,
+                    configuring and managing the stores powered
+                    by your e-commerce system.
+                </p>
+
+                <div class="features">
+
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+
+                        <div>
+                            <h3>Create Stores</h3>
+                            <p>Set up new stores for your clients.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+
+                        <div>
+                            <h3>Manage Products</h3>
+                            <p>Add and organize products across stores.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <div>
+                            <h3>Manage Store Admins</h3>
+                            <p>Give your clients access to their stores.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+
+                        <div>
+                            <h3>System Control</h3>
+                            <p>Control your multi-store platform.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             LOGIN SIDE
+             ================================================= -->
+
+        <section class="login-side">
+
+            <div class="login-card">
+
+                <div class="login-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <h2>Super Admin Login</h2>
+
+                <p class="subtitle">
+                    Sign in to access your administration dashboard.
+                </p>
+
+
+                <form id="adminLoginForm">
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="adminEmail">
+                            Email address
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            <input
+                                type="email"
+                                id="adminEmail"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="adminPassword">
+                            Password
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input
+                                type="password"
+                                id="adminPassword"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="togglePassword"
+                                aria-label="Show password"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOGIN BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="login-btn"
+                        id="loginBtn"
+                    >
+                        <span id="loginBtnText">Login</span>
+                        <i class="fa-solid fa-arrow-right" id="loginArrow"></i>
+                    </button>
+
+                </form>
+
+
+                <!-- MESSAGE -->
+
+                <div
+                    class="login-message"
+                    id="loginMessage"
+                ></div>
+
+
+                <!-- BACK -->
+
+                <a
+                    href="index.html"
+                    class="back-link"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Website
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+        /* =====================================================
+           SUPABASE
+           ===================================================== */
+
+        const SUPABASE_URL =
+            "https://difamwnbnfjevvgcprig.supabase.co";
+
+        const SUPABASE_KEY =
+            "YOUR_PUBLISHABLE_KEY_HERE";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        /* =====================================================
+           ELEMENTS
+           ===================================================== */
+
+        const loginForm =
+            document.getElementById("adminLoginForm");
+
+        const emailInput =
+            document.getElementById("adminEmail");
+
+        const passwordInput =
+            document.getElementById("adminPassword");
+
+        const togglePassword =
+            document.getElementById("togglePassword");
+
+        const loginBtn =
+            document.getElementById("loginBtn");
+
+        const loginBtnText =
+            document.getElementById("loginBtnText");
+
+        const loginArrow =
+            document.getElementById("loginArrow");
+
+        const loginMessage =
+            document.getElementById("loginMessage");
+
+
+        /* =====================================================
+           SHOW / HIDE PASSWORD
+           ===================================================== */
+
+        togglePassword.addEventListener("click", () => {
+
+            const isPassword =
+                passwordInput.type === "password";
+
+            passwordInput.type =
+                isPassword ? "text" : "password";
+
+            togglePassword.innerHTML = isPassword
+                ? '<i class="fa-solid fa-eye-slash"></i>'
+                : '<i class="fa-solid fa-eye"></i>';
+
+        });
+
+
+        /* =====================================================
+           MESSAGE
+           ===================================================== */
+
+        function showMessage(message, type) {
+
+            loginMessage.textContent = message;
+
+            loginMessage.className =
+                "login-message " + type;
+
+        }
+
+
+        function clearMessage() {
+
+            loginMessage.textContent = "";
+
+            loginMessage.className =
+                "login-message";
+
+        }
+
+
+        /* =====================================================
+           LOGIN
+           ===================================================== */
+
+        loginForm.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+            clearMessage();
+
+            const email =
+                emailInput.value.trim();
+
+            const password =
+                passwordInput.value;
+
+
+            if (!email || !password) {
+
+                showMessage(
+                    "Please enter your email and password.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            /* Loading state */
+
+            loginBtn.disabled = true;
+
+            loginBtnText.textContent = "Signing in...";
+
+            loginArrow.outerHTML =
+                '<span class="spinner" id="loginArrow"></span>';
+
+
+            try {
+
+                /* -----------------------------------------
+                   SUPABASE AUTHENTICATION
+                   ----------------------------------------- */
+
+                const { data, error } =
+                    await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                if (!data.user) {
+                    throw new Error(
+                        "Login failed. Please try again."
+                    );
+                }
+
+
+                /* -----------------------------------------
+                   CHECK USER PROFILE
+                   ----------------------------------------- */
+
+                const {
+                    data: profile,
+                    error: profileError
+                } = await supabaseClient
+                    .from("profiles")
+                    .select("id, full_name, role, store_id")
+                    .eq("id", data.user.id)
+                    .single();
+
+
+                if (profileError) {
+                    throw profileError;
+                }
+
+
+                /* -----------------------------------------
+                   SECURITY CHECK
+                   ----------------------------------------- */
+
+                if (profile.role !== "SUPER_ADMIN") {
+
+                    await supabaseClient.auth.signOut();
+
+                    throw new Error(
+                        "This account does not have Super Admin access."
+                    );
+                }
+
+
+                /* -----------------------------------------
+                   SUCCESS
+                   ----------------------------------------- */
+
+                showMessage(
+                    "Login successful. Opening dashboard...",
+                    "success"
+                );
+
+
+                setTimeout(() => {
+
+                    window.location.href =
+                        "admin-dashboard.html";
+
+                }, 700);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Admin login error:",
+                    error
+                );
+
+                showMessage(
+                    error.message ||
+                    "Unable to log in. Please check your details.",
+                    "error"
+                );
+
+                loginBtn.disabled = false;
+
+                loginBtnText.textContent = "Login";
+
+                const spinner =
+                    document.getElementById("loginArrow");
+
+                if (spinner) {
+
+                    spinner.outerHTML =
+                        '<i class="fa-solid fa-arrow-right" id="loginArrow"></i>';
+
+                }
+
+            }
+
+        });
+
+
+        /* =====================================================
+           CHECK EXISTING SESSION
+           ===================================================== */
+
+        async function checkExistingSession() {
+
+            const {
+                data: { session }
+            } = await supabaseClient.auth.getSession();
+
+
+            if (!session) {
+                return;
+            }
+
+
+            const {
+                data: profile
+            } = await supabaseClient
+                .from("profiles")
+                .select("role")
+                .eq("id", session.user.id)
+                .single();
+
+
+            if (profile?.role === "SUPER_ADMIN") {
+
+                window.location.href =
+                    "admin-dashboard.html";
+
+            }
+
+        }
+
+
+        checkExistingSession();
+    </script>
+
+</body>
+</html>

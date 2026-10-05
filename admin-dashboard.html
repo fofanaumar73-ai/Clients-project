@@ -3,14 +3,1804 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Super Admin Dashboard | BUSINESS NAME</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        /* =====================================================
+           RESET
+           ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #f7f3ed;
+            --cream-dark: #eee8df;
+            --white: #ffffff;
+
+            --black: #111111;
+            --dark: #1b1b1b;
+
+            --primary: #ff5a1f;
+            --primary-dark: #d9430b;
+
+            --text: #171717;
+            --muted: #77736d;
+
+            --border: #e5ded4;
+
+            --success: #1d9b5f;
+            --danger: #dc3545;
+            --warning: #d98c00;
+
+            --shadow:
+                0 10px 35px rgba(0, 0, 0, 0.06);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--cream);
+            color: var(--text);
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =====================================================
+           LAYOUT
+           ===================================================== */
+
+        .dashboard {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* =====================================================
+           SIDEBAR
+           ===================================================== */
+
+        .sidebar {
+            width: 255px;
+            min-height: 100vh;
+
+            background: var(--black);
+            color: white;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            z-index: 100;
+        }
+
+        .brand {
+            padding: 28px 24px;
+
+            font-size: 19px;
+            font-weight: 800;
+
+            letter-spacing: 1.5px;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.08);
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .admin-label {
+            padding: 22px 24px 12px;
+
+            color: #777;
+            font-size: 10px;
+
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .nav {
+            padding: 0 12px;
+        }
+
+        .nav-item {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 14px;
+
+            margin-bottom: 5px;
+
+            border-radius: 9px;
+
+            color: #aaa;
+            text-decoration: none;
+
+            font-size: 14px;
+
+            transition:
+                background .2s ease,
+                color .2s ease;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,.06);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 18px 12px;
+        }
+
+        .logout-btn {
+            width: 100%;
+
+            border: 0;
+
+            background: rgba(255,255,255,.06);
+
+            color: #aaa;
+
+            padding: 13px 14px;
+
+            border-radius: 9px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            transition: .2s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(220,53,69,.15);
+            color: #ff6b78;
+        }
+
+        /* =====================================================
+           MAIN
+           ===================================================== */
+
+        .main {
+            width: calc(100% - 255px);
+            margin-left: 255px;
+
+            min-height: 100vh;
+        }
+
+        /* =====================================================
+           TOPBAR
+           ===================================================== */
+
+        .topbar {
+            height: 78px;
+
+            background: rgba(255,255,255,.78);
+
+            backdrop-filter: blur(12px);
+
+            border-bottom:
+                1px solid var(--border);
+
+            padding: 0 35px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 50;
+        }
+
+        .page-title h1 {
+            font-size: 21px;
+            margin-bottom: 4px;
+        }
+
+        .page-title p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background: var(--black);
+            color: white;
+
+            display: grid;
+            place-items: center;
+
+            font-size: 14px;
+        }
+
+        .profile-info strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .profile-info span {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* =====================================================
+           CONTENT
+           ===================================================== */
+
+        .content {
+            padding: 32px 35px 50px;
+        }
+
+        /* =====================================================
+           WELCOME
+           ===================================================== */
+
+        .welcome {
+            background:
+                linear-gradient(
+                    120deg,
+                    #191919,
+                    #252525
+                );
+
+            color: white;
+
+            border-radius: 16px;
+
+            padding: 28px 30px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+
+            overflow: hidden;
+
+            position: relative;
+        }
+
+        .welcome::after {
+            content: "";
+
+            position: absolute;
+
+            width: 250px;
+            height: 250px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255,90,31,.12);
+
+            right: -80px;
+            top: -100px;
+
+            pointer-events: none;
+        }
+
+        .welcome-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-text small {
+            color: var(--primary);
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .welcome-text h2 {
+            margin-top: 7px;
+
+            font-size: 25px;
+        }
+
+        .welcome-text p {
+            margin-top: 7px;
+
+            color: #aaa;
+
+            font-size: 13px;
+        }
+
+        .welcome-icon {
+            position: relative;
+            z-index: 2;
+
+            width: 65px;
+            height: 65px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(255,90,31,.15);
+
+            display: grid;
+            place-items: center;
+
+            color: var(--primary);
+
+            font-size: 27px;
+        }
+
+        /* =====================================================
+           STAT CARDS
+           ===================================================== */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--white);
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            box-shadow: var(--shadow);
+        }
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 10px;
+
+            display: grid;
+            place-items: center;
+
+            background: #fff0e9;
+
+            color: var(--primary);
+        }
+
+        .stat-card h3 {
+            font-size: 27px;
+
+            margin-top: 17px;
+        }
+
+        .stat-card p {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            margin-top: 4px;
+        }
+
+        /* =====================================================
+           SECTION HEADER
+           ===================================================== */
+
+        .section-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 17px;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .primary-btn {
+            border: 0;
+
+            background: var(--primary);
+
+            color: white;
+
+            padding: 11px 16px;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            transition: .2s ease;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* =====================================================
+           STORES TABLE
+           ===================================================== */
+
+        .table-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 700px;
+        }
+
+        th {
+            background: #faf8f5;
+
+            text-align: left;
+
+            padding: 14px 18px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .8px;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+        td {
+            padding: 16px 18px;
+
+            font-size: 12px;
+
+            border-bottom:
+                1px solid #eee9e2;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .store-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .store-avatar {
+            width: 35px;
+            height: 35px;
+
+            border-radius: 9px;
+
+            background: #f0ece5;
+
+            display: grid;
+            place-items: center;
+
+            color: var(--primary);
+
+            font-weight: 700;
+        }
+
+        .store-name strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .store-name span {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        .status {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .status::before {
+            content: "";
+
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+        }
+
+        .status.active {
+            background: #e9f8f0;
+            color: var(--success);
+        }
+
+        .status.active::before {
+            background: var(--success);
+        }
+
+        .status.inactive {
+            background: #fcecef;
+            color: var(--danger);
+        }
+
+        .status.inactive::before {
+            background: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+
+            padding: 55px 20px;
+
+            color: var(--muted);
+        }
+
+        .empty-state i {
+            font-size: 32px;
+
+            margin-bottom: 12px;
+
+            color: #cfc7bc;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           LOADING
+           ===================================================== */
+
+        .loading {
+            text-align: center;
+
+            padding: 45px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        .spinner {
+            display: inline-block;
+
+            width: 18px;
+            height: 18px;
+
+            border:
+                2px solid #ddd;
+
+            border-top-color:
+                var(--primary);
+
+            border-radius: 50%;
+
+            animation:
+                spin .7s linear infinite;
+
+            vertical-align: middle;
+
+            margin-right: 7px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =====================================================
+           TOAST
+           ===================================================== */
+
+        .toast {
+            position: fixed;
+
+            right: 25px;
+            bottom: 25px;
+
+            background: #171717;
+
+            color: white;
+
+            padding: 13px 17px;
+
+            border-radius: 9px;
+
+            font-size: 12px;
+
+            box-shadow:
+                0 12px 35px rgba(0,0,0,.2);
+
+            transform:
+                translateY(20px);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transition: .25s ease;
+
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform:
+                translateY(0);
+
+            opacity: 1;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 1050px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 72px;
+            }
+
+            .brand {
+                font-size: 0;
+                text-align: center;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .brand span {
+                display: none;
+            }
+
+            .admin-label,
+            .nav-item span,
+            .logout-btn span {
+                display: none;
+            }
+
+            .nav-item,
+            .logout-btn {
+                justify-content: center;
+            }
+
+            .main {
+                width: calc(100% - 72px);
+                margin-left: 72px;
+            }
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .content {
+                padding: 22px 20px 40px;
+            }
+
+            .profile-info {
+                display: none;
+            }
+
+        }
+
+        @media (max-width: 560px) {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome {
+                padding: 22px;
+            }
+
+            .welcome-icon {
+                display: none;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                gap: 12px;
+                flex-direction: column;
+            }
+
+            .page-title h1 {
+                font-size: 18px;
+            }
+
+        }
+
+    </style>
 </head>
+
 
 <body>
 
-    <h1>Super Admin Dashboard</h1>
+<div class="dashboard">
 
-    <p>You are logged in as the Super Admin.</p>
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            BUSINESS<span> NAME</span>
+        </div>
+
+        <div class="admin-label">
+            Super Admin
+        </div>
+
+        <nav class="nav">
+
+            <a
+                href="#"
+                class="nav-item active"
+            >
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a
+                href="#"
+                class="nav-item"
+                id="storesNav"
+            >
+                <i class="fa-solid fa-store"></i>
+                <span>Stores</span>
+            </a>
+
+            <a
+                href="#"
+                class="nav-item"
+                id="adminsNav"
+            >
+                <i class="fa-solid fa-users"></i>
+                <span>Store Admins</span>
+            </a>
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+                <i class="fa-solid fa-box"></i>
+                <span>Products</span>
+            </a>
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Categories</span>
+            </a>
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <button
+                class="logout-btn"
+                id="logoutBtn"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="page-title">
+
+                <h1>
+                    Dashboard
+                </h1>
+
+                <p>
+                    Manage your multi-store system
+                </p>
+
+            </div>
+
+
+            <div class="admin-profile">
+
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+
+                <div class="profile-info">
+
+                    <strong id="adminName">
+                        Super Admin
+                    </strong>
+
+                    <span>
+                        Super Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="content">
+
+
+            <!-- WELCOME -->
+
+            <div class="welcome">
+
+                <div class="welcome-text">
+
+                    <small>
+                        Control Center
+                    </small>
+
+                    <h2>
+                        Welcome back, <span id="welcomeName">
+                            Admin
+                        </span>.
+                    </h2>
+
+                    <p>
+                        Here's what's happening across your stores.
+                    </p>
+
+                </div>
+
+                <div class="welcome-icon">
+
+                    <i class="fa-solid fa-store"></i>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 STATISTICS
+                 ================================================= -->
+
+            <div class="stats-grid">
+
+
+                <!-- STORES -->
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div>
+
+                            <span>
+                                Stores
+                            </span>
+
+                        </div>
+
+                        <div class="stat-icon">
+
+                            <i class="fa-solid fa-store"></i>
+
+                        </div>
+
+                    </div>
+
+                    <h3 id="totalStores">
+                        0
+                    </h3>
+
+                    <p>
+                        Total stores
+                    </p>
+
+                </div>
+
+
+                <!-- ACTIVE STORES -->
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div>
+
+                            <span>
+                                Active
+                            </span>
+
+                        </div>
+
+                        <div class="stat-icon">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                        </div>
+
+                    </div>
+
+                    <h3 id="activeStores">
+                        0
+                    </h3>
+
+                    <p>
+                        Active stores
+                    </p>
+
+                </div>
+
+
+                <!-- PRODUCTS -->
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div>
+
+                            <span>
+                                Products
+                            </span>
+
+                        </div>
+
+                        <div class="stat-icon">
+
+                            <i class="fa-solid fa-box"></i>
+
+                        </div>
+
+                    </div>
+
+                    <h3 id="totalProducts">
+                        0
+                    </h3>
+
+                    <p>
+                        Across all stores
+                    </p>
+
+                </div>
+
+
+                <!-- CATEGORIES -->
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div>
+
+                            <span>
+                                Categories
+                            </span>
+
+                        </div>
+
+                        <div class="stat-icon">
+
+                            <i class="fa-solid fa-layer-group"></i>
+
+                        </div>
+
+                    </div>
+
+                    <h3 id="totalCategories">
+                        0
+                    </h3>
+
+                    <p>
+                        Across all stores
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 STORES
+                 ================================================= -->
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Your Stores
+                    </h2>
+
+                    <p>
+                        Stores currently connected to your platform.
+                    </p>
+
+                </div>
+
+                <button
+                    class="primary-btn"
+                    id="createStoreBtn"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                    Create Store
+                </button>
+
+            </div>
+
+
+            <div class="table-card">
+
+                <div
+                    id="storesLoading"
+                    class="loading"
+                >
+                    <span class="spinner"></span>
+                    Loading stores...
+                </div>
+
+
+                <div
+                    id="storesTableContainer"
+                    class="table-wrapper"
+                    style="display:none;"
+                >
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Store
+                                </th>
+
+                                <th>
+                                    Slug
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Created
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody
+                            id="storesTableBody"
+                        ></tbody>
+
+                    </table>
+
+                </div>
+
+
+                <div
+                    id="emptyStores"
+                    class="empty-state"
+                    style="display:none;"
+                >
+
+                    <i class="fa-solid fa-store-slash"></i>
+
+                    <p>
+                        No stores have been created yet.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<script>
+
+    /* =====================================================
+       SUPABASE CONFIGURATION
+       ===================================================== */
+
+    const SUPABASE_URL =
+        "https://difamwnbnfjevvgcprig.supabase.co";
+
+    const SUPABASE_KEY =
+        "YOUR_PUBLISHABLE_KEY";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    /* =====================================================
+       ELEMENTS
+       ===================================================== */
+
+    const adminName =
+        document.getElementById("adminName");
+
+    const welcomeName =
+        document.getElementById("welcomeName");
+
+    const totalStores =
+        document.getElementById("totalStores");
+
+    const activeStores =
+        document.getElementById("activeStores");
+
+    const totalProducts =
+        document.getElementById("totalProducts");
+
+    const totalCategories =
+        document.getElementById("totalCategories");
+
+    const storesLoading =
+        document.getElementById("storesLoading");
+
+    const storesTableContainer =
+        document.getElementById(
+            "storesTableContainer"
+        );
+
+    const storesTableBody =
+        document.getElementById(
+            "storesTableBody"
+        );
+
+    const emptyStores =
+        document.getElementById(
+            "emptyStores"
+        );
+
+    const toast =
+        document.getElementById("toast");
+
+
+    /* =====================================================
+       TOAST
+       ===================================================== */
+
+    function showToast(message) {
+
+        toast.textContent = message;
+
+        toast.classList.add("show");
+
+        setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        }, 3000);
+
+    }
+
+
+    /* =====================================================
+       CHECK SUPER ADMIN
+       ===================================================== */
+
+    async function checkAdminAccess() {
+
+        const {
+            data: {
+                session
+            }
+        } =
+            await supabaseClient
+                .auth
+                .getSession();
+
+
+        if (!session) {
+
+            window.location.href =
+                "admin-login.html";
+
+            return null;
+        }
+
+
+        const {
+            data: profile,
+            error
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(
+                    "id, full_name, role, store_id"
+                )
+                .eq(
+                    "id",
+                    session.user.id
+                )
+                .single();
+
+
+        if (
+            error ||
+            !profile ||
+            profile.role !== "SUPER_ADMIN"
+        ) {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            window.location.href =
+                "admin-login.html";
+
+            return null;
+        }
+
+
+        return profile;
+    }
+
+
+    /* =====================================================
+       LOAD STORES
+       ===================================================== */
+
+    async function loadStores() {
+
+        storesLoading.style.display =
+            "block";
+
+        storesTableContainer.style.display =
+            "none";
+
+        emptyStores.style.display =
+            "none";
+
+
+        const {
+            data: stores,
+            error
+        } =
+            await supabaseClient
+                .from("stores")
+                .select("*")
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Stores error:",
+                error
+            );
+
+            storesLoading.innerHTML =
+                "Unable to load stores.";
+
+            return;
+        }
+
+
+        storesLoading.style.display =
+            "none";
+
+
+        if (
+            !stores ||
+            stores.length === 0
+        ) {
+
+            emptyStores.style.display =
+                "block";
+
+            return;
+        }
+
+
+        storesTableContainer.style.display =
+            "block";
+
+
+        storesTableBody.innerHTML = "";
+
+
+        stores.forEach(store => {
+
+            const row =
+                document.createElement("tr");
+
+
+            const createdDate =
+                store.created_at
+                    ? new Date(
+                        store.created_at
+                    ).toLocaleDateString(
+                        "en-US",
+                        {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric"
+                        }
+                    )
+                    : "—";
+
+
+            const isActive =
+                store.is_active !== false;
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    <div class="store-name">
+
+                        <div class="store-avatar">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                ${escapeHtml(
+                                    store.name ||
+                                    "Unnamed Store"
+                                )}
+                            </strong>
+
+                            <span>
+                                ${escapeHtml(
+                                    store.description ||
+                                    "No description"
+                                )}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        store.slug || "—"
+                    )}
+                </td>
+
+
+                <td>
+
+                    <span class="status ${
+                        isActive
+                            ? "active"
+                            : "inactive"
+                    }">
+
+                        ${
+                            isActive
+                                ? "Active"
+                                : "Inactive"
+                        }
+
+                    </span>
+
+                </td>
+
+
+                <td>
+                    ${createdDate}
+                </td>
+
+
+                <td>
+
+                    <button
+                        class="action-btn"
+                        onclick="
+                            viewStore(
+                                '${store.id}'
+                            )
+                        "
+                    >
+                        View
+                    </button>
+
+                </td>
+
+            `;
+
+
+            storesTableBody.appendChild(
+                row
+            );
+
+        });
+
+    }
+
+
+    /* =====================================================
+       LOAD STATISTICS
+       ===================================================== */
+
+    async function loadStatistics() {
+
+        const [
+            storesResult,
+            productsResult,
+            categoriesResult
+        ] =
+            await Promise.all([
+
+                supabaseClient
+                    .from("stores")
+                    .select(
+                        "id, is_active"
+                    ),
+
+                supabaseClient
+                    .from("products")
+                    .select(
+                        "id"
+                    ),
+
+                supabaseClient
+                    .from("categories")
+                    .select(
+                        "id"
+                    )
+
+            ]);
+
+
+        if (
+            !storesResult.error
+        ) {
+
+            const stores =
+                storesResult.data || [];
+
+
+            totalStores.textContent =
+                stores.length;
+
+
+            activeStores.textContent =
+                stores.filter(
+                    store =>
+                        store.is_active !== false
+                ).length;
+
+        }
+
+
+        if (
+            !productsResult.error
+        ) {
+
+            totalProducts.textContent =
+                (
+                    productsResult.data || []
+                ).length;
+
+        }
+
+
+        if (
+            !categoriesResult.error
+        ) {
+
+            totalCategories.textContent =
+                (
+                    categoriesResult.data || []
+                ).length;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       ESCAPE HTML
+       ===================================================== */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    /* =====================================================
+       VIEW STORE
+       ===================================================== */
+
+    function viewStore(storeId) {
+
+        showToast(
+            "Store management will be connected next."
+        );
+
+        console.log(
+            "Selected store:",
+            storeId
+        );
+
+    }
+
+
+    /* =====================================================
+       CREATE STORE
+       ===================================================== */
+
+    document
+        .getElementById(
+            "createStoreBtn"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                showToast(
+                    "Store creation module coming next."
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
+
+    document
+        .getElementById(
+            "logoutBtn"
+        )
+        .addEventListener(
+            "click",
+            async () => {
+
+                await supabaseClient
+                    .auth
+                    .signOut();
+
+                window.location.href =
+                    "admin-login.html";
+
+            }
+        );
+
+
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
+
+    async function initializeDashboard() {
+
+        const profile =
+            await checkAdminAccess();
+
+
+        if (!profile) {
+            return;
+        }
+
+
+        const name =
+            profile.full_name ||
+            "Super Admin";
+
+
+        adminName.textContent =
+            name;
+
+        welcomeName.textContent =
+            name;
+
+
+        await Promise.all([
+
+            loadStatistics(),
+
+            loadStores()
+
+        ]);
+
+    }
+
+
+    initializeDashboard();
+
+</script>
 
 </body>
 </html>

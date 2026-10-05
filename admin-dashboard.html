@@ -1067,6 +1067,45 @@
     }
 
 }
+        /* =====================================================
+   MOBILE SIDEBAR - SHOW LOGOUT
+   ===================================================== */
+
+@media (max-width: 800px) {
+
+    .sidebar {
+        height: 100vh;
+        min-height: 100vh;
+
+        overflow-y: auto;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nav {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .sidebar-bottom {
+        flex-shrink: 0;
+        margin-top: auto;
+        padding: 18px 12px 24px;
+        background: var(--black);
+    }
+
+    .logout-btn {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .logout-btn span {
+        display: block;
+    }
+}
     </style>
 </head>
 

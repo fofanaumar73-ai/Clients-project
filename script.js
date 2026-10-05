@@ -811,3 +811,24 @@ function searchAddProduct(productId) {
     closeSearchPanel();
 
 }
+
+
+// ==========================================
+// SUPABASE CONNECTION TEST
+// ==========================================
+
+async function testSupabaseConnection() {
+    const { data, error } = await supabaseClient
+        .from("stores")
+        .select("id")
+        .limit(1);
+
+    if (error) {
+        console.error("Supabase connection failed:", error);
+        return;
+    }
+
+    console.log("Supabase connected successfully:", data);
+}
+
+testSupabaseConnection();

@@ -1,3 +1,17 @@
+// ==========================================
+// SUPABASE CONNECTION
+// ==========================================
+
+const SUPABASE_URL = "https://difamwnbnfjevvgcprig.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_pETuvhi__8zgCn2_Vc19BQ_IeW2PfLl";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
 /* =========================================================
    BUSINESS NAME— MAIN JAVASCRIPT
 ========================================================= */

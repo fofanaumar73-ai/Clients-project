@@ -206,16 +206,20 @@
         }
 
         .login-card {
-            width: 100%;
-            max-width: 470px;
-            background: var(--dark-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 48px;
-            box-shadow:
-                0 30px 80px rgba(0, 0, 0, 0.45),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03);
-        }
+    width: 100%;
+    max-width: 470px;
+    background: var(--dark-card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px;
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+    position: relative;
+    z-index: 20;
+    pointer-events: auto;
+}
 
         .login-icon {
             width: 58px;
@@ -314,23 +318,28 @@
            LOGIN BUTTON
            ===================================================== */
 
-        .login-btn {
-            width: 100%;
-            height: 54px;
-            border: none;
-            border-radius: 12px;
-            background: var(--primary);
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: 0.25s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+       .login-btn {
+    width: 100%;
+    height: 54px;
+    border: none;
+    border-radius: 12px;
+    background: var(--primary);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: 0.25s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    position: relative;
+    z-index: 30;
+    pointer-events: auto;
+}
 
         .login-btn:hover {
             background: var(--primary-dark);

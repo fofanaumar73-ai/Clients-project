@@ -2561,26 +2561,33 @@ CHECK (
 
         /* View buttons */
 
-        document
-            .querySelectorAll(
-                ".store-action-btn"
-            )
-            .forEach(button => {
+       document
+    .querySelectorAll(
+        ".store-action-btn"
+    )
+    .forEach(button => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+        button.addEventListener(
+            "click",
+            () => {
 
-                        viewStore(
-                            button.dataset.storeId
-                        );
+                const storeId =
+                    button.dataset.storeId;
 
-                    }
+                const storeName =
+                    button.dataset.storeName ||
+                    "Selected Store";
+
+
+                openStoreAdminModal(
+                    storeId,
+                    storeName
                 );
 
-            });
+            }
+        );
 
-    }
+    });
 
 
     /* =====================================================

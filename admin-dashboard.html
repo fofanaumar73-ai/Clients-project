@@ -1106,6 +1106,72 @@
         display: block;
     }
 }
+
+        /* =====================================================
+   MOBILE LOGOUT
+   ===================================================== */
+
+.mobile-logout {
+    display: none;
+}
+
+.mobile-logout-btn {
+    width: 100%;
+
+    border: 0;
+
+    background: rgba(255,255,255,.06);
+
+    color: #aaa;
+
+    padding: 13px 14px;
+
+    border-radius: 9px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+.mobile-logout-btn:hover {
+    background: rgba(220,53,69,.15);
+    color: #ff6b78;
+}
+
+.mobile-logout-btn i {
+    width: 20px;
+    text-align: center;
+}
+
+
+@media (max-width: 800px) {
+
+    .mobile-logout {
+        display: block;
+
+        padding: 10px 12px 20px;
+
+        flex-shrink: 0;
+    }
+
+    .mobile-logout-btn {
+        display: flex;
+    }
+
+    /* Keep desktop logout hidden on mobile */
+    .sidebar-bottom {
+        display: none;
+    }
+
+}
+        
     </style>
 </head>
 
@@ -1193,18 +1259,35 @@
                 <span>Settings</span>
             </a>
 
-        </nav>
+               </nav>
+
+        <!-- MOBILE LOGOUT -->
+
+        <div class="mobile-logout">
+
+            <button
+                type="button"
+                class="mobile-logout-btn"
+                id="mobileLogoutBtn"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </button>
+
+        </div>
+
+        <!-- DESKTOP LOGOUT -->
 
         <div class="sidebar-bottom">
 
             <button
-    type="button"
-    class="logout-btn"
-    id="logoutBtn"
->
-    <i class="fa-solid fa-right-from-bracket"></i>
-    <span>Logout</span>
-</button>
+                type="button"
+                class="logout-btn"
+                id="logoutBtn"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </button>
 
         </div>
 
@@ -2192,6 +2275,24 @@ if (logoutButton) {
 
 }
 
+
+    /* =====================================================
+   MOBILE LOGOUT
+   ===================================================== */
+
+const mobileLogoutButton =
+    document.getElementById(
+        "mobileLogoutBtn"
+    );
+
+if (mobileLogoutButton) {
+
+    mobileLogoutButton.addEventListener(
+        "click",
+        logoutAdmin
+    );
+
+}
 
     /* =====================================================
        INITIALIZE

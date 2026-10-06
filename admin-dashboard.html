@@ -1587,6 +1587,52 @@
     }
 
 }
+
+        .field-help {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    outline: none;
+    background: #fff;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.form-group textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255,90,31,.10);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-group input[type="color"] {
+    height: 46px;
+    padding: 4px;
+    cursor: pointer;
+}
+
+@media (max-width: 560px) {
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+}
         
     </style>
 </head>
@@ -2044,6 +2090,242 @@
 
 </div>
 
+
+    <!-- =====================================================
+     CREATE STORE MODAL
+     ===================================================== -->
+
+<div class="modal-overlay" id="createStoreModal">
+
+    <div class="modal-card">
+
+        <div class="modal-header">
+
+            <div>
+                <small>NEW STORE</small>
+
+                <h2>Create Store</h2>
+
+                <p>
+                    Set up the client's store and basic storefront information.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeCreateStoreModal"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form id="createStoreForm">
+
+            <div class="form-group">
+                <label for="storeName">
+                    Business / Store Name
+                </label>
+
+                <input
+                    type="text"
+                    id="storeName"
+                    placeholder="e.g. Luxe Avenue"
+                    maxlength="120"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="storeSlug">
+                    Store Slug
+                </label>
+
+                <input
+                    type="text"
+                    id="storeSlug"
+                    placeholder="e.g. luxe-avenue"
+                    maxlength="120"
+                    required
+                >
+
+                <small class="field-help">
+                    This becomes the store's unique URL identifier.
+                </small>
+            </div>
+
+
+            <div class="form-group">
+                <label for="storeTagline">
+                    Tagline
+                </label>
+
+                <input
+                    type="text"
+                    id="storeTagline"
+                    placeholder="Your brand tagline"
+                    maxlength="300"
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="storeDescription">
+                    Store Description
+                </label>
+
+                <textarea
+                    id="storeDescription"
+                    rows="3"
+                    maxlength="2000"
+                    placeholder="Short description of the business..."
+                ></textarea>
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="storeEmail">
+                        Contact Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="storeEmail"
+                        placeholder="business@example.com"
+                        maxlength="254"
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="storePhone">
+                        Phone
+                    </label>
+
+                    <input
+                        type="text"
+                        id="storePhone"
+                        placeholder="+234..."
+                        maxlength="50"
+                    >
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+                <label for="storeAddress">
+                    Business Address
+                </label>
+
+                <textarea
+                    id="storeAddress"
+                    rows="2"
+                    maxlength="500"
+                    placeholder="Business address"
+                ></textarea>
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="primaryColor">
+                        Primary Colour
+                    </label>
+
+                    <input
+                        type="color"
+                        id="primaryColor"
+                        value="#ff5a1f"
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="secondaryColor">
+                        Secondary Colour
+                    </label>
+
+                    <input
+                        type="color"
+                        id="secondaryColor"
+                        value="#111111"
+                    >
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+                <label for="heroTitle">
+                    Hero Heading
+                </label>
+
+                <input
+                    type="text"
+                    id="heroTitle"
+                    placeholder="Your main storefront heading"
+                    maxlength="300"
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="heroDescription">
+                    Hero Description
+                </label>
+
+                <textarea
+                    id="heroDescription"
+                    rows="3"
+                    maxlength="2000"
+                    placeholder="Short text displayed in the hero section..."
+                ></textarea>
+            </div>
+
+
+            <div
+                class="form-message"
+                id="createStoreMessage"
+            ></div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="cancelCreateStoreBtn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                    id="saveStoreBtn"
+                >
+                    <i class="fa-solid fa-store"></i>
+
+                    <span>
+                        Create Store
+                    </span>
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+    
 
     <!-- =====================================================
      STORE ADMIN MODAL
@@ -2776,6 +3058,25 @@ async function checkAdminAccess() {
 
     }
 
+    async function getCurrentSession() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getSession();
+
+    if (error) {
+        console.error(
+            "Session error:",
+            error
+        );
+
+        return null;
+    }
+
+    return data.session || null;
+}
 
    /* =========================================================
    CREATE STORE SECURITY
@@ -3153,6 +3454,397 @@ async function createStore(storeData) {
     }
 }
 
+    /* =====================================================
+   CREATE STORE MODAL
+   ===================================================== */
+
+const createStoreModal =
+    document.getElementById(
+        "createStoreModal"
+    );
+
+const createStoreForm =
+    document.getElementById(
+        "createStoreForm"
+    );
+
+const createStoreMessage =
+    document.getElementById(
+        "createStoreMessage"
+    );
+
+const saveStoreBtn =
+    document.getElementById(
+        "saveStoreBtn"
+    );
+
+const closeCreateStoreModal =
+    document.getElementById(
+        "closeCreateStoreModal"
+    );
+
+const cancelCreateStoreBtn =
+    document.getElementById(
+        "cancelCreateStoreBtn"
+    );
+
+
+function showCreateStoreMessage(
+    message,
+    type
+) {
+
+    if (!createStoreMessage) {
+        return;
+    }
+
+    createStoreMessage.textContent =
+        message;
+
+    createStoreMessage.className =
+        "form-message show " +
+        type;
+}
+
+
+function openCreateStoreModal() {
+
+    if (!createStoreModal) {
+        return;
+    }
+
+    createStoreForm.reset();
+
+    document.getElementById(
+        "primaryColor"
+    ).value = "#ff5a1f";
+
+    document.getElementById(
+        "secondaryColor"
+    ).value = "#111111";
+
+    showCreateStoreMessage(
+        "",
+        ""
+    );
+
+    createStoreModal.classList.add(
+        "show"
+    );
+
+    document.body.style.overflow =
+        "hidden";
+
+    setTimeout(() => {
+
+        const input =
+            document.getElementById(
+                "storeName"
+            );
+
+        if (input) {
+            input.focus();
+        }
+
+    }, 100);
+}
+
+
+function closeCreateStoreModalWindow() {
+
+    if (!createStoreModal) {
+        return;
+    }
+
+    createStoreModal.classList.remove(
+        "show"
+    );
+
+    document.body.style.overflow =
+        "";
+
+    createStoreForm.reset();
+
+    showCreateStoreMessage(
+        "",
+        ""
+    );
+}
+
+
+/* CREATE STORE BUTTON */
+
+const createStoreBtn =
+    document.getElementById(
+        "createStoreBtn"
+    );
+
+if (createStoreBtn) {
+
+    createStoreBtn.addEventListener(
+        "click",
+        openCreateStoreModal
+    );
+
+}
+
+
+/* CLOSE BUTTON */
+
+if (closeCreateStoreModal) {
+
+    closeCreateStoreModal.addEventListener(
+        "click",
+        closeCreateStoreModalWindow
+    );
+
+}
+
+
+if (cancelCreateStoreBtn) {
+
+    cancelCreateStoreBtn.addEventListener(
+        "click",
+        closeCreateStoreModalWindow
+    );
+
+}
+
+
+/* CLICK OUTSIDE */
+
+if (createStoreModal) {
+
+    createStoreModal.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                createStoreModal
+            ) {
+
+                closeCreateStoreModalWindow();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* AUTO-GENERATE SLUG */
+
+const storeNameInput =
+    document.getElementById(
+        "storeName"
+    );
+
+const storeSlugInput =
+    document.getElementById(
+        "storeSlug"
+    );
+
+if (
+    storeNameInput &&
+    storeSlugInput
+) {
+
+    storeNameInput.addEventListener(
+        "input",
+        () => {
+
+            if (
+                !storeSlugInput.dataset.edited
+            ) {
+
+                storeSlugInput.value =
+                    createSlug(
+                        storeNameInput.value
+                    );
+
+            }
+
+        }
+    );
+
+
+    storeSlugInput.addEventListener(
+        "input",
+        () => {
+
+            storeSlugInput.dataset.edited =
+                "true";
+
+            storeSlugInput.value =
+                createSlug(
+                    storeSlugInput.value
+                );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CREATE STORE FORM SUBMIT
+   ===================================================== */
+
+if (createStoreForm) {
+
+    createStoreForm.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            const storeData = {
+
+                name:
+                    document.getElementById(
+                        "storeName"
+                    ).value,
+
+                slug:
+                    document.getElementById(
+                        "storeSlug"
+                    ).value,
+
+                tagline:
+                    document.getElementById(
+                        "storeTagline"
+                    ).value,
+
+                description:
+                    document.getElementById(
+                        "storeDescription"
+                    ).value,
+
+                contact_email:
+                    document.getElementById(
+                        "storeEmail"
+                    ).value,
+
+                contact_phone:
+                    document.getElementById(
+                        "storePhone"
+                    ).value,
+
+                address:
+                    document.getElementById(
+                        "storeAddress"
+                    ).value,
+
+                primary_color:
+                    document.getElementById(
+                        "primaryColor"
+                    ).value,
+
+                secondary_color:
+                    document.getElementById(
+                        "secondaryColor"
+                    ).value,
+
+                hero_title:
+                    document.getElementById(
+                        "heroTitle"
+                    ).value,
+
+                hero_description:
+                    document.getElementById(
+                        "heroDescription"
+                    ).value
+
+            };
+
+
+            saveStoreBtn.disabled =
+                true;
+
+            saveStoreBtn.innerHTML = `
+                <span class="spinner"></span>
+                <span>Creating...</span>
+            `;
+
+
+            showCreateStoreMessage(
+                "",
+                ""
+            );
+
+
+            try {
+
+                const store =
+                    await createStore(
+                        storeData
+                    );
+
+
+                showCreateStoreMessage(
+                    "Store created successfully.",
+                    "success"
+                );
+
+
+                saveStoreBtn.innerHTML = `
+                    <i class="fa-solid fa-check"></i>
+                    <span>Created</span>
+                `;
+
+
+                await loadStores();
+
+                await loadStatistics();
+
+
+                setTimeout(() => {
+
+                    closeCreateStoreModalWindow();
+
+                    saveStoreBtn.disabled =
+                        false;
+
+                    saveStoreBtn.innerHTML = `
+                        <i class="fa-solid fa-store"></i>
+                        <span>Create Store</span>
+                    `;
+
+                }, 1200);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Create Store failed:",
+                    error
+                );
+
+
+                showCreateStoreMessage(
+                    error.message ||
+                    "Unable to create the store.",
+                    "error"
+                );
+
+
+                saveStoreBtn.disabled =
+                    false;
+
+                saveStoreBtn.innerHTML = `
+                    <i class="fa-solid fa-store"></i>
+                    <span>Create Store</span>
+                `;
+
+            }
+
+        }
+    );
+
+}
 
     /* =====================================================
    STORE ADMIN MODAL

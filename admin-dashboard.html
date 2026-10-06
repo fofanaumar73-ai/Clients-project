@@ -2541,11 +2541,12 @@ CHECK (
                 <td>
 
                     <button
-                        class="store-action-btn"
-                        data-store-id="${store.id}"
-                    >
-                        View
-                    </button>
+    class="store-action-btn"
+    data-store-id="${store.id}"
+    data-store-name="${escapeHtml(store.name)}"
+>
+    Manage
+</button>
 
                 </td>
 

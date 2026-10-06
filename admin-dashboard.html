@@ -1171,7 +1171,34 @@
     }
 
 }
-        
+     /* =====================================================
+   MOBILE LOGOUT
+   ===================================================== */
+
+.mobile-logout-item {
+    display: none;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+}
+
+/* MOBILE ONLY */
+@media (max-width: 800px) {
+
+    .mobile-logout-item {
+        display: flex;
+        width: 100%;
+        color: #aaa;
+    }
+
+    .mobile-logout-item:hover {
+        background: rgba(220, 53, 69, .15);
+        color: #ff6b78;
+    }
+
+}   
     </style>
 </head>
 
@@ -1261,20 +1288,17 @@
 
                </nav>
 
-        <!-- MOBILE LOGOUT -->
+       <!-- MOBILE LOGOUT -->
+<button
+    type="button"
+    class="nav-item mobile-logout-item"
+    id="mobileLogoutBtn"
+>
+    <i class="fa-solid fa-right-from-bracket"></i>
+    <span>Logout</span>
+</button>
 
-        <div class="mobile-logout">
-
-            <button
-                type="button"
-                class="mobile-logout-btn"
-                id="mobileLogoutBtn"
-            >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Logout</span>
-            </button>
-
-        </div>
+</nav>
 
         <!-- DESKTOP LOGOUT -->
 

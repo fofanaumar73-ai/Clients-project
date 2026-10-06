@@ -4209,35 +4209,6 @@ if (storeAdminForm) {
 
             try {
 
-                /* -------------------------------------
-                   INVOKE EDGE FUNCTION
-                   ------------------------------------- */
-
-               /* -------------------------------------
-   GET CURRENT AUTH SESSION
-   ------------------------------------- */
-
-const {
-    data: sessionData,
-    error: sessionError
-} =
-    await supabaseClient.auth.getSession();
-
-if (sessionError) {
-    throw new Error(
-        "Unable to verify your login session."
-    );
-}
-
-const session =
-    sessionData?.session;
-
-if (!session?.access_token) {
-    throw new Error(
-        "Your login session has expired. Please log in again."
-    );
-}
-
 
 /* -------------------------------------
    INVOKE EDGE FUNCTION

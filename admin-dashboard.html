@@ -4239,29 +4239,40 @@ if (storeAdminForm) {
 
                 if (error) {
 
-                    console.error(
-                        "Edge Function error:",
-                        error
-                    );
+    console.error(
+        "Edge Function error:",
+        error
+    );
 
-                    throw new Error(
-                        "Unable to contact the Store Admin service."
-                    );
+    console.error(
+        "Edge Function response data:",
+        data
+    );
 
-                }
+    throw new Error(
+        data?.error ||
+        error.message ||
+        "Store Admin service returned an error."
+    );
+
+}
 
 
-                if (
-                    !data ||
-                    !data.success
-                ) {
+console.log(
+    "Create Store Admin response:",
+    data
+);
 
-                    throw new Error(
-                        data?.error ||
-                        "Store Admin could not be created."
-                    );
 
-                }
+if (!data || data.success !== true) {
+
+    throw new Error(
+        data?.error ||
+        data?.message ||
+        "Store Admin could not be created."
+    );
+
+}
 
 
                 /* -------------------------------------

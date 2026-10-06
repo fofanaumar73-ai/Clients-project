@@ -4286,6 +4286,37 @@ const {
     }
 );
 
+                if (error) {
+    console.error(
+        "Edge Function error:",
+        error
+    );
+
+    console.error(
+        "Edge Function response data:",
+        data
+    );
+
+    throw new Error(
+        data?.error ||
+        error.message ||
+        "Store Admin service returned an error."
+    );
+}
+
+console.log(
+    "Create Store Admin response:",
+    data
+);
+
+if (!data || data.success !== true) {
+    throw new Error(
+        data?.error ||
+        data?.message ||
+        "Store Admin could not be created."
+    );
+}
+
 
                 /* -------------------------------------
                    SUCCESS

@@ -3085,6 +3085,490 @@ async function createStore(storeData) {
     }
 }
 
+
+    /* =====================================================
+   STORE ADMIN MODAL
+   ===================================================== */
+
+const storeAdminModal =
+    document.getElementById(
+        "storeAdminModal"
+    );
+
+const storeAdminForm =
+    document.getElementById(
+        "storeAdminForm"
+    );
+
+const selectedStoreId =
+    document.getElementById(
+        "selectedStoreId"
+    );
+
+const selectedStoreName =
+    document.getElementById(
+        "selectedStoreName"
+    );
+
+const selectedStoreLabel =
+    document.getElementById(
+        "selectedStoreLabel"
+    );
+
+const storeAdminMessage =
+    document.getElementById(
+        "storeAdminMessage"
+    );
+
+const createStoreAdminBtn =
+    document.getElementById(
+        "createStoreAdminBtn"
+    );
+
+const closeStoreAdminModal =
+    document.getElementById(
+        "closeStoreAdminModal"
+    );
+
+const cancelStoreAdminBtn =
+    document.getElementById(
+        "cancelStoreAdminBtn"
+    );
+
+
+/* =====================================================
+   SHOW MESSAGE
+   ===================================================== */
+
+function showStoreAdminMessage(
+    message,
+    type
+) {
+
+    if (!storeAdminMessage) {
+        return;
+    }
+
+
+    storeAdminMessage.textContent =
+        message;
+
+
+    storeAdminMessage.className =
+        "form-message show " +
+        type;
+
+}
+
+
+/* =====================================================
+   OPEN MODAL
+   ===================================================== */
+
+function openStoreAdminModal(
+    storeId,
+    storeName
+) {
+
+    if (!storeAdminModal) {
+        return;
+    }
+
+
+    selectedStoreId.value =
+        storeId;
+
+
+    selectedStoreName.textContent =
+        "Create an administrator for " +
+        storeName;
+
+
+    selectedStoreLabel.textContent =
+        storeName;
+
+
+    storeAdminForm.reset();
+
+
+    /*
+     * reset() clears the hidden store ID,
+     * so restore it afterward.
+     */
+
+    selectedStoreId.value =
+        storeId;
+
+
+    selectedStoreLabel.textContent =
+        storeName;
+
+
+    showStoreAdminMessage(
+        "",
+        ""
+    );
+
+
+    storeAdminModal.classList.add(
+        "show"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    setTimeout(() => {
+
+        const nameInput =
+            document.getElementById(
+                "storeAdminName"
+            );
+
+        if (nameInput) {
+            nameInput.focus();
+        }
+
+    }, 100);
+
+}
+
+
+/* =====================================================
+   CLOSE MODAL
+   ===================================================== */
+
+function closeStoreAdminModalWindow() {
+
+    if (!storeAdminModal) {
+        return;
+    }
+
+
+    storeAdminModal.classList.remove(
+        "show"
+    );
+
+
+    document.body.style.overflow =
+        "";
+
+
+    storeAdminForm.reset();
+
+
+    showStoreAdminMessage(
+        "",
+        ""
+    );
+
+}
+
+
+if (closeStoreAdminModal) {
+
+    closeStoreAdminModal.addEventListener(
+        "click",
+        closeStoreAdminModalWindow
+    );
+
+}
+
+
+if (cancelStoreAdminBtn) {
+
+    cancelStoreAdminBtn.addEventListener(
+        "click",
+        closeStoreAdminModalWindow
+    );
+
+}
+
+
+/* Close when clicking outside */
+
+if (storeAdminModal) {
+
+    storeAdminModal.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                storeAdminModal
+            ) {
+
+                closeStoreAdminModalWindow();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* Escape key */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            storeAdminModal &&
+            storeAdminModal.classList.contains(
+                "show"
+            )
+        ) {
+
+            closeStoreAdminModalWindow();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   SEND STORE ADMIN INVITATION
+   ===================================================== */
+
+if (storeAdminForm) {
+
+    storeAdminForm.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            const nameInput =
+                document.getElementById(
+                    "storeAdminName"
+                );
+
+            const emailInput =
+                document.getElementById(
+                    "storeAdminEmail"
+                );
+
+
+            const fullName =
+                nameInput.value
+                    .trim();
+
+
+            const email =
+                emailInput.value
+                    .trim()
+                    .toLowerCase();
+
+
+            const storeId =
+                selectedStoreId.value
+                    .trim();
+
+
+            /* -----------------------------------------
+               VALIDATION
+               ----------------------------------------- */
+
+            if (
+                fullName.length < 2
+            ) {
+
+                showStoreAdminMessage(
+                    "Please enter the client's full name.",
+                    "error"
+                );
+
+                nameInput.focus();
+
+                return;
+            }
+
+
+            if (
+                fullName.length > 120
+            ) {
+
+                showStoreAdminMessage(
+                    "The name is too long.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!email) {
+
+                showStoreAdminMessage(
+                    "Please enter the client's email address.",
+                    "error"
+                );
+
+                emailInput.focus();
+
+                return;
+            }
+
+
+            if (!storeId) {
+
+                showStoreAdminMessage(
+                    "No store has been selected.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            /* -----------------------------------------
+               LOADING
+               ----------------------------------------- */
+
+            createStoreAdminBtn.disabled =
+                true;
+
+
+            createStoreAdminBtn.innerHTML = `
+                <span class="spinner"></span>
+                <span>Sending...</span>
+            `;
+
+
+            showStoreAdminMessage(
+                "",
+                ""
+            );
+
+
+            try {
+
+                /* -------------------------------------
+                   INVOKE EDGE FUNCTION
+                   ------------------------------------- */
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.functions
+                        .invoke(
+                            "create-store-admin",
+                            {
+                                body: {
+
+                                    full_name:
+                                        fullName,
+
+                                    email:
+                                        email,
+
+                                    store_id:
+                                        storeId
+
+                                }
+                            }
+                        );
+
+
+                if (error) {
+
+                    console.error(
+                        "Edge Function error:",
+                        error
+                    );
+
+                    throw new Error(
+                        "Unable to contact the Store Admin service."
+                    );
+
+                }
+
+
+                if (
+                    !data ||
+                    !data.success
+                ) {
+
+                    throw new Error(
+                        data?.error ||
+                        "Store Admin could not be created."
+                    );
+
+                }
+
+
+                /* -------------------------------------
+                   SUCCESS
+                   ------------------------------------- */
+
+                showStoreAdminMessage(
+                    "Invitation sent successfully to " +
+                    email + ".",
+                    "success"
+                );
+
+
+                createStoreAdminBtn.innerHTML = `
+                    <i class="fa-solid fa-check"></i>
+                    <span>Invitation Sent</span>
+                `;
+
+
+                setTimeout(
+                    () => {
+
+                        closeStoreAdminModalWindow();
+
+                        createStoreAdminBtn.disabled =
+                            false;
+
+                        createStoreAdminBtn.innerHTML = `
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Send Invitation</span>
+                        `;
+
+                    },
+                    1800
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Create Store Admin failed:",
+                    error
+                );
+
+
+                showStoreAdminMessage(
+                    error.message ||
+                    "Something went wrong. Please try again.",
+                    "error"
+                );
+
+
+                createStoreAdminBtn.disabled =
+                    false;
+
+
+                createStoreAdminBtn.innerHTML = `
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>Send Invitation</span>
+                `;
+
+            }
+
+        }
+    );
+
+}
     
     /* =====================================================
    LOGOUT

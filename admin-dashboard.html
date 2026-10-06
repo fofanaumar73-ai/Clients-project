@@ -2295,6 +2295,133 @@
 
 
     /* =====================================================
+   CHECK ADMIN ACCESS
+   ===================================================== */
+
+async function checkAdminAccess() {
+
+    try {
+
+        const {
+            data: {
+                session
+            },
+            error: sessionError
+        } =
+            await supabaseClient.auth.getSession();
+
+
+        if (
+            sessionError ||
+            !session
+        ) {
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+            return null;
+        }
+
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(
+                    "id, full_name, role, store_id"
+                )
+                .eq(
+                    "id",
+                    session.user.id
+                )
+                .single();
+
+
+        if (
+            profileError ||
+            !profile
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+            return null;
+        }
+
+
+        if (
+            profile.id !==
+            session.user.id
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+            return null;
+        }
+
+
+        if (
+            profile.role !==
+            "SUPER_ADMIN"
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+            return null;
+        }
+
+
+        if (
+            profile.store_id !== null
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+            return null;
+        }
+
+
+        return profile;
+
+
+    } catch (error) {
+
+        console.error(
+            "Security verification error:",
+            error
+        );
+
+        await supabaseClient.auth.signOut();
+
+        window.location.replace(
+            "admin-login.html"
+        );
+
+        return null;
+    }
+
+}
+    
+
+    /* =====================================================
        LOAD STORES
        ===================================================== */
 

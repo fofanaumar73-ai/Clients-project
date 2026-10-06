@@ -215,6 +215,7 @@
             box-shadow:
                 0 30px 80px rgba(0, 0, 0, 0.45),
                 inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
             position: relative;
             z-index: 20;
             pointer-events: auto;
@@ -329,10 +330,12 @@
             cursor: pointer;
             margin-top: 8px;
             transition: 0.25s ease;
+
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+
             position: relative;
             z-index: 30;
             pointer-events: auto;
@@ -377,60 +380,6 @@
         }
 
         /* =====================================================
-           ACTIVATION PANEL
-           ===================================================== */
-
-        .activation-panel {
-            display: none;
-        }
-
-        .activation-panel.show {
-            display: block;
-        }
-
-        .activation-email {
-            color: var(--primary);
-            font-weight: 700;
-            word-break: break-word;
-        }
-
-        .activation-note {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .activation-btn {
-            width: 100%;
-            height: 54px;
-            border: none;
-            border-radius: 12px;
-            background: var(--primary);
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: 0.25s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .activation-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        .activation-btn:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* =====================================================
            BACK TO WEBSITE
            ===================================================== */
 
@@ -467,6 +416,108 @@
             to {
                 transform: rotate(360deg);
             }
+        }
+
+        /* =====================================================
+           INVITATION / ACCOUNT ACTIVATION
+           ===================================================== */
+
+        .activation-panel {
+            display: none;
+        }
+
+        .activation-panel.show {
+            display: block;
+        }
+
+        .activation-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            background: rgba(255, 90, 31, 0.10);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 28px;
+        }
+
+        .activation-panel h2 {
+            font-size: 30px;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .activation-panel .subtitle {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .activation-note {
+            margin-top: 14px;
+            color: #777;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .activation-panel .login-btn {
+            margin-top: 6px;
+        }
+
+        .expired-panel {
+            display: none;
+            text-align: center;
+        }
+
+        .expired-panel.show {
+            display: block;
+        }
+
+        .expired-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            border-radius: 18px;
+            background: rgba(255, 80, 80, 0.08);
+            border: 1px solid rgba(255, 80, 80, 0.16);
+            color: #ff8585;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .expired-panel h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .expired-panel p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .secondary-btn {
+            width: 100%;
+            height: 54px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .25s ease;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.2);
         }
 
         /* =====================================================
@@ -623,223 +674,207 @@
 
             <div class="login-card">
 
-                <!-- =================================================
-                     NORMAL LOGIN
-                     ================================================= -->
-
-                <div id="normalLoginPanel">
-
-                    <div class="login-icon">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-
-                    <h2>Admin Login</h2>
-
-                    <p class="subtitle">
-                        Sign in to access your administration portal.
-                    </p>
-
-
-                    <form id="adminLoginForm">
-
-                        <!-- EMAIL -->
-
-                        <div class="form-group">
-
-                            <label for="adminEmail">
-                                Email address
-                            </label>
-
-                            <div class="input-wrapper">
-
-                                <i class="fa-solid fa-envelope"></i>
-
-                                <input
-                                    type="email"
-                                    id="adminEmail"
-                                    placeholder="Enter your email"
-                                    autocomplete="email"
-                                    required
-                                >
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- PASSWORD -->
-
-                        <div class="form-group">
-
-                            <label for="adminPassword">
-                                Password
-                            </label>
-
-                            <div class="input-wrapper">
-
-                                <i class="fa-solid fa-lock"></i>
-
-                                <input
-                                    type="password"
-                                    id="adminPassword"
-                                    placeholder="Enter your password"
-                                    autocomplete="current-password"
-                                    required
-                                >
-
-                                <button
-                                    type="button"
-                                    class="password-toggle"
-                                    id="togglePassword"
-                                    aria-label="Show password"
-                                >
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- LOGIN BUTTON -->
-
-                        <button
-                            type="submit"
-                            class="login-btn"
-                            id="loginBtn"
-                        >
-                            <span id="loginBtnText">Login</span>
-                            <i class="fa-solid fa-arrow-right" id="loginArrow"></i>
-                        </button>
-
-                    </form>
-
+                <div class="login-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
 
+                <h2>Admin Login</h2>
 
-                <!-- =================================================
-                     INVITATION ACTIVATION
-                     ================================================= -->
+                <p class="subtitle">
+                    Sign in to access your administration portal.
+                </p>
 
-                <div
-                    class="activation-panel"
-                    id="activationPanel"
-                >
+                <!-- INVITATION ACTIVATION -->
+                <div class="activation-panel" id="activationPanel">
 
-                    <div class="login-icon">
+                    <div class="activation-icon">
                         <i class="fa-solid fa-user-check"></i>
                     </div>
 
-                    <h2>Set Your Password</h2>
+                    <h2>Set your password</h2>
 
                     <p class="subtitle">
-                        Your administrator account has been created.
-                        Create a password below to activate your account.
-                    </p>
-
-                    <p class="activation-note">
-                        Account:
-                        <span
-                            class="activation-email"
-                            id="activationEmail"
-                        ></span>
+                        Your Store Admin invitation is ready. Create a password to activate your account.
                     </p>
 
                     <form id="activationForm">
 
-                        <!-- NEW PASSWORD -->
-
                         <div class="form-group">
-
-                            <label for="activationPassword">
-                                New Password
-                            </label>
+                            <label for="newPassword">New password</label>
 
                             <div class="input-wrapper">
-
                                 <i class="fa-solid fa-lock"></i>
 
                                 <input
                                     type="password"
-                                    id="activationPassword"
+                                    id="newPassword"
                                     placeholder="Create a password"
                                     autocomplete="new-password"
                                     minlength="8"
                                     required
                                 >
-
-                                <button
-                                    type="button"
-                                    class="password-toggle"
-                                    id="toggleActivationPassword"
-                                    aria-label="Show password"
-                                >
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-
                             </div>
-
                         </div>
 
-
-                        <!-- CONFIRM PASSWORD -->
-
                         <div class="form-group">
-
-                            <label for="activationPasswordConfirm">
-                                Confirm Password
-                            </label>
+                            <label for="confirmPassword">Confirm password</label>
 
                             <div class="input-wrapper">
-
                                 <i class="fa-solid fa-lock"></i>
 
                                 <input
                                     type="password"
-                                    id="activationPasswordConfirm"
+                                    id="confirmPassword"
                                     placeholder="Confirm your password"
                                     autocomplete="new-password"
                                     minlength="8"
                                     required
                                 >
-
-                                <button
-                                    type="button"
-                                    class="password-toggle"
-                                    id="toggleActivationPasswordConfirm"
-                                    aria-label="Show password"
-                                >
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-
                             </div>
-
                         </div>
-
 
                         <button
                             type="submit"
-                            class="activation-btn"
-                            id="activationBtn"
+                            class="login-btn"
+                            id="activateBtn"
                         >
-                            <span id="activationBtnText">
+                            <span id="activateBtnText">
                                 Activate Account
                             </span>
 
                             <i
                                 class="fa-solid fa-check"
-                                id="activationIcon"
+                                id="activateIcon"
                             ></i>
                         </button>
 
                     </form>
 
+                    <p class="activation-note">
+                        Use at least 8 characters. After activation,
+                        you can sign in with your email and password.
+                    </p>
+
+                    <div
+                        class="login-message"
+                        id="activationMessage"
+                    ></div>
+
                 </div>
 
 
-                <!-- =================================================
-                     MESSAGE
-                     ================================================= -->
+                <!-- EXPIRED / INVALID INVITATION -->
+                <div
+                    class="expired-panel"
+                    id="expiredPanel"
+                >
+
+                    <div class="expired-icon">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+
+                    <h2>Invitation expired</h2>
+
+                    <p>
+                        This invitation link is no longer valid or has
+                        already been used. Please contact your administrator
+                        and ask for a new invitation.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        id="returnToLoginBtn"
+                    >
+                        Return to Admin Login
+                    </button>
+
+                </div>
+
+
+                <!-- NORMAL LOGIN FORM -->
+                <form id="adminLoginForm">
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="adminEmail">
+                            Email address
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            <input
+                                type="email"
+                                id="adminEmail"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="adminPassword">
+                            Password
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input
+                                type="password"
+                                id="adminPassword"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="togglePassword"
+                                aria-label="Show password"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOGIN BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="login-btn"
+                        id="loginBtn"
+                    >
+                        <span id="loginBtnText">
+                            Login
+                        </span>
+
+                        <i
+                            class="fa-solid fa-arrow-right"
+                            id="loginArrow"
+                        ></i>
+                    </button>
+
+                </form>
+
+
+                <!-- MESSAGE -->
 
                 <div
                     class="login-message"
@@ -847,9 +882,7 @@
                 ></div>
 
 
-                <!-- =================================================
-                     BACK
-                     ================================================= -->
+                <!-- BACK -->
 
                 <a
                     href="index.html"
@@ -881,14 +914,7 @@
         const supabaseClient =
             window.supabase.createClient(
                 SUPABASE_URL,
-                SUPABASE_KEY,
-                {
-                    auth: {
-                        persistSession: true,
-                        autoRefreshToken: true,
-                        detectSessionInUrl: true
-                    }
-                }
+                SUPABASE_KEY
             );
 
 
@@ -896,177 +922,85 @@
            ELEMENTS
            ===================================================== */
 
-        const normalLoginPanel =
-            document.getElementById(
-                "normalLoginPanel"
-            );
-
-        const activationPanel =
-            document.getElementById(
-                "activationPanel"
-            );
-
         const loginForm =
-            document.getElementById(
-                "adminLoginForm"
-            );
+            document.getElementById("adminLoginForm");
 
         const emailInput =
-            document.getElementById(
-                "adminEmail"
-            );
+            document.getElementById("adminEmail");
 
         const passwordInput =
-            document.getElementById(
-                "adminPassword"
-            );
+            document.getElementById("adminPassword");
 
         const togglePassword =
-            document.getElementById(
-                "togglePassword"
-            );
+            document.getElementById("togglePassword");
 
         const loginBtn =
-            document.getElementById(
-                "loginBtn"
-            );
+            document.getElementById("loginBtn");
 
         const loginBtnText =
-            document.getElementById(
-                "loginBtnText"
-            );
+            document.getElementById("loginBtnText");
 
         const loginArrow =
-            document.getElementById(
-                "loginArrow"
-            );
-
-        const activationForm =
-            document.getElementById(
-                "activationForm"
-            );
-
-        const activationEmail =
-            document.getElementById(
-                "activationEmail"
-            );
-
-        const activationPassword =
-            document.getElementById(
-                "activationPassword"
-            );
-
-        const activationPasswordConfirm =
-            document.getElementById(
-                "activationPasswordConfirm"
-            );
-
-        const toggleActivationPassword =
-            document.getElementById(
-                "toggleActivationPassword"
-            );
-
-        const toggleActivationPasswordConfirm =
-            document.getElementById(
-                "toggleActivationPasswordConfirm"
-            );
-
-        const activationBtn =
-            document.getElementById(
-                "activationBtn"
-            );
-
-        const activationBtnText =
-            document.getElementById(
-                "activationBtnText"
-            );
-
-        const activationIcon =
-            document.getElementById(
-                "activationIcon"
-            );
+            document.getElementById("loginArrow");
 
         const loginMessage =
-            document.getElementById(
-                "loginMessage"
-            );
+            document.getElementById("loginMessage");
+
+        const activationPanel =
+            document.getElementById("activationPanel");
+
+        const activationForm =
+            document.getElementById("activationForm");
+
+        const newPasswordInput =
+            document.getElementById("newPassword");
+
+        const confirmPasswordInput =
+            document.getElementById("confirmPassword");
+
+        const activateBtn =
+            document.getElementById("activateBtn");
+
+        const activateBtnText =
+            document.getElementById("activateBtnText");
+
+        const activateIcon =
+            document.getElementById("activateIcon");
+
+        const activationMessage =
+            document.getElementById("activationMessage");
+
+        const expiredPanel =
+            document.getElementById("expiredPanel");
+
+        const returnToLoginBtn =
+            document.getElementById("returnToLoginBtn");
 
 
         /* =====================================================
            SHOW / HIDE PASSWORD
            ===================================================== */
 
-        togglePassword.addEventListener(
-            "click",
-            () => {
+        togglePassword.addEventListener("click", () => {
 
-                const isPassword =
-                    passwordInput.type === "password";
+            const isPassword =
+                passwordInput.type === "password";
 
-                passwordInput.type =
-                    isPassword
-                        ? "text"
-                        : "password";
+            passwordInput.type =
+                isPassword ? "text" : "password";
 
-                togglePassword.innerHTML =
-                    isPassword
-                        ? '<i class="fa-solid fa-eye-slash"></i>'
-                        : '<i class="fa-solid fa-eye"></i>';
+            togglePassword.innerHTML = isPassword
+                ? '<i class="fa-solid fa-eye-slash"></i>'
+                : '<i class="fa-solid fa-eye"></i>';
 
-            }
-        );
-
-
-        toggleActivationPassword.addEventListener(
-            "click",
-            () => {
-
-                const isPassword =
-                    activationPassword.type === "password";
-
-                activationPassword.type =
-                    isPassword
-                        ? "text"
-                        : "password";
-
-                toggleActivationPassword.innerHTML =
-                    isPassword
-                        ? '<i class="fa-solid fa-eye-slash"></i>'
-                        : '<i class="fa-solid fa-eye"></i>';
-
-            }
-        );
-
-
-        toggleActivationPasswordConfirm.addEventListener(
-            "click",
-            () => {
-
-                const isPassword =
-                    activationPasswordConfirm.type === "password";
-
-                activationPasswordConfirm.type =
-                    isPassword
-                        ? "text"
-                        : "password";
-
-                toggleActivationPasswordConfirm.innerHTML =
-                    isPassword
-                        ? '<i class="fa-solid fa-eye-slash"></i>'
-                        : '<i class="fa-solid fa-eye"></i>';
-
-            }
-        );
+        });
 
 
         /* =====================================================
            MESSAGE
            ===================================================== */
 
-        function showMessage(
-            message,
-            type
-        ) {
+        function showMessage(message, type) {
 
             loginMessage.textContent =
                 message;
@@ -1089,10 +1023,10 @@
 
 
         /* =====================================================
-           DETECT INVITATION LINK
+           INVITATION / ACTIVATION FLOW
            ===================================================== */
 
-        function isInvitationLink() {
+        function isInvitationError() {
 
             const hash =
                 window.location.hash || "";
@@ -1100,109 +1034,364 @@
             const search =
                 window.location.search || "";
 
+            const combined =
+                (hash + "&" + search).toLowerCase();
+
             return (
-                hash.includes("access_token=") ||
-                hash.includes("type=invite") ||
-                hash.includes("type=recovery") ||
-                search.includes("type=invite") ||
-                search.includes("type=recovery")
+                combined.includes("error=access_denied") ||
+                combined.includes("error_code=otp_expired") ||
+                combined.includes("error_code=access_denied") ||
+                combined.includes(
+                    "error_description=email+link+is+invalid"
+                ) ||
+                combined.includes(
+                    "error_description=email%20link%20is%20invalid"
+                )
+            );
+        }
+
+
+        function isInvitationRequest() {
+
+            const hash =
+                window.location.hash || "";
+
+            const search =
+                window.location.search || "";
+
+            const combined =
+                (hash + "&" + search).toLowerCase();
+
+            return (
+                combined.includes("type=invite") ||
+                combined.includes("type%3dinvite")
+            );
+        }
+
+
+        function showExpiredInvitation() {
+
+            document.querySelector(
+                ".login-icon"
+            ).style.display = "none";
+
+            document.querySelector(
+                ".login-card > h2"
+            ).style.display = "none";
+
+            document.querySelector(
+                ".login-card > .subtitle"
+            ).style.display = "none";
+
+            loginForm.style.display =
+                "none";
+
+            loginMessage.style.display =
+                "none";
+
+            if (activationPanel) {
+                activationPanel.classList.remove("show");
+            }
+
+            if (expiredPanel) {
+                expiredPanel.classList.add("show");
+            }
+        }
+
+
+        function showActivationPanel() {
+
+            document.querySelector(
+                ".login-icon"
+            ).style.display = "none";
+
+            document.querySelector(
+                ".login-card > h2"
+            ).style.display = "none";
+
+            document.querySelector(
+                ".login-card > .subtitle"
+            ).style.display = "none";
+
+            loginForm.style.display =
+                "none";
+
+            loginMessage.style.display =
+                "none";
+
+            if (expiredPanel) {
+                expiredPanel.classList.remove("show");
+            }
+
+            if (activationPanel) {
+                activationPanel.classList.add("show");
+            }
+        }
+
+
+        function showNormalLogin() {
+
+            document.querySelector(
+                ".login-icon"
+            ).style.display = "flex";
+
+            document.querySelector(
+                ".login-card > h2"
+            ).style.display = "block";
+
+            document.querySelector(
+                ".login-card > .subtitle"
+            ).style.display = "block";
+
+            loginForm.style.display =
+                "block";
+
+            if (activationPanel) {
+                activationPanel.classList.remove("show");
+            }
+
+            if (expiredPanel) {
+                expiredPanel.classList.remove("show");
+            }
+        }
+
+
+        function showActivationMessage(
+            message,
+            type
+        ) {
+
+            activationMessage.textContent =
+                message;
+
+            activationMessage.className =
+                "login-message " + type;
+
+            activationMessage.style.display =
+                "block";
+        }
+
+
+        if (returnToLoginBtn) {
+
+            returnToLoginBtn.addEventListener(
+                "click",
+                () => {
+
+                    window.location.href =
+                        "admin-login.html";
+
+                }
             );
 
         }
 
 
         /* =====================================================
-           ROUTE AUTHENTICATED USER
+           ACTIVATE STORE ADMIN ACCOUNT
            ===================================================== */
 
-        async function routeAuthenticatedUser(
-            userId
-        ) {
+        if (activationForm) {
+
+            activationForm.addEventListener(
+                "submit",
+                async (event) => {
+
+                    event.preventDefault();
+
+                    const password =
+                        newPasswordInput.value;
+
+                    const confirmation =
+                        confirmPasswordInput.value;
+
+
+                    if (password.length < 8) {
+
+                        showActivationMessage(
+                            "Your password must be at least 8 characters.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (password !== confirmation) {
+
+                        showActivationMessage(
+                            "The passwords do not match.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    activateBtn.disabled =
+                        true;
+
+                    activateBtnText.textContent =
+                        "Activating...";
+
+                    activateIcon.outerHTML =
+                        '<span class="spinner" id="activateIcon"></span>';
+
+
+                    try {
+
+                        const {
+                            data: sessionData,
+                            error: sessionError
+                        } =
+                            await supabaseClient.auth.getSession();
+
+
+                        if (
+                            sessionError ||
+                            !sessionData?.session
+                        ) {
+
+                            throw new Error(
+                                "This invitation is no longer valid. Please request a new invitation."
+                            );
+
+                        }
+
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient.auth.updateUser({
+                                password: password
+                            });
+
+
+                        if (error) {
+                            throw error;
+                        }
+
+
+                        showActivationMessage(
+                            "Account activated successfully. You can now sign in with your new password.",
+                            "success"
+                        );
+
+
+                        newPasswordInput.value =
+                            "";
+
+                        confirmPasswordInput.value =
+                            "";
+
+
+                        /*
+                         * Stay on this page after activation for now.
+                         * The Store Admin dashboard will be wired in
+                         * when its portal is ready.
+                         */
+
+                    } catch (error) {
+
+                        console.error(
+                            "Account activation error:",
+                            error
+                        );
+
+
+                        showActivationMessage(
+                            error.message ||
+                            "We could not activate your account. Please request a new invitation.",
+                            "error"
+                        );
+
+
+                        activateBtn.disabled =
+                            false;
+
+                        activateBtnText.textContent =
+                            "Activate Account";
+
+
+                        const currentIcon =
+                            document.getElementById(
+                                "activateIcon"
+                            );
+
+
+                        if (currentIcon) {
+
+                            currentIcon.outerHTML =
+                                '<i class="fa-solid fa-check" id="activateIcon"></i>';
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           INITIALIZE INVITATION FLOW
+           ===================================================== */
+
+        async function initializeInvitationFlow() {
+
+            /*
+             * If Supabase redirected us here with an
+             * expired/invalid invitation error, show
+             * the friendly expired invitation screen.
+             */
+
+            if (isInvitationError()) {
+
+                showExpiredInvitation();
+
+                return true;
+            }
+
+
+            /*
+             * If this URL is not an invitation URL,
+             * continue with the normal login/session flow.
+             */
+
+            if (!isInvitationRequest()) {
+
+                return false;
+            }
+
+
+            /*
+             * A valid invitation should create an
+             * authenticated session before we show
+             * the password activation screen.
+             */
 
             const {
-                data: profile,
+                data: sessionData,
                 error
-            } = await supabaseClient
-                .from("profiles")
-                .select(
-                    "id, full_name, role, store_id"
-                )
-                .eq(
-                    "id",
-                    userId
-                )
-                .single();
+            } =
+                await supabaseClient.auth.getSession();
+
 
             if (
                 error ||
-                !profile
+                !sessionData?.session
             ) {
 
-                await supabaseClient.auth.signOut();
+                showExpiredInvitation();
 
-                throw new Error(
-                    "Administrator profile could not be found."
-                );
-
+                return true;
             }
 
 
-            if (
-                profile.role ===
-                "SUPER_ADMIN"
-            ) {
+            showActivationPanel();
 
-                window.location.href =
-                    "admin-dashboard.html";
-
-                return;
-
-            }
-
-
-            if (
-                profile.role ===
-                "STORE_ADMIN"
-            ) {
-
-                window.location.href =
-                    "store-dashboard.html";
-
-                return;
-
-            }
-
-
-            await supabaseClient.auth.signOut();
-
-            throw new Error(
-                "This account does not have administrator access."
-            );
-
-        }
-
-
-        /* =====================================================
-           SHOW ACTIVATION PANEL
-           ===================================================== */
-
-        async function showActivationPanel(
-            session
-        ) {
-
-            normalLoginPanel.style.display =
-                "none";
-
-            activationPanel.classList.add(
-                "show"
-            );
-
-            clearMessage();
-
-            activationEmail.textContent =
-                session?.user?.email ||
-                "";
-
+            return true;
         }
 
 
@@ -1212,27 +1401,21 @@
 
         loginForm.addEventListener(
             "submit",
-            async (
-                event
-            ) => {
+            async (event) => {
 
                 event.preventDefault();
 
                 clearMessage();
 
+
                 const email =
-                    emailInput.value
-                        .trim()
-                        .toLowerCase();
+                    emailInput.value.trim();
 
                 const password =
                     passwordInput.value;
 
 
-                if (
-                    !email ||
-                    !password
-                ) {
+                if (!email || !password) {
 
                     showMessage(
                         "Please enter your email and password.",
@@ -1240,7 +1423,6 @@
                     );
 
                     return;
-
                 }
 
 
@@ -1266,17 +1448,10 @@
                         data,
                         error
                     } =
-                        await supabaseClient
-                            .auth
-                            .signInWithPassword(
-                                {
-                                    email:
-                                        email,
-
-                                    password:
-                                        password
-                                }
-                            );
+                        await supabaseClient.auth.signInWithPassword({
+                            email: email,
+                            password: password
+                        });
 
 
                     if (error) {
@@ -1284,9 +1459,7 @@
                     }
 
 
-                    if (
-                        !data.user
-                    ) {
+                    if (!data.user) {
 
                         throw new Error(
                             "Login failed. Please try again."
@@ -1299,19 +1472,69 @@
                        CHECK USER PROFILE
                        ----------------------------------------- */
 
-                    await routeAuthenticatedUser(
-                        data.user.id
-                    );
+                    const {
+                        data: profile,
+                        error: profileError
+                    } =
+                        await supabaseClient
+                            .from("profiles")
+                            .select(
+                                "id, full_name, role, store_id"
+                            )
+                            .eq(
+                                "id",
+                                data.user.id
+                            )
+                            .single();
 
 
-                } catch (
-                    error
-                ) {
+                    if (profileError) {
+                        throw profileError;
+                    }
+
+
+                    /* -----------------------------------------
+                       ROLE-BASED DASHBOARD ROUTING
+                       ----------------------------------------- */
+
+                    if (
+                        profile.role ===
+                        "SUPER_ADMIN"
+                    ) {
+
+                        window.location.href =
+                            "admin-dashboard.html";
+
+                    } else if (
+                        profile.role ===
+                        "STORE_ADMIN"
+                    ) {
+
+                        window.location.href =
+                            "store-dashboard.html";
+
+                    } else {
+
+                        /*
+                         * Customers and unknown roles
+                         * cannot use this portal.
+                         */
+
+                        await supabaseClient.auth.signOut();
+
+                        throw new Error(
+                            "This account does not have administrator access."
+                        );
+                    }
+
+
+                } catch (error) {
 
                     console.error(
                         "Admin login error:",
                         error
                     );
+
 
                     showMessage(
                         error.message ||
@@ -1319,20 +1542,21 @@
                         "error"
                     );
 
+
                     loginBtn.disabled =
                         false;
 
                     loginBtnText.textContent =
                         "Login";
 
+
                     const spinner =
                         document.getElementById(
                             "loginArrow"
                         );
 
-                    if (
-                        spinner
-                    ) {
+
+                    if (spinner) {
 
                         spinner.outerHTML =
                             '<i class="fa-solid fa-arrow-right" id="loginArrow"></i>';
@@ -1346,356 +1570,89 @@
 
 
         /* =====================================================
-           ACTIVATE INVITED ACCOUNT
-           ===================================================== */
-
-        activationForm.addEventListener(
-            "submit",
-            async (
-                event
-            ) => {
-
-                event.preventDefault();
-
-                clearMessage();
-
-                const password =
-                    activationPassword.value;
-
-                const confirmPassword =
-                    activationPasswordConfirm.value;
-
-
-                if (
-                    password.length < 8
-                ) {
-
-                    showMessage(
-                        "Your password must contain at least 8 characters.",
-                        "error"
-                    );
-
-                    return;
-
-                }
-
-
-                if (
-                    password !==
-                    confirmPassword
-                ) {
-
-                    showMessage(
-                        "The passwords do not match.",
-                        "error"
-                    );
-
-                    return;
-
-                }
-
-
-                activationBtn.disabled =
-                    true;
-
-                activationBtnText.textContent =
-                    "Activating...";
-
-                activationIcon.className =
-                    "spinner";
-
-
-                try {
-
-                    /* -----------------------------------------
-                       VERIFY CURRENT SESSION
-                       ----------------------------------------- */
-
-                    const {
-                        data: sessionData,
-                        error: sessionError
-                    } =
-                        await supabaseClient
-                            .auth
-                            .getSession();
-
-
-                    if (
-                        sessionError
-                    ) {
-
-                        throw sessionError;
-
-                    }
-
-
-                    const session =
-                        sessionData?.session;
-
-
-                    if (
-                        !session
-                    ) {
-
-                        throw new Error(
-                            "Your invitation session is missing or has expired. Please request a new invitation."
-                        );
-
-                    }
-
-
-                    /* -----------------------------------------
-                       SET PASSWORD
-                       ----------------------------------------- */
-
-                    const {
-                        data: updatedUser,
-                        error: updateError
-                    } =
-                        await supabaseClient
-                            .auth
-                            .updateUser(
-                                {
-                                    password:
-                                        password
-                                }
-                            );
-
-
-                    if (
-                        updateError
-                    ) {
-
-                        throw updateError;
-
-                    }
-
-
-                    if (
-                        !updatedUser?.user
-                    ) {
-
-                        throw new Error(
-                            "Your account could not be activated."
-                        );
-
-                    }
-
-
-                    /* -----------------------------------------
-                       SUCCESS
-                       ----------------------------------------- */
-
-                    showMessage(
-                        "Account activated successfully. Redirecting...",
-                        "success"
-                    );
-
-
-                    activationBtnText.textContent =
-                        "Account Activated";
-
-                    activationIcon.className =
-                        "fa-solid fa-check";
-
-
-                    setTimeout(
-                        async () => {
-
-                            try {
-
-                                await routeAuthenticatedUser(
-                                    updatedUser.user.id
-                                );
-
-                            } catch (
-                                routeError
-                            ) {
-
-                                console.error(
-                                    "POST-ACTIVATION ROUTING ERROR:",
-                                    routeError
-                                );
-
-                                showMessage(
-                                    routeError.message ||
-                                    "Account activated, but we could not open your dashboard.",
-                                    "error"
-                                );
-
-                                activationBtn.disabled =
-                                    false;
-
-                            }
-
-                        },
-                        700
-                    );
-
-
-                } catch (
-                    error
-                ) {
-
-                    console.error(
-                        "Account activation error:",
-                        error
-                    );
-
-                    showMessage(
-                        error.message ||
-                        "Unable to activate your account.",
-                        "error"
-                    );
-
-                    activationBtn.disabled =
-                        false;
-
-                    activationBtnText.textContent =
-                        "Activate Account";
-
-                    activationIcon.className =
-                        "fa-solid fa-check";
-
-                }
-
-            }
-        );
-
-
-        /* =====================================================
-           CHECK EXISTING SESSION / INVITATION
+           CHECK EXISTING SESSION
            ===================================================== */
 
         async function checkExistingSession() {
 
             const {
-                data: {
-                    session
-                },
+                data: { session }
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (!session) {
+                return;
+            }
+
+
+            const {
+                data: profile,
                 error
             } =
                 await supabaseClient
-                    .auth
-                    .getSession();
-
-
-            if (
-                error
-            ) {
-
-                console.error(
-                    "SESSION CHECK ERROR:",
-                    error
-                );
-
-                return;
-
-            }
-
-
-            /*
-             * Supabase invitation links establish
-             * an authenticated session in the browser.
-             */
-
-            const invitation =
-                isInvitationLink();
-
-
-            if (
-                invitation &&
-                session
-            ) {
-
-                await showActivationPanel(
-                    session
-                );
-
-                return;
-
-            }
-
-
-            if (
-                !session
-            ) {
-
-                return;
-
-            }
-
-
-            try {
-
-                await routeAuthenticatedUser(
-                    session.user.id
-                );
-
-            } catch (
-                routeError
-            ) {
-
-                console.error(
-                    "SESSION ROUTING ERROR:",
-                    routeError
-                );
-
-                showMessage(
-                    routeError.message ||
-                    "Unable to verify your account.",
-                    "error"
-                );
-
-            }
-
-        }
-
-
-        /* =====================================================
-           HANDLE AUTH ERRORS FROM INVITATION LINKS
-           ===================================================== */
-
-        const hashParams =
-            new URLSearchParams(
-                (
-                    window.location.hash ||
-                    ""
-                ).replace(
-                    /^#/,
-                    ""
-                )
-            );
-
-
-        const authError =
-            hashParams.get(
-                "error_description"
-            );
-
-
-        if (
-            authError
-        ) {
-
-            showMessage(
-                decodeURIComponent(
-                    authError.replace(
-                        /\+/g,
-                        " "
+                    .from("profiles")
+                    .select("role")
+                    .eq(
+                        "id",
+                        session.user.id
                     )
-                ),
-                "error"
-            );
+                    .single();
+
+
+            if (
+                error ||
+                !profile
+            ) {
+
+                await supabaseClient.auth.signOut();
+
+                return;
+            }
+
+
+            if (
+                profile.role ===
+                "SUPER_ADMIN"
+            ) {
+
+                window.location.href =
+                    "admin-dashboard.html";
+
+            } else if (
+                profile.role ===
+                "STORE_ADMIN"
+            ) {
+
+                window.location.href =
+                    "store-dashboard.html";
+
+            } else {
+
+                await supabaseClient.auth.signOut();
+
+            }
 
         }
 
 
         /* =====================================================
-           START SESSION CHECK
+           START LOGIN / INVITATION FLOW
            ===================================================== */
 
-        checkExistingSession();
+        (async () => {
+
+            const invitationHandled =
+                await initializeInvitationFlow();
+
+
+            if (!invitationHandled) {
+
+                await checkExistingSession();
+
+            }
+
+        })();
 
     </script>
 

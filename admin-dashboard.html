@@ -4244,101 +4244,47 @@ if (!session?.access_token) {
    ------------------------------------- */
 
 const {
+    data: sessionData,
+    error: sessionError
+} = await supabaseClient.auth.getSession();
+
+if (sessionError) {
+    throw new Error(
+        "Unable to verify your login session."
+    );
+}
+
+const session =
+    sessionData?.session;
+
+if (!session?.access_token) {
+    throw new Error(
+        "Your admin login session has expired. Please log in again."
+    );
+}
+
+console.log(
+    "Authenticated user:",
+    session.user.id
+);
+
+const {
     data,
     error
-} =
-    await supabaseClient.functions.invoke(
-        "create-store-admin",
-        {
-            body: {
-                full_name: fullName,
-                email: email,
-                store_id: storeId
-            },
-
-            headers: {
-                Authorization:
-                    `Bearer ${session.access_token}`
-            }
+} = await supabaseClient.functions.invoke(
+    "create-store-admin",
+    {
+        body: {
+            full_name: fullName,
+            email: email,
+            store_id: storeId
+        },
+        headers: {
+            Authorization:
+                `Bearer ${session.access_token}`
         }
-    );
-
-
-console.log(
-    "Create Store Admin response:",
-    data
+    }
 );
-
-
-if (error) {
-
-    console.error(
-        "Edge Function error:",
-        error
-    );
-
-    console.error(
-        "Edge Function response data:",
-        data
-    );
-
-    throw new Error(
-        data?.error ||
-        error.message ||
-        "Store Admin service returned an error."
-    );
-}
-
-
-if (
-    !data ||
-    data.success !== true
-) {
-
-    throw new Error(
-        data?.error ||
-        data?.message ||
-        "Store Admin could not be created."
-    );
-}
-
-
-                if (error) {
-
-    console.error(
-        "Edge Function error:",
-        error
-    );
-
-    console.error(
-        "Edge Function response data:",
-        data
-    );
-
-    throw new Error(
-        data?.error ||
-        error.message ||
-        "Store Admin service returned an error."
-    );
-
-}
-
-
-console.log(
-    "Create Store Admin response:",
-    data
-);
-
-
-if (!data || data.success !== true) {
-
-    throw new Error(
-        data?.error ||
-        data?.message ||
-        "Store Admin could not be created."
-    );
-
-}
 
 
                 /* -------------------------------------

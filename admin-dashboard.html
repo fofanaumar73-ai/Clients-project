@@ -1759,69 +1759,72 @@
     }
 
 
-    /* =====================================================
-       CHECK ADMIN ACCESS
-       ===================================================== */
+   /* =========================================================
+   STORE SECURITY HARDENING
+   ========================================================= */
 
-    async function checkAdminAccess() {
+/* ---------------------------------------------------------
+   1. UNIQUE STORE SLUG
+   --------------------------------------------------------- */
 
-        const {
-            data: {
-                session
-            },
-            error: sessionError
-        } =
-            await supabaseClient.auth.getSession();
+CREATE UNIQUE INDEX IF NOT EXISTS
+stores_slug_unique_idx
+ON public.stores (lower(slug));
 
 
-        if (
-            sessionError ||
-            !session
-        ) {
+/* ---------------------------------------------------------
+   2. VALID STORE STATUS
+   --------------------------------------------------------- */
 
-            window.location.href =
-                "admin-login.html";
+ALTER TABLE public.stores
+DROP CONSTRAINT IF EXISTS stores_status_check;
 
-            return null;
-        }
-
-
-        const {
-            data: profile,
-            error: profileError
-        } =
-            await supabaseClient
-                .from("profiles")
-                .select(
-                    "id, full_name, role, store_id"
-                )
-                .eq(
-                    "id",
-                    session.user.id
-                )
-                .single();
+ALTER TABLE public.stores
+ADD CONSTRAINT stores_status_check
+CHECK (
+    status IN (
+        'ACTIVE',
+        'PAUSED',
+        'ARCHIVED'
+    )
+);
 
 
-        if (
-            profileError ||
-            !profile ||
-            profile.role !== "SUPER_ADMIN"
-        ) {
+/* ---------------------------------------------------------
+   3. SAFE STATUS DEFAULT
+   --------------------------------------------------------- */
 
-            await supabaseClient
-                .auth
-                .signOut();
-
-            window.location.href =
-                "admin-login.html";
-
-            return null;
-        }
+ALTER TABLE public.stores
+ALTER COLUMN status
+SET DEFAULT 'ACTIVE';
 
 
-        return profile;
+/* ---------------------------------------------------------
+   4. SLUG FORMAT
+   --------------------------------------------------------- */
 
-    }
+ALTER TABLE public.stores
+DROP CONSTRAINT IF EXISTS stores_slug_format_check;
+
+ALTER TABLE public.stores
+ADD CONSTRAINT stores_slug_format_check
+CHECK (
+    slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+);
+
+
+/* ---------------------------------------------------------
+   5. BASIC STORE NAME PROTECTION
+   --------------------------------------------------------- */
+
+ALTER TABLE public.stores
+DROP CONSTRAINT IF EXISTS stores_name_length_check;
+
+ALTER TABLE public.stores
+ADD CONSTRAINT stores_name_length_check
+CHECK (
+    char_length(name) BETWEEN 2 AND 120
+);
 
 
     /* =====================================================
@@ -2171,32 +2174,383 @@
     }
 
 
-    /* =====================================================
-       CREATE STORE
-       ===================================================== */
+   /* =========================================================
+   CREATE STORE SECURITY
+   ========================================================= */
 
-    const createStoreBtn =
-        document.getElementById(
-            "createStoreBtn"
+function createSlug(value) {
+
+    return value
+        .toLowerCase()
+        .trim()
+        .replace(
+            /[^a-z0-9\s-]/g,
+            ""
+        )
+        .replace(
+            /\s+/g,
+            "-"
+        )
+        .replace(
+            /-+/g,
+            "-"
+        )
+        .replace(
+            /^-|-$/g,
+            ""
         );
 
+}
 
-    if (createStoreBtn) {
 
-        createStoreBtn.addEventListener(
-            "click",
-            () => {
+/* ---------------------------------------------------------
+   VALIDATE STORE DATA
+   --------------------------------------------------------- */
 
-                showToast(
-                    "Store creation module coming next."
-                );
+function validateStoreData(data) {
 
-            }
-        );
+    if (
+        !data.name ||
+        data.name.length < 2
+    ) {
 
+        return "Store name must contain at least 2 characters.";
     }
 
 
+    if (
+        data.name.length > 120
+    ) {
+
+        return "Store name is too long.";
+    }
+
+
+    if (
+        !data.slug
+    ) {
+
+        return "Store slug is required.";
+    }
+
+
+    if (
+        !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(
+            data.slug
+        )
+    ) {
+
+        return "Invalid store slug.";
+    }
+
+
+    if (
+        data.contact_email &&
+        data.contact_email.length > 254
+    ) {
+
+        return "Email address is too long.";
+    }
+
+
+    if (
+        data.address &&
+        data.address.length > 500
+    ) {
+
+        return "Address is too long.";
+    }
+
+
+    return null;
+}
+
+
+    /* =========================================================
+   CREATE STORE
+   ========================================================= */
+
+async function createStore(storeData) {
+
+    try {
+
+        /* ---------------------------------------------
+           VERIFY SESSION AGAIN
+           --------------------------------------------- */
+
+        const session =
+            await getCurrentSession();
+
+
+        if (!session) {
+
+            throw new Error(
+                "Your session has expired. Please log in again."
+            );
+        }
+
+
+        /* ---------------------------------------------
+           VERIFY SUPER ADMIN PROFILE
+           --------------------------------------------- */
+
+        const {
+            data: profile,
+            error: profileError
+        } = await supabaseClient
+            .from("profiles")
+            .select(
+                "id, role, store_id"
+            )
+            .eq(
+                "id",
+                session.user.id
+            )
+            .single();
+
+
+        if (
+            profileError ||
+            !profile
+        ) {
+
+            throw new Error(
+                "Unable to verify administrator access."
+            );
+        }
+
+
+        if (
+            profile.role !==
+            "SUPER_ADMIN"
+        ) {
+
+            throw new Error(
+                "You are not authorized to create stores."
+            );
+        }
+
+
+        if (
+            profile.store_id !== null
+        ) {
+
+            throw new Error(
+                "Invalid administrator account."
+            );
+        }
+
+
+        /* ---------------------------------------------
+           NORMALIZE DATA
+           --------------------------------------------- */
+
+        const cleanData = {
+
+            name:
+                String(
+                    storeData.name || ""
+                )
+                .trim()
+                .slice(0, 120),
+
+            slug:
+                createSlug(
+                    storeData.slug ||
+                    storeData.name
+                ),
+
+            description:
+                String(
+                    storeData.description || ""
+                )
+                .trim()
+                .slice(0, 2000),
+
+            tagline:
+                String(
+                    storeData.tagline || ""
+                )
+                .trim()
+                .slice(0, 300),
+
+            logo_url:
+                String(
+                    storeData.logo_url || ""
+                )
+                .trim()
+                .slice(0, 1000),
+
+            favicon_url:
+                String(
+                    storeData.favicon_url || ""
+                )
+                .trim()
+                .slice(0, 1000),
+
+            primary_color:
+                storeData.primary_color ||
+                "#ff5a1f",
+
+            secondary_color:
+                storeData.secondary_color ||
+                "#111111",
+
+            hero_title:
+                String(
+                    storeData.hero_title || ""
+                )
+                .trim()
+                .slice(0, 300),
+
+            hero_description:
+                String(
+                    storeData.hero_description || ""
+                )
+                .trim()
+                .slice(0, 2000),
+
+            hero_image_url:
+                String(
+                    storeData.hero_image_url || ""
+                )
+                .trim()
+                .slice(0, 1000),
+
+            contact_email:
+                String(
+                    storeData.contact_email || ""
+                )
+                .trim()
+                .slice(0, 254),
+
+            contact_phone:
+                String(
+                    storeData.contact_phone || ""
+                )
+                .trim()
+                .slice(0, 50),
+
+            address:
+                String(
+                    storeData.address || ""
+                )
+                .trim()
+                .slice(0, 500),
+
+            privacy_policy:
+                String(
+                    storeData.privacy_policy || ""
+                )
+                .slice(0, 20000),
+
+            terms_policy:
+                String(
+                    storeData.terms_policy || ""
+                )
+                .slice(0, 20000),
+
+            return_policy:
+                String(
+                    storeData.return_policy || ""
+                )
+                .slice(0, 20000),
+
+            shipping_policy:
+                String(
+                    storeData.shipping_policy || ""
+                )
+                .slice(0, 20000),
+
+            cookie_policy:
+                String(
+                    storeData.cookie_policy || ""
+                )
+                .slice(0, 20000),
+
+            status:
+                "ACTIVE",
+
+            is_active:
+                true
+        };
+
+
+        /* ---------------------------------------------
+           VALIDATE
+           --------------------------------------------- */
+
+        const validationError =
+            validateStoreData(
+                cleanData
+            );
+
+
+        if (validationError) {
+
+            throw new Error(
+                validationError
+            );
+        }
+
+
+        /* ---------------------------------------------
+           INSERT
+           --------------------------------------------- */
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("stores")
+            .insert(
+                cleanData
+            )
+            .select()
+            .single();
+
+
+        if (error) {
+
+            console.error(
+                "Store creation error:",
+                error
+            );
+
+
+            /* Friendly duplicate slug message */
+
+            if (
+                error.code === "23505"
+            ) {
+
+                throw new Error(
+                    "That store slug already exists. Please choose another."
+                );
+            }
+
+
+            throw new Error(
+                "Store could not be created."
+            );
+        }
+
+
+        return data;
+
+
+    } catch (error) {
+
+        console.error(
+            "Create store failed:",
+            error
+        );
+
+        throw error;
+    }
+}
+
+    
     /* =====================================================
    LOGOUT
    ===================================================== */
@@ -2362,6 +2716,39 @@ if (mobileLogoutButton) {
 
     }
 
+
+    /* =========================================================
+   AUTH STATE MONITOR
+   ========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+    async (event, session) => {
+
+        if (
+            event === "SIGNED_OUT" ||
+            !session
+        ) {
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+            return;
+        }
+
+
+        if (
+            event === "USER_DELETED"
+        ) {
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+        }
+
+    }
+);
 
     /* =====================================================
        START

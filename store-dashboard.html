@@ -3509,7 +3509,7 @@ async function loadProducts(
                 id,
                 name,
                 category_id,
-                active,
+                is_active,
                 created_at
             `)
 
@@ -3590,7 +3590,7 @@ async function loadProducts(
 
 
             const active =
-                product.active !== false;
+                product.is_active !== false;
 
 
             row.innerHTML = `

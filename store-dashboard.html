@@ -1,0 +1,2506 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Store Dashboard | BUSINESS NAME</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        :root {
+
+            --primary: #ff5a1f;
+            --primary-dark: #e84910;
+
+            --black: #111111;
+            --sidebar: #0b0b0b;
+
+            --cream: #f8f5ef;
+            --white: #ffffff;
+
+            --text: #171717;
+            --muted: #777;
+
+            --border: #e8e3da;
+
+            --success: #16834b;
+            --danger: #c93434;
+
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            font-family: "Inter", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(255, 90, 31, .07),
+                    transparent 35%
+                ),
+                var(--cream);
+
+            color: var(--text);
+
+            min-height: 100vh;
+
+        }
+
+
+        button,
+        input {
+
+            font-family: inherit;
+
+        }
+
+
+        button {
+
+            cursor: pointer;
+
+        }
+
+
+        /* =====================================================
+           LAYOUT
+           ===================================================== */
+
+        .dashboard {
+
+            display: flex;
+
+            min-height: 100vh;
+
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+           ===================================================== */
+
+        .sidebar {
+
+            width: 255px;
+
+            background: var(--sidebar);
+
+            color: white;
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            display: flex;
+
+            flex-direction: column;
+
+            padding: 28px 18px;
+
+            z-index: 300;
+
+        }
+
+
+        .brand {
+
+            font-size: 19px;
+
+            font-weight: 800;
+
+            letter-spacing: .8px;
+
+            padding:
+                0 12px
+                25px;
+
+        }
+
+
+        .brand span {
+
+            color: var(--primary);
+
+        }
+
+
+        .admin-label {
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            letter-spacing: 1.8px;
+
+            color: #777;
+
+            text-transform: uppercase;
+
+            padding:
+                0 12px
+                13px;
+
+        }
+
+
+        .nav {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+
+        }
+
+
+        .nav-item {
+
+            border: none;
+
+            background: transparent;
+
+            color: #999;
+
+            text-decoration: none;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            width: 100%;
+
+            padding: 13px 12px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            text-align: left;
+
+            transition: .2s ease;
+
+        }
+
+
+        .nav-item i {
+
+            width: 20px;
+
+            text-align: center;
+
+            font-size: 14px;
+
+        }
+
+
+        .nav-item:hover {
+
+            background: rgba(255,255,255,.06);
+
+            color: white;
+
+        }
+
+
+        .nav-item.active {
+
+            background: rgba(255,90,31,.13);
+
+            color: var(--primary);
+
+        }
+
+
+        .sidebar-bottom {
+
+            margin-top: auto;
+
+        }
+
+
+        .logout-btn {
+
+            width: 100%;
+
+            border: 1px solid rgba(255,255,255,.08);
+
+            background: rgba(255,255,255,.035);
+
+            color: #aaa;
+
+            padding: 13px;
+
+            border-radius: 9px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            font-weight: 600;
+
+        }
+
+
+        .logout-btn:hover {
+
+            color: #ff7070;
+
+            background: rgba(255,80,80,.08);
+
+        }
+
+
+        /* =====================================================
+           MAIN
+           ===================================================== */
+
+        .main {
+
+            width: calc(100% - 255px);
+
+            margin-left: 255px;
+
+            min-height: 100vh;
+
+        }
+
+
+        .topbar {
+
+            height: 82px;
+
+            background: rgba(255,255,255,.76);
+
+            backdrop-filter: blur(15px);
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 34px;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+
+        }
+
+
+        .page-title h1 {
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+        }
+
+
+        .page-title p {
+
+            font-size: 12px;
+
+            color: var(--muted);
+
+            margin-top: 4px;
+
+        }
+
+
+        .admin-profile {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+        }
+
+
+        .profile-avatar {
+
+            width: 39px;
+
+            height: 39px;
+
+            border-radius: 50%;
+
+            background: #fff0e9;
+
+            color: var(--primary);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+
+        .profile-info {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 3px;
+
+        }
+
+
+        .profile-info strong {
+
+            font-size: 12px;
+
+        }
+
+
+        .profile-info span {
+
+            font-size: 10px;
+
+            color: var(--muted);
+
+        }
+
+
+        .mobile-menu-btn {
+
+            display: none;
+
+            border: none;
+
+            background: transparent;
+
+            font-size: 20px;
+
+        }
+
+
+        /* =====================================================
+           CONTENT
+           ===================================================== */
+
+        .content {
+
+            padding: 34px;
+
+        }
+
+
+        .welcome {
+
+            background:
+
+                linear-gradient(
+                    120deg,
+                    #111 0%,
+                    #18110e 100%
+                );
+
+            color: white;
+
+            border-radius: 18px;
+
+            padding: 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 28px;
+
+            overflow: hidden;
+
+            position: relative;
+
+        }
+
+
+        .welcome::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 260px;
+
+            height: 260px;
+
+            border-radius: 50%;
+
+            background: rgba(255,90,31,.12);
+
+            right: -100px;
+
+            top: -130px;
+
+        }
+
+
+        .welcome small {
+
+            color: var(--primary);
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+        }
+
+
+        .welcome h2 {
+
+            font-size: 27px;
+
+            margin-top: 8px;
+
+        }
+
+
+        .welcome p {
+
+            color: #aaa;
+
+            font-size: 12px;
+
+            margin-top: 8px;
+
+        }
+
+
+        .welcome-icon {
+
+            width: 62px;
+
+            height: 62px;
+
+            border-radius: 15px;
+
+            background: rgba(255,255,255,.06);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 24px;
+
+            color: var(--primary);
+
+            z-index: 2;
+
+        }
+
+
+        /* =====================================================
+           STORE STATUS
+           ===================================================== */
+
+        .store-card {
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 22px;
+
+            margin-bottom: 25px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .store-info {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+        }
+
+
+        .store-logo {
+
+            width: 50px;
+
+            height: 50px;
+
+            border-radius: 12px;
+
+            background: #f5f1eb;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            color: var(--primary);
+
+        }
+
+
+        .store-logo img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+
+        .store-info h3 {
+
+            font-size: 15px;
+
+        }
+
+
+        .store-info p {
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            margin-top: 4px;
+
+        }
+
+
+        .store-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            padding: 8px 11px;
+
+            border-radius: 20px;
+
+        }
+
+
+        .store-status.active {
+
+            background: #eaf8f0;
+
+            color: var(--success);
+
+        }
+
+
+        .store-status.paused {
+
+            background: #fff1e8;
+
+            color: #bd5a16;
+
+        }
+
+
+        .store-status.archived {
+
+            background: #f2eeee;
+
+            color: #777;
+
+        }
+
+
+        /* =====================================================
+           STATS
+           ===================================================== */
+
+        .stats-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .stat-card {
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+        }
+
+
+        .stat-top {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+        }
+
+
+        .stat-top span {
+
+            font-size: 11px;
+
+            color: var(--muted);
+
+            font-weight: 600;
+
+        }
+
+
+        .stat-icon {
+
+            width: 36px;
+
+            height: 36px;
+
+            border-radius: 9px;
+
+            background: #fff0e9;
+
+            color: var(--primary);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+
+        .stat-card h3 {
+
+            font-size: 27px;
+
+            margin-top: 15px;
+
+        }
+
+
+        .stat-card p {
+
+            font-size: 10px;
+
+            color: #999;
+
+            margin-top: 5px;
+
+        }
+
+
+        /* =====================================================
+           SECTION
+           ===================================================== */
+
+        .section-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 14px;
+
+        }
+
+
+        .section-header h2 {
+
+            font-size: 17px;
+
+        }
+
+
+        .section-header p {
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            margin-top: 4px;
+
+        }
+
+
+        .primary-btn {
+
+            border: none;
+
+            background: var(--primary);
+
+            color: white;
+
+            padding: 11px 16px;
+
+            border-radius: 8px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+        }
+
+
+        .primary-btn:hover {
+
+            background: var(--primary-dark);
+
+        }
+
+
+        /* =====================================================
+           PRODUCTS
+           ===================================================== */
+
+        .table-card {
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+        }
+
+
+        .table-wrapper {
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 650px;
+
+        }
+
+
+        th {
+
+            background: #faf8f4;
+
+            color: #888;
+
+            text-align: left;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .6px;
+
+            padding: 13px 17px;
+
+        }
+
+
+        td {
+
+            padding: 14px 17px;
+
+            border-top: 1px solid #eeeae3;
+
+            font-size: 11px;
+
+        }
+
+
+        .product-cell {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+        .product-image {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 8px;
+
+            background: #f3f1ed;
+
+            overflow: hidden;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: #aaa;
+
+        }
+
+
+        .product-image img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+
+        .product-cell strong {
+
+            display: block;
+
+            font-size: 11px;
+
+        }
+
+
+        .product-cell span {
+
+            display: block;
+
+            color: #999;
+
+            font-size: 9px;
+
+            margin-top: 3px;
+
+        }
+
+
+        .status-badge {
+
+            display: inline-flex;
+
+            padding: 6px 9px;
+
+            border-radius: 15px;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+        }
+
+
+        .status-badge.active {
+
+            background: #eaf8f0;
+
+            color: var(--success);
+
+        }
+
+
+        .status-badge.inactive {
+
+            background: #f4eeee;
+
+            color: var(--danger);
+
+        }
+
+
+        .empty-state {
+
+            text-align: center;
+
+            padding: 55px 20px;
+
+            color: #999;
+
+        }
+
+
+        .empty-state i {
+
+            font-size: 30px;
+
+            margin-bottom: 12px;
+
+            color: #ccc;
+
+        }
+
+
+        .empty-state p {
+
+            font-size: 12px;
+
+        }
+
+
+        .loading {
+
+            padding: 45px;
+
+            text-align: center;
+
+            color: #999;
+
+            font-size: 12px;
+
+        }
+
+
+        .spinner {
+
+            width: 16px;
+
+            height: 16px;
+
+            border: 2px solid #ddd;
+
+            border-top-color: var(--primary);
+
+            border-radius: 50%;
+
+            display: inline-block;
+
+            animation: spin .7s linear infinite;
+
+            vertical-align: middle;
+
+            margin-right: 7px;
+
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        /* =====================================================
+           TOAST
+           ===================================================== */
+
+        .toast {
+
+            position: fixed;
+
+            right: 25px;
+
+            bottom: 25px;
+
+            background: #111;
+
+            color: white;
+
+            padding: 13px 17px;
+
+            border-radius: 9px;
+
+            font-size: 11px;
+
+            opacity: 0;
+
+            transform: translateY(15px);
+
+            pointer-events: none;
+
+            transition: .25s ease;
+
+            z-index: 1000;
+
+        }
+
+
+        .toast.show {
+
+            opacity: 1;
+
+            transform: translateY(0);
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 850px) {
+
+            .sidebar {
+
+                transform: translateX(-100%);
+
+                transition: .25s ease;
+
+            }
+
+
+            .sidebar.mobile-open {
+
+                transform: translateX(0);
+
+            }
+
+
+            .main {
+
+                width: 100%;
+
+                margin-left: 0;
+
+            }
+
+
+            .mobile-menu-btn {
+
+                display: block;
+
+                margin-right: 15px;
+
+            }
+
+
+            .topbar {
+
+                justify-content: flex-start;
+
+            }
+
+
+            .admin-profile {
+
+                margin-left: auto;
+
+            }
+
+
+            .profile-info {
+
+                display: none;
+
+            }
+
+
+            .content {
+
+                padding: 20px;
+
+            }
+
+
+            .stats-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+
+        @media (max-width: 560px) {
+
+            .topbar {
+
+                padding: 0 18px;
+
+            }
+
+
+            .welcome {
+
+                padding: 23px;
+
+            }
+
+
+            .welcome h2 {
+
+                font-size: 22px;
+
+            }
+
+
+            .welcome-icon {
+
+                display: none;
+
+            }
+
+
+            .store-card {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+
+            .section-header {
+
+                align-items: flex-start;
+
+                gap: 15px;
+
+                flex-direction: column;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="dashboard">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <div class="brand">
+            BUSINESS<span> NAME</span>
+        </div>
+
+
+        <div class="admin-label">
+            Store Admin
+        </div>
+
+
+        <nav class="nav">
+
+            <a
+                href="#"
+                class="nav-item active"
+            >
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+
+
+            <button
+                type="button"
+                class="nav-item"
+                data-coming-soon="Products"
+            >
+                <i class="fa-solid fa-box"></i>
+                <span>Products</span>
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-item"
+                data-coming-soon="Categories"
+            >
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Categories</span>
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-item"
+                data-coming-soon="Orders"
+            >
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span>Orders</span>
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-item"
+                data-coming-soon="Customers"
+            >
+                <i class="fa-solid fa-users"></i>
+                <span>Customers</span>
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-item"
+                data-coming-soon="Store Settings"
+            >
+                <i class="fa-solid fa-gear"></i>
+                <span>Store Settings</span>
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <button
+                type="button"
+                class="logout-btn"
+                id="logoutBtn"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
+    <main class="main">
+
+
+        <header class="topbar">
+
+
+            <button
+                type="button"
+                class="mobile-menu-btn"
+                id="mobileMenuBtn"
+                aria-label="Open menu"
+            >
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+
+            <div class="page-title">
+
+                <h1>
+                    Store Dashboard
+                </h1>
+
+                <p id="pageSubtitle">
+                    Manage your store
+                </p>
+
+            </div>
+
+
+            <div class="admin-profile">
+
+                <div class="profile-avatar">
+
+                    <i class="fa-solid fa-user"></i>
+
+                </div>
+
+
+                <div class="profile-info">
+
+                    <strong id="adminName">
+                        Store Admin
+                    </strong>
+
+                    <span>
+                        Store Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             CONTENT
+             ===================================================== -->
+
+        <section class="content">
+
+
+            <!-- WELCOME -->
+
+            <div class="welcome">
+
+                <div>
+
+                    <small>
+                        Store Control Center
+                    </small>
+
+                    <h2>
+                        Welcome back,
+                        <span id="welcomeName">
+                            Admin
+                        </span>.
+                    </h2>
+
+                    <p id="welcomeDescription">
+                        Here's what's happening in your store.
+                    </p>
+
+                </div>
+
+
+                <div class="welcome-icon">
+
+                    <i class="fa-solid fa-store"></i>
+
+                </div>
+
+            </div>
+
+
+            <!-- STORE -->
+
+            <div class="store-card">
+
+
+                <div class="store-info">
+
+
+                    <div
+                        class="store-logo"
+                        id="storeLogo"
+                    >
+
+                        <i class="fa-solid fa-store"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h3 id="storeName">
+                            Loading store...
+                        </h3>
+
+                        <p id="storeSlug">
+                            Loading...
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div
+                    class="store-status active"
+                    id="storeStatus"
+                >
+
+                    <i class="fa-solid fa-circle"></i>
+
+                    <span>
+                        Active
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATS -->
+
+            <div class="stats-grid">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <span>
+                            Products
+                        </span>
+
+                        <div class="stat-icon">
+
+                            <i class="fa-solid fa-box"></i>
+
+                        </div>
+
+                    </div>
+
+                    <h3 id="totalProducts">
+                        0
+                    </h3>
+
+                    <p>
+                        Products in your store
+                    </p>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <span>
+                            Categories
+                        </span>
+
+                        <div class="stat-icon">
+
+                            <i class="fa-solid fa-layer-group"></i>
+
+                        </div>
+
+                    </div>
+
+                    <h3 id="totalCategories">
+                        0
+                    </h3>
+
+                    <p>
+                        Store categories
+                    </p>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <span>
+                            Store Status
+                        </span>
+
+                        <div class="stat-icon">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                        </div>
+
+                    </div>
+
+                    <h3 id="statusText">
+                        Active
+                    </h3>
+
+                    <p>
+                        Public storefront status
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRODUCTS -->
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Your Products
+                    </h2>
+
+                    <p>
+                        Products belonging to your store.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    data-coming-soon="Products"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Add Product
+
+                </button>
+
+            </div>
+
+
+            <div class="table-card">
+
+
+                <div
+                    class="loading"
+                    id="productsLoading"
+                >
+
+                    <span class="spinner"></span>
+
+                    Loading products...
+
+                </div>
+
+
+                <div
+                    class="table-wrapper"
+                    id="productsTableWrapper"
+                    style="display:none;"
+                >
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Product
+                                </th>
+
+                                <th>
+                                    Brand
+                                </th>
+
+                                <th>
+                                    Category
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="productsTableBody"
+                        ></tbody>
+
+                    </table>
+
+                </div>
+
+
+                <div
+                    class="empty-state"
+                    id="emptyProducts"
+                    style="display:none;"
+                >
+
+                    <i class="fa-solid fa-box-open"></i>
+
+                    <p>
+                        No products have been added to this store yet.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<script>
+
+
+    /* =====================================================
+       SUPABASE
+       ===================================================== */
+
+    const SUPABASE_URL =
+        "https://difamwnbnfjevvgcprig.supabase.co";
+
+
+    const SUPABASE_KEY =
+        "sb_publishable_pETuvhi__8zgCn2_Vc19BQ_IeW2PfLl";
+
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY,
+            {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
+                }
+            }
+        );
+
+
+    /* =====================================================
+       ELEMENTS
+       ===================================================== */
+
+    const adminName =
+        document.getElementById("adminName");
+
+    const welcomeName =
+        document.getElementById("welcomeName");
+
+    const storeName =
+        document.getElementById("storeName");
+
+    const storeSlug =
+        document.getElementById("storeSlug");
+
+    const storeStatus =
+        document.getElementById("storeStatus");
+
+    const statusText =
+        document.getElementById("statusText");
+
+    const totalProducts =
+        document.getElementById("totalProducts");
+
+    const totalCategories =
+        document.getElementById("totalCategories");
+
+    const productsLoading =
+        document.getElementById("productsLoading");
+
+    const productsTableWrapper =
+        document.getElementById(
+            "productsTableWrapper"
+        );
+
+    const productsTableBody =
+        document.getElementById(
+            "productsTableBody"
+        );
+
+    const emptyProducts =
+        document.getElementById(
+            "emptyProducts"
+        );
+
+    const toast =
+        document.getElementById("toast");
+
+
+    /* =====================================================
+       HELPERS
+       ===================================================== */
+
+    function escapeHtml(value) {
+
+        return String(
+            value ?? ""
+        )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    function showToast(message) {
+
+        if (!toast) return;
+
+        toast.textContent =
+            message;
+
+        toast.classList.add(
+            "show"
+        );
+
+        setTimeout(() => {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        }, 3000);
+
+    }
+
+
+    /* =====================================================
+       AUTHENTICATION + TENANT SECURITY
+       ===================================================== */
+
+    async function checkStoreAdminAccess() {
+
+        const {
+            data: {
+                session
+            },
+            error: sessionError
+        } =
+            await supabaseClient.auth.getSession();
+
+
+        if (
+            sessionError ||
+            !session
+        ) {
+
+            window.location.href =
+                "admin-login.html";
+
+            return null;
+
+        }
+
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await supabaseClient
+
+                .from("profiles")
+
+                .select(
+                    "id, full_name, role, store_id"
+                )
+
+                .eq(
+                    "id",
+                    session.user.id
+                )
+
+                .single();
+
+
+        if (
+            profileError ||
+            !profile
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href =
+                "admin-login.html";
+
+            return null;
+
+        }
+
+
+        if (
+            profile.role !==
+            "STORE_ADMIN"
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href =
+                "admin-login.html";
+
+            return null;
+
+        }
+
+
+        if (
+            !profile.store_id
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href =
+                "admin-login.html";
+
+            return null;
+
+        }
+
+
+        return {
+
+            session,
+
+            profile
+
+        };
+
+    }
+
+
+    /* =====================================================
+       LOAD STORE
+       ===================================================== */
+
+    async function loadStore(
+        storeId
+    ) {
+
+        const {
+            data: store,
+            error
+        } =
+            await supabaseClient
+
+                .from("stores")
+
+                .select(
+                    `
+                    id,
+                    name,
+                    slug,
+                    description,
+                    logo_url,
+                    status,
+                    is_active
+                    `
+                )
+
+                .eq(
+                    "id",
+                    storeId
+                )
+
+                .single();
+
+
+        if (error) {
+
+            console.error(
+                "Store loading error:",
+                error
+            );
+
+            showToast(
+                "Unable to load your store."
+            );
+
+            return null;
+
+        }
+
+
+        storeName.textContent =
+            store.name ||
+            "Unnamed Store";
+
+
+        storeSlug.textContent =
+            store.slug
+                ? "/" + store.slug
+                : "No store slug";
+
+
+        if (
+            store.description
+        ) {
+
+            document
+                .getElementById(
+                    "welcomeDescription"
+                )
+                .textContent =
+                store.description;
+
+        }
+
+
+        if (
+            store.logo_url
+        ) {
+
+            const logo =
+                document.createElement(
+                    "img"
+                );
+
+            logo.src =
+                store.logo_url;
+
+            logo.alt =
+                store.name || "Store";
+
+            document
+                .getElementById(
+                    "storeLogo"
+                )
+                .innerHTML = "";
+
+            document
+                .getElementById(
+                    "storeLogo"
+                )
+                .appendChild(
+                    logo
+                );
+
+        }
+
+
+        const status =
+            store.status ||
+            (
+                store.is_active === false
+                    ? "PAUSED"
+                    : "ACTIVE"
+            );
+
+
+        statusText.textContent =
+            status;
+
+
+        storeStatus.className =
+            "store-status " +
+            status.toLowerCase();
+
+
+        storeStatus.innerHTML = `
+
+            <i class="fa-solid fa-circle"></i>
+
+            <span>
+                ${escapeHtml(status)}
+            </span>
+
+        `;
+
+
+        return store;
+
+    }
+
+
+    /* =====================================================
+       LOAD PRODUCTS
+       ===================================================== */
+
+    async function loadProducts(
+        storeId
+    ) {
+
+        productsLoading.style.display =
+            "block";
+
+        productsTableWrapper.style.display =
+            "none";
+
+        emptyProducts.style.display =
+            "none";
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+
+                .from("products")
+
+                .select(
+                    "id, name, brand, category, image1, active, created_at"
+                )
+
+                .eq(
+                    "store_id",
+                    storeId
+                )
+
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        productsLoading.style.display =
+            "none";
+
+
+        if (error) {
+
+            console.error(
+                "Products loading error:",
+                error
+            );
+
+            emptyProducts.style.display =
+                "block";
+
+            emptyProducts.innerHTML = `
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                <p>
+                    Unable to load products.
+                </p>
+
+            `;
+
+            return;
+
+        }
+
+
+        totalProducts.textContent =
+            data?.length || 0;
+
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            emptyProducts.style.display =
+                "block";
+
+            return;
+
+        }
+
+
+        productsTableWrapper.style.display =
+            "block";
+
+
+        productsTableBody.innerHTML =
+            "";
+
+
+        data.forEach(
+            product => {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                const image =
+                    product.image1;
+
+
+                const active =
+                    product.active !== false;
+
+
+                row.innerHTML = `
+
+                    <td>
+
+                        <div class="product-cell">
+
+                            <div class="product-image">
+
+                                ${
+                                    image
+
+                                        ? `
+                                            <img
+                                                src="${escapeHtml(image)}"
+                                                alt="${escapeHtml(product.name)}"
+                                            >
+                                          `
+
+                                        : `
+                                            <i class="fa-solid fa-box"></i>
+                                          `
+                                }
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    ${escapeHtml(
+                                        product.name ||
+                                        "Unnamed Product"
+                                    )}
+                                </strong>
+
+                                <span>
+                                    Product
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        ${escapeHtml(
+                            product.brand ||
+                            "—"
+                        )}
+                    </td>
+
+
+                    <td>
+                        ${escapeHtml(
+                            product.category ||
+                            "—"
+                        )}
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="status-badge ${
+                                active
+                                    ? "active"
+                                    : "inactive"
+                            }"
+                        >
+
+                            ${
+                                active
+                                    ? "Active"
+                                    : "Inactive"
+                            }
+
+                        </span>
+
+                    </td>
+
+                `;
+
+
+                productsTableBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       LOAD CATEGORIES
+       ===================================================== */
+
+    async function loadCategories(
+        storeId
+    ) {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+
+                .from("categories")
+
+                .select("id")
+
+                .eq(
+                    "store_id",
+                    storeId
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Categories loading error:",
+                error
+            );
+
+            totalCategories.textContent =
+                "—";
+
+            return;
+
+        }
+
+
+        totalCategories.textContent =
+            data?.length || 0;
+
+    }
+
+
+    /* =====================================================
+       SIDEBAR PLACEHOLDERS
+       ===================================================== */
+
+    document
+        .querySelectorAll(
+            "[data-coming-soon]"
+        )
+        .forEach(
+            element => {
+
+                element.addEventListener(
+                    "click",
+                    () => {
+
+                        showToast(
+                            element.dataset.comingSoon +
+                            " management is coming next."
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       MOBILE MENU
+       ===================================================== */
+
+    const sidebar =
+        document.getElementById(
+            "sidebar"
+        );
+
+
+    const mobileMenuBtn =
+        document.getElementById(
+            "mobileMenuBtn"
+        );
+
+
+    mobileMenuBtn.addEventListener(
+        "click",
+        () => {
+
+            sidebar.classList.toggle(
+                "mobile-open"
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
+
+    document
+        .getElementById("logoutBtn")
+        .addEventListener(
+            "click",
+            async () => {
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href =
+                    "admin-login.html";
+
+            }
+        );
+
+
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
+
+    async function initializeDashboard() {
+
+        const access =
+            await checkStoreAdminAccess();
+
+
+        if (!access) {
+            return;
+        }
+
+
+        const {
+            profile
+        } = access;
+
+
+        adminName.textContent =
+            profile.full_name ||
+            "Store Admin";
+
+
+        welcomeName.textContent =
+            (
+                profile.full_name ||
+                "Admin"
+            )
+                .split(" ")[0];
+
+
+        const store =
+            await loadStore(
+                profile.store_id
+            );
+
+
+        if (!store) {
+            return;
+        }
+
+
+        await Promise.all([
+
+            loadProducts(
+                profile.store_id
+            ),
+
+            loadCategories(
+                profile.store_id
+            )
+
+        ]);
+
+    }
+
+
+    initializeDashboard();
+
+</script>
+
+
+</body>
+
+</html>
+```

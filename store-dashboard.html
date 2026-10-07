@@ -3484,204 +3484,191 @@ if (saveStoreSettings) {
     
 
     /* =====================================================
-       LOAD PRODUCTS
-       ===================================================== */
+   LOAD PRODUCTS
+   ===================================================== */
 
-    async function loadProducts(
-        storeId
-    ) {
+async function loadProducts(
+    storeId
+) {
 
-        productsLoading.style.display =
-            "block";
+    productsLoading.style.display =
+        "block";
 
-        productsTableWrapper.style.display =
-            "none";
+    productsTableWrapper.style.display =
+        "none";
+
+    emptyProducts.style.display =
+        "none";
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+
+            .from("products")
+
+            .select(`
+                id,
+                name,
+                category_id,
+                active,
+                created_at
+            `)
+
+            .eq(
+                "store_id",
+                storeId
+            )
+
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    productsLoading.style.display =
+        "none";
+
+
+    if (error) {
+
+        console.error(
+            "Products loading error:",
+            error
+        );
 
         emptyProducts.style.display =
-            "none";
+            "block";
+
+        emptyProducts.innerHTML = `
+
+            <i class="fa-solid fa-triangle-exclamation"></i>
+
+            <p>
+                Unable to load products.
+            </p>
+
+        `;
+
+        return;
+
+    }
 
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
+    totalProducts.textContent =
+        data?.length || 0;
 
-                .from("products")
 
-                .select(
-    "id, name, category_id, image1, active, created_at"
-)
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
-                .eq(
-                    "store_id",
-                    storeId
-                )
+        emptyProducts.style.display =
+            "block";
 
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
+        return;
+
+    }
+
+
+    productsTableWrapper.style.display =
+        "block";
+
+
+    productsTableBody.innerHTML =
+        "";
+
+
+    data.forEach(
+        product => {
+
+            const row =
+                document.createElement(
+                    "tr"
                 );
 
 
-        productsLoading.style.display =
-            "none";
+            const active =
+                product.active !== false;
 
 
-        if (error) {
+            row.innerHTML = `
 
-            console.error(
-                "Products loading error:",
-                error
-            );
+                <td>
 
-            emptyProducts.style.display =
-                "block";
+                    <div class="product-cell">
 
-            emptyProducts.innerHTML = `
+                        <div class="product-image">
 
-                <i class="fa-solid fa-triangle-exclamation"></i>
-
-                <p>
-                    Unable to load products.
-                </p>
-
-            `;
-
-            return;
-
-        }
-
-
-        totalProducts.textContent =
-            data?.length || 0;
-
-
-        if (
-            !data ||
-            data.length === 0
-        ) {
-
-            emptyProducts.style.display =
-                "block";
-
-            return;
-
-        }
-
-
-        productsTableWrapper.style.display =
-            "block";
-
-
-        productsTableBody.innerHTML =
-            "";
-
-
-        data.forEach(
-            product => {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                const image =
-                    product.image1;
-
-
-                const active =
-                    product.active !== false;
-
-
-                row.innerHTML = `
-
-                    <td>
-
-                        <div class="product-cell">
-
-                            <div class="product-image">
-
-                                ${
-                                    image
-
-                                        ? `
-                                            <img
-                                                src="${escapeHtml(image)}"
-                                                alt="${escapeHtml(product.name)}"
-                                            >
-                                          `
-
-                                        : `
-                                            <i class="fa-solid fa-box"></i>
-                                          `
-                                }
-
-                            </div>
-
-
-                            <div>
-
-                                <strong>
-                                    ${escapeHtml(
-                                        product.name ||
-                                        "Unnamed Product"
-                                    )}
-                                </strong>
-
-                                <span>
-                                    Product
-                                </span>
-
-                            </div>
+                            <i class="fa-solid fa-box"></i>
 
                         </div>
 
-                    </td>
+
+                        <div>
+
+                            <strong>
+                                ${escapeHtml(
+                                    product.name ||
+                                    "Unnamed Product"
+                                )}
+                            </strong>
+
+                            <span>
+                                Product
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </td>
 
 
-                    <td>
-    ${escapeHtml(
-        product.category_id ||
-        "—"
-    )}
-</td>
+                <td>
+                    ${escapeHtml(
+                        product.category_id ||
+                        "—"
+                    )}
+                </td>
 
 
-                    <td>
+                <td>
 
-                        <span
-                            class="status-badge ${
-                                active
-                                    ? "active"
-                                    : "inactive"
-                            }"
-                        >
+                    <span
+                        class="status-badge ${
+                            active
+                                ? "active"
+                                : "inactive"
+                        }"
+                    >
 
-                            ${
-                                active
-                                    ? "Active"
-                                    : "Inactive"
-                            }
+                        ${
+                            active
+                                ? "Active"
+                                : "Inactive"
+                        }
 
-                        </span>
+                    </span>
 
-                    </td>
+                </td>
 
-                `;
+            `;
 
 
-                productsTableBody.appendChild(
-                    row
-                );
+            productsTableBody.appendChild(
+                row
+            );
 
-            }
-        );
+        }
+    );
 
-    }
+}
 
 
     /* =====================================================

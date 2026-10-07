@@ -3422,17 +3422,26 @@ if (saveStoreSettings) {
             /* Save to Supabase */
 
             const {
-                error
-            } = await supabaseClient
+    data: updatedStore,
+    error
+} = await supabaseClient
 
-                .from("stores")
+    .from("stores")
 
-                .update(updates)
+    .update(updates)
 
-                .eq(
-                    "id",
-                    storeId
-                );
+    .eq("id", storeId)
+
+    .select(`
+        id,
+        name,
+        privacy_policy,
+        terms_policy,
+        return_policy,
+        shipping_policy,
+        cookie_policy
+    `)
+    .single();
 
 
             /* Restore button */

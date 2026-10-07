@@ -2027,6 +2027,7 @@
 
         }
 
+        currentStoreSlug = store.slug || null;
 
         storeName.textContent =
             store.name ||
@@ -2399,6 +2400,45 @@
             }
         );
 
+
+    /* =====================================================
+   VIEW CUSTOMER STOREFRONT
+   ===================================================== */
+
+const viewStoreBtn =
+    document.getElementById("viewStoreBtn");
+
+if (viewStoreBtn) {
+
+    viewStoreBtn.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            if (!currentStoreSlug) {
+
+                showToast(
+                    "Your store link is not available yet."
+                );
+
+                return;
+            }
+
+            const storeUrl =
+                `store.html?store=${encodeURIComponent(
+                    currentStoreSlug
+                )}`;
+
+            window.open(
+                storeUrl,
+                "_blank"
+            );
+        }
+    );
+
+}
+    
 
     /* =====================================================
        MOBILE MENU

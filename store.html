@@ -1869,622 +1869,844 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        /* =========================================================
-           SUPABASE
-        ========================================================= */
+        <script>
+    /* =========================================================
+       SUPABASE
+    ========================================================= */
 
-        const SUPABASE_URL =
-            "https://difamwnbnfjevvgcprig.supabase.co";
+    const SUPABASE_URL =
+        "https://difamwnbnfjevvgcprig.supabase.co";
 
-        const SUPABASE_KEY =
-            "sb_publishable_pETuvhi__8zgCn2_Vc19BQ_IeW2PfLl";
+    const SUPABASE_KEY =
+        "sb_publishable_pETuvhi__8zgCn2_Vc19BQ_IeW2PfLl";
 
-        const supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY,
+    const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true
+            }
+        }
+    );
+
+
+    /* =========================================================
+       STATE
+    ========================================================= */
+
+    let currentStore = null;
+    let products = [];
+    let categories = [];
+    let cart = [];
+
+    const storeSlug =
+        new URLSearchParams(window.location.search).get("store");
+
+
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
+
+    const loadingScreen =
+        document.getElementById("loadingScreen");
+
+    const storeApp =
+        document.getElementById("storeApp");
+
+    const storeUnavailable =
+        document.getElementById("storeUnavailable");
+
+    const unavailableMessage =
+        document.getElementById("unavailableMessage");
+
+    const productsGrid =
+        document.getElementById("productsGrid");
+
+    const categoriesGrid =
+        document.getElementById("categoriesGrid");
+
+    const productSearch =
+        document.getElementById("productSearch");
+
+    const productCount =
+        document.getElementById("productCount");
+
+    const cartDrawer =
+        document.getElementById("cartDrawer");
+
+    const cartOverlay =
+        document.getElementById("cartOverlay");
+
+    const cartItems =
+        document.getElementById("cartItems");
+
+    const cartCount =
+        document.getElementById("cartCount");
+
+    const cartTotal =
+        document.getElementById("cartTotal");
+
+    const toast =
+        document.getElementById("toast");
+
+
+    /* =========================================================
+       HELPERS
+    ========================================================= */
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function showToast(message) {
+
+        if (!toast) return;
+
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        clearTimeout(window.toastTimer);
+
+        window.toastTimer = setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        }, 2500);
+    }
+
+
+    function formatPrice(value) {
+
+        const number =
+            Number(value || 0);
+
+        return new Intl.NumberFormat(
+            "en-NG",
             {
-                auth: {
-                    persistSession: true,
-                    autoRefreshToken: true,
-                    detectSessionInUrl: true
-                }
-            }
-        );
-
-
-        /* =========================================================
-           STATE
-        ========================================================= */
-
-        let currentStore = null;
-        let products = [];
-        let categories = [];
-        let cart = [];
-
-        const storeSlug =
-            new URLSearchParams(window.location.search).get("store");
-
-
-        /* =========================================================
-           ELEMENTS
-        ========================================================= */
-
-        const loadingScreen =
-            document.getElementById("loadingScreen");
-
-        const storeApp =
-            document.getElementById("storeApp");
-
-        const storeUnavailable =
-            document.getElementById("storeUnavailable");
-
-        const unavailableMessage =
-            document.getElementById("unavailableMessage");
-
-        const productsGrid =
-            document.getElementById("productsGrid");
-
-        const categoriesGrid =
-            document.getElementById("categoriesGrid");
-
-        const productSearch =
-            document.getElementById("productSearch");
-
-        const productCount =
-            document.getElementById("productCount");
-
-        const cartDrawer =
-            document.getElementById("cartDrawer");
-
-        const cartOverlay =
-            document.getElementById("cartOverlay");
-
-        const cartItems =
-            document.getElementById("cartItems");
-
-        const cartCount =
-            document.getElementById("cartCount");
-
-        const cartTotal =
-            document.getElementById("cartTotal");
-
-        const toast =
-            document.getElementById("toast");
-
-
-        /* =========================================================
-           HELPERS
-        ========================================================= */
-
-        function escapeHtml(value) {
-            if (value === null || value === undefined) {
-                return "";
-            }
-
-            return String(value)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-
-        function showToast(message) {
-            toast.textContent = message;
-            toast.classList.add("show");
-
-            clearTimeout(window.toastTimer);
-
-            window.toastTimer = setTimeout(() => {
-                toast.classList.remove("show");
-            }, 2500);
-        }
-
-
-        function formatPrice(value) {
-            const number = Number(value || 0);
-
-            return new Intl.NumberFormat("en-NG", {
                 style: "currency",
                 currency: "NGN",
                 maximumFractionDigits: 0
-            }).format(number);
-        }
+            }
+        ).format(number);
+    }
 
 
-        function hideLoading() {
-            loadingScreen.classList.add("hidden");
-        }
+    function hideLoading() {
+
+        if (!loadingScreen) return;
+
+        loadingScreen.classList.add("hidden");
+    }
 
 
-        function showUnavailable(message) {
+    function showUnavailable(message) {
+
+        if (storeApp) {
             storeApp.style.display = "none";
+        }
+
+        if (storeUnavailable) {
             storeUnavailable.style.display = "flex";
+        }
+
+        if (unavailableMessage) {
 
             unavailableMessage.textContent =
                 message ||
                 "This store is currently unavailable.";
-
-            hideLoading();
         }
 
+        hideLoading();
+    }
 
-        /* =========================================================
-           LOAD STORE
-        ========================================================= */
 
-        async function loadStore() {
+    /* =========================================================
+       LOAD STORE
+    ========================================================= */
 
-            if (!storeSlug) {
+    async function loadStore() {
+
+        console.log(
+            "Loading store:",
+            storeSlug
+        );
+
+        if (!storeSlug) {
+
+            showUnavailable(
+                "No store was specified in this link."
+            );
+
+            return;
+        }
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("stores")
+                .select(`
+                    id,
+                    name,
+                    slug,
+                    description,
+                    tagline,
+                    logo_url,
+                    favicon_url,
+                    primary_color,
+                    secondary_color,
+                    hero_title,
+                    hero_description,
+                    hero_image_url,
+                    contact_email,
+                    contact_phone,
+                    address,
+                    privacy_policy,
+                    terms_policy,
+                    return_policy,
+                    shipping_policy,
+                    cookie_policy,
+                    status,
+                    is_active
+                `)
+                .eq(
+                    "slug",
+                    storeSlug
+                )
+                .maybeSingle();
+
+
+            if (error) {
+
+                console.error(
+                    "Store load error:",
+                    error
+                );
+
                 showUnavailable(
-                    "No store was specified in this link."
+                    "We couldn't load this store right now."
                 );
 
                 return;
             }
 
-            try {
 
-                const {
-                    data,
-                    error
-                } = await supabaseClient
-                    .from("stores")
-                    .select(`
-                        id,
-                        name,
-                        slug,
-                        description,
-                        tagline,
-                        logo_url,
-                        favicon_url,
-                        primary_color,
-                        secondary_color,
-                        hero_title,
-                        hero_description,
-                        hero_image_url,
-                        contact_email,
-                        contact_phone,
-                        address,
-                        privacy_policy,
-                        terms_policy,
-                        return_policy,
-                        shipping_policy,
-                        cookie_policy,
-                        status,
-                        is_active
-                    `)
-                    .eq("slug", storeSlug)
-                    .maybeSingle();
+            if (!data) {
 
-
-                if (error) {
-                    console.error("Store load error:", error);
-
-                    showUnavailable(
-                        "We couldn't load this store right now."
-                    );
-
-                    return;
-                }
-
-
-                if (!data) {
-                    showUnavailable(
-                        "This store could not be found."
-                    );
-
-                    return;
-                }
-
-
-                const storeStatus =
-                    String(
-                        data.status ||
-                        (data.is_active ? "ACTIVE" : "PAUSED")
-                    ).toUpperCase();
-
-
-                if (
-                    storeStatus !== "ACTIVE" ||
-                    data.is_active === false
-                ) {
-                    showUnavailable(
-                        "This store is temporarily unavailable."
-                    );
-
-                    return;
-                }
-
-
-                currentStore = data;
-
-                applyStoreBranding(data);
-
-                await Promise.all([
-                    loadCategories(data.id),
-                    loadProducts(data.id)
-                ]);
-
-                renderCategories();
-                renderProducts(products);
-
-                storeApp.style.display = "block";
-
-                hideLoading();
-
-            } catch (error) {
-
-                console.error(error);
+                console.warn(
+                    "Store not found:",
+                    storeSlug
+                );
 
                 showUnavailable(
-                    "Something went wrong while loading the store."
+                    "This store could not be found."
                 );
+
+                return;
+            }
+
+
+            const storeStatus =
+                String(
+                    data.status ||
+                    (
+                        data.is_active
+                            ? "ACTIVE"
+                            : "PAUSED"
+                    )
+                ).toUpperCase();
+
+
+            if (
+                storeStatus !== "ACTIVE" ||
+                data.is_active === false
+            ) {
+
+                showUnavailable(
+                    "This store is temporarily unavailable."
+                );
+
+                return;
+            }
+
+
+            currentStore = data;
+
+
+            applyStoreBranding(
+                data
+            );
+
+
+            await Promise.all([
+                loadCategories(data.id),
+                loadProducts(data.id)
+            ]);
+
+
+            renderCategories();
+
+            renderProducts(
+                products
+            );
+
+
+            storeApp.style.display =
+                "block";
+
+
+            hideLoading();
+
+            console.log(
+                "Store loaded successfully:",
+                data.name
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Unexpected store error:",
+                error
+            );
+
+            showUnavailable(
+                "Something went wrong while loading the store."
+            );
+        }
+    }
+
+
+    /* =========================================================
+       APPLY STORE BRANDING
+    ========================================================= */
+
+    function applyStoreBranding(store) {
+
+        const primary =
+            store.primary_color ||
+            "#ff5a1f";
+
+        const secondary =
+            store.secondary_color ||
+            "#111111";
+
+
+        document.documentElement.style.setProperty(
+            "--primary",
+            primary
+        );
+
+        document.documentElement.style.setProperty(
+            "--secondary",
+            secondary
+        );
+
+
+        const storeName =
+            store.name ||
+            "BUSINESS NAME";
+
+        const tagline =
+            store.tagline ||
+            "Quality products, made for you";
+
+
+        document.title =
+            `${storeName} | Online Store`;
+
+
+        const brandName =
+            document.getElementById(
+                "brandName"
+            );
+
+        if (brandName) {
+            brandName.textContent =
+                storeName;
+        }
+
+
+        const brandTagline =
+            document.getElementById(
+                "brandTagline"
+            );
+
+        if (brandTagline) {
+            brandTagline.textContent =
+                tagline;
+        }
+
+
+        const footerBrandName =
+            document.getElementById(
+                "footerBrandName"
+            );
+
+        if (footerBrandName) {
+            footerBrandName.textContent =
+                storeName;
+        }
+
+
+        const copyrightName =
+            document.getElementById(
+                "copyrightName"
+            );
+
+        if (copyrightName) {
+            copyrightName.textContent =
+                storeName;
+        }
+
+
+        const announcementBar =
+            document.getElementById(
+                "announcementBar"
+            );
+
+        if (announcementBar) {
+            announcementBar.textContent =
+                tagline;
+        }
+
+
+        if (store.hero_title) {
+
+            const heroTitle =
+                document.getElementById(
+                    "heroTitle"
+                );
+
+            if (heroTitle) {
+
+                heroTitle.innerHTML =
+                    escapeHtml(
+                        store.hero_title
+                    ).replace(
+                        /(\S+)$/,
+                        '<span class="accent">$1</span>'
+                    );
             }
         }
 
 
-        /* =========================================================
-           APPLY STORE BRANDING
-        ========================================================= */
+        if (store.hero_description) {
 
-        function applyStoreBranding(store) {
-
-            const primary =
-                store.primary_color || "#ff5a1f";
-
-            const secondary =
-                store.secondary_color || "#111111";
-
-
-            document.documentElement.style.setProperty(
-                "--primary",
-                primary
-            );
-
-            document.documentElement.style.setProperty(
-                "--secondary",
-                secondary
-            );
-
-
-            const storeName =
-                store.name || "BUSINESS NAME";
-
-            const tagline =
-                store.tagline ||
-                "Quality products, made for you";
-
-
-            document.title =
-                `${storeName} | Online Store`;
-
-
-            document.getElementById(
-                "brandName"
-            ).textContent = storeName;
-
-            document.getElementById(
-                "brandTagline"
-            ).textContent = tagline;
-
-            document.getElementById(
-                "footerBrandName"
-            ).textContent = storeName;
-
-            document.getElementById(
-                "copyrightName"
-            ).textContent = storeName;
-
-
-            document.getElementById(
-                "announcementBar"
-            ).textContent =
-                tagline;
-
-
-            if (store.hero_title) {
-
-                document.getElementById(
-                    "heroTitle"
-                ).innerHTML =
-                    escapeHtml(store.hero_title)
-                        .replace(
-                            /(\S+)$/,
-                            '<span class="accent">$1</span>'
-                        );
-            }
-
-
-            if (store.hero_description) {
-
+            const heroDescription =
                 document.getElementById(
                     "heroDescription"
-                ).textContent =
+                );
+
+            if (heroDescription) {
+
+                heroDescription.textContent =
                     store.hero_description;
             }
+        }
 
 
-            if (store.description) {
+        if (store.description) {
 
+            const aboutDescription =
                 document.getElementById(
                     "aboutDescription"
-                ).textContent =
-                    store.description;
+                );
 
+            if (aboutDescription) {
+
+                aboutDescription.textContent =
+                    store.description;
+            }
+
+
+            const footerDescription =
                 document.getElementById(
                     "footerDescription"
-                ).textContent =
+                );
+
+            if (footerDescription) {
+
+                footerDescription.textContent =
                     store.description;
             }
+        }
 
 
-            if (store.logo_url) {
+        if (store.logo_url) {
 
-                const logo =
-                    document.getElementById("brandLogo");
+            const logo =
+                document.getElementById(
+                    "brandLogo"
+                );
 
-                logo.src = store.logo_url;
-                logo.style.display = "block";
+            if (logo) {
+
+                logo.src =
+                    store.logo_url;
+
+                logo.style.display =
+                    "block";
             }
+        }
 
 
-            if (store.favicon_url) {
+        if (store.favicon_url) {
 
+            const favicon =
                 document.getElementById(
                     "favicon"
-                ).href =
+                );
+
+            if (favicon) {
+
+                favicon.href =
                     store.favicon_url;
             }
+        }
 
 
-            if (store.hero_image_url) {
+        if (store.hero_image_url) {
 
-                const heroImage =
-                    document.getElementById("heroImage");
+            const heroImage =
+                document.getElementById(
+                    "heroImage"
+                );
+
+            const placeholder =
+                document.getElementById(
+                    "heroImagePlaceholder"
+                );
+
+            if (heroImage) {
 
                 heroImage.src =
                     store.hero_image_url;
 
                 heroImage.style.display =
                     "block";
+            }
 
-                document.getElementById(
-                    "heroImagePlaceholder"
-                ).style.display =
+            if (placeholder) {
+
+                placeholder.style.display =
                     "none";
             }
+        }
 
 
+        const contactEmail =
             document.getElementById(
                 "contactEmail"
-            ).textContent =
+            );
+
+        if (contactEmail) {
+
+            contactEmail.textContent =
                 store.contact_email ||
                 "Not provided";
+        }
 
 
+        const contactPhone =
             document.getElementById(
                 "contactPhone"
-            ).textContent =
+            );
+
+        if (contactPhone) {
+
+            contactPhone.textContent =
                 store.contact_phone ||
                 "Not provided";
+        }
 
 
+        const contactAddress =
             document.getElementById(
                 "contactAddress"
-            ).textContent =
+            );
+
+        if (contactAddress) {
+
+            contactAddress.textContent =
                 store.address ||
                 "Not provided";
+        }
 
 
+        const footerYear =
             document.getElementById(
                 "footerYear"
-            ).textContent =
+            );
+
+        if (footerYear) {
+
+            footerYear.textContent =
                 new Date().getFullYear();
         }
+    }
 
 
-        /* =========================================================
-           LOAD CATEGORIES
-        ========================================================= */
+    /* =========================================================
+       LOAD CATEGORIES
+    ========================================================= */
 
-        async function loadCategories(storeId) {
+    async function loadCategories(storeId) {
 
-            const {
-                data,
-                error
-            } = await supabaseClient
-                .from("categories")
-                .select("*")
-                .eq("store_id", storeId)
-                .order("created_at", {
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("categories")
+            .select("*")
+            .eq(
+                "store_id",
+                storeId
+            )
+            .order(
+                "created_at",
+                {
                     ascending: true
-                });
+                }
+            );
 
 
-            if (error) {
+        if (error) {
 
-                console.error(
-                    "Categories error:",
-                    error
-                );
+            console.error(
+                "Categories error:",
+                error
+            );
 
-                categories = [];
-                return;
-            }
+            categories = [];
 
-
-            categories = data || [];
+            return;
         }
 
 
-        /* =========================================================
-           LOAD PRODUCTS
-        ========================================================= */
+        categories =
+            data || [];
+    }
 
-        async function loadProducts(storeId) {
 
-            const {
-                data,
-                error
-            } = await supabaseClient
-                .from("products")
-                .select("*")
-                .eq("store_id", storeId)
-                .order("created_at", {
+    /* =========================================================
+       LOAD PRODUCTS
+    ========================================================= */
+
+    async function loadProducts(storeId) {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("products")
+            .select("*")
+            .eq(
+                "store_id",
+                storeId
+            )
+            .order(
+                "created_at",
+                {
                     ascending: false
-                });
+                }
+            );
 
 
-            if (error) {
+        if (error) {
 
-                console.error(
-                    "Products error:",
-                    error
-                );
+            console.error(
+                "Products error:",
+                error
+            );
 
-                products = [];
-                return;
-            }
+            products = [];
+
+            return;
+        }
 
 
-            products = (data || []).filter(
+        products =
+            (data || []).filter(
                 product =>
                     product.active !== false
             );
+    }
+
+
+    /* =========================================================
+       RENDER CATEGORIES
+    ========================================================= */
+
+    function renderCategories() {
+
+        if (!categories.length) {
+
+            categoriesGrid.innerHTML = `
+                <div class="empty-products">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <p>No categories available yet.</p>
+                </div>
+            `;
+
+            return;
         }
 
 
-        /* =========================================================
-           RENDER CATEGORIES
-        ========================================================= */
-
-        function renderCategories() {
-
-            if (!categories.length) {
-
-                categoriesGrid.innerHTML = `
-                    <div class="empty-products">
-                        <i class="fa-solid fa-layer-group"></i>
-                        <p>No categories available yet.</p>
-                    </div>
-                `;
-
-                return;
-            }
+        const icons = [
+            "fa-mobile-screen-button",
+            "fa-shirt",
+            "fa-house",
+            "fa-laptop",
+            "fa-gem",
+            "fa-bag-shopping",
+            "fa-chair",
+            "fa-box"
+        ];
 
 
-            const icons = [
-                "fa-mobile-screen-button",
-                "fa-shirt",
-                "fa-house",
-                "fa-laptop",
-                "fa-gem",
-                "fa-bag-shopping",
-                "fa-chair",
-                "fa-box"
-            ];
+        categoriesGrid.innerHTML =
+            categories.map(
+                (category, index) => {
+
+                    const name =
+                        category.name ||
+                        "Category";
 
 
-            categoriesGrid.innerHTML =
-                categories.map(
-                    (category, index) => {
+                    return `
+                        <div
+                            class="category-card"
+                            data-category="${escapeHtml(name)}"
+                        >
 
-                        const name =
-                            category.name ||
-                            "Category";
-
-                        return `
-                            <div
-                                class="category-card"
-                                data-category="${escapeHtml(name)}"
-                            >
-
-                                <div class="category-icon">
-                                    <i class="fa-solid ${
-                                        icons[index % icons.length]
-                                    }"></i>
-                                </div>
-
-                                <div>
-                                    <h3>
-                                        ${escapeHtml(name)}
-                                    </h3>
-
-                                    <p>
-                                        Explore collection
-                                    </p>
-                                </div>
-
+                            <div class="category-icon">
+                                <i class="fa-solid ${
+                                    icons[
+                                        index %
+                                        icons.length
+                                    ]
+                                }"></i>
                             </div>
-                        `;
-                    }
-                ).join("");
+
+                            <div>
+                                <h3>
+                                    ${escapeHtml(name)}
+                                </h3>
+
+                                <p>
+                                    Explore collection
+                                </p>
+                            </div>
+
+                        </div>
+                    `;
+                }
+            ).join("");
 
 
-            document
-                .querySelectorAll(".category-card")
-                .forEach(card => {
+        document
+            .querySelectorAll(
+                ".category-card"
+            )
+            .forEach(card => {
 
-                    card.addEventListener(
-                        "click",
-                        () => {
+                card.addEventListener(
+                    "click",
+                    () => {
 
-                            const category =
-                                card.dataset.category;
+                        const category =
+                            card.dataset.category;
+
+
+                        if (productSearch) {
 
                             productSearch.value =
                                 category;
-
-                            filterProducts();
-
-                            document
-                                .getElementById("shop")
-                                .scrollIntoView({
-                                    behavior: "smooth"
-                                });
                         }
-                    );
-                });
+
+
+                        filterProducts();
+
+
+                        document
+                            .getElementById(
+                                "shop"
+                            )
+                            ?.scrollIntoView({
+                                behavior: "smooth"
+                            });
+                    }
+                );
+            });
+    }
+
+
+    /* =========================================================
+       RENDER PRODUCTS
+    ========================================================= */
+
+    function renderProducts(list) {
+
+        if (!productsGrid) {
+            return;
         }
 
 
-        /* =========================================================
-           RENDER PRODUCTS
-        ========================================================= */
-
-        function renderProducts(list) {
-
-            productCount.textContent =
-                `${list.length} ${
-                    list.length === 1
-                        ? "product"
-                        : "products"
-                }`;
+        productCount.textContent =
+            `${list.length} ${
+                list.length === 1
+                    ? "product"
+                    : "products"
+            }`;
 
 
-            if (!list.length) {
+        if (!list.length) {
 
-                productsGrid.innerHTML = `
-                    <div class="empty-products">
-                        <i class="fa-solid fa-box-open"></i>
-                        <p>No products found.</p>
-                    </div>
-                `;
+            productsGrid.innerHTML = `
+                <div class="empty-products">
+                    <i class="fa-solid fa-box-open"></i>
+                    <p>No products found.</p>
+                </div>
+            `;
 
-                return;
-            }
+            return;
+        }
 
 
-            productsGrid.innerHTML =
-                list.map(product => {
+        productsGrid.innerHTML =
+            list.map(
+                product => {
 
                     const image =
                         product.image1 ||
                         product.image_url ||
                         product.image ||
                         "";
+
+
+                    const price =
+                        product.price ||
+                        product.amount ||
+                        0;
 
 
                     return `
@@ -2497,34 +2719,1016 @@
 
                                 ${
                                     image
-                                    ? `
-                                        <img
-                                            src="${escapeHtml(image)}"
-                                            alt="${escapeHtml(product.name || "Product")}"
-                                            class="product-image"
-                                            loading="lazy"
-                                        >
-                                    `
-                                    : `
-                                        <div class="product-placeholder">
-                                            <i class="fa-solid fa-box"></i>
-                                        </div>
-                                    `
+                                        ? `
+                                            <img
+                                                src="${escapeHtml(image)}"
+                                                alt="${escapeHtml(
+                                                    product.name ||
+                                                    "Product"
+                                                )}"
+                                                class="product-image"
+                                                loading="lazy"
+                                            >
+                                        `
+                                        : `
+                                            <div class="product-placeholder">
+                                                <i class="fa-solid fa-box"></i>
+                                            </div>
+                                        `
                                 }
+
 
                                 ${
                                     product.badge
-                                    ? `
-                                        <span class="product-badge">
-                                            ${escapeHtml(product.badge)}
-                                        </span>
-                                    `
-                                    : ""
+                                        ? `
+                                            <span class="product-badge">
+                                                ${escapeHtml(
+                                                    product.badge
+                                                )}
+                                            </span>
+                                        `
+                                        : ""
                                 }
 
                             </div>
+
 
                             <div class="product-info">
 
                                 ${
                                     product.brand
+                                        ? `
+                                            <div class="product-brand">
+                                                ${escapeHtml(
+                                                    product.brand
+                                                )}
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+
+                                <h3 class="product-name">
+                                    ${escapeHtml(
+                                        product.name ||
+                                        "Product"
+                                    )}
+                                </h3>
+
+
+                                <div class="product-bottom">
+
+                                    <strong class="product-price">
+                                        ${formatPrice(price)}
+                                    </strong>
+
+
+                                    <button
+                                        class="add-cart-btn"
+                                        type="button"
+                                        data-add-cart="${escapeHtml(
+                                            product.id
+                                        )}"
+                                        aria-label="Add to cart"
+                                    >
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+                    `;
+                }
+            ).join("");
+
+
+        document
+            .querySelectorAll(
+                "[data-add-cart]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        const productId =
+                            button.dataset.addCart;
+
+                        addToCart(
+                            productId
+                        );
+                    }
+                );
+            });
+    }
+
+
+    /* =========================================================
+       FILTER PRODUCTS
+    ========================================================= */
+
+    function filterProducts() {
+
+        const search =
+            (
+                productSearch?.value ||
+                ""
+            )
+            .trim()
+            .toLowerCase();
+
+
+        if (!search) {
+
+            renderProducts(
+                products
+            );
+
+            return;
+        }
+
+
+        const filtered =
+            products.filter(
+                product => {
+
+                    const name =
+                        String(
+                            product.name ||
+                            ""
+                        ).toLowerCase();
+
+                    const brand =
+                        String(
+                            product.brand ||
+                            ""
+                        ).toLowerCase();
+
+                    const category =
+                        String(
+                            product.category ||
+                            ""
+                        ).toLowerCase();
+
+                    const description =
+                        String(
+                            product.description ||
+                            ""
+                        ).toLowerCase();
+
+
+                    return (
+                        name.includes(search) ||
+                        brand.includes(search) ||
+                        category.includes(search) ||
+                        description.includes(search)
+                    );
+                }
+            );
+
+
+        renderProducts(
+            filtered
+        );
+    }
+
+
+    if (productSearch) {
+
+        productSearch.addEventListener(
+            "input",
+            filterProducts
+        );
+    }
+
+
+    /* =========================================================
+       CART STORAGE
+    ========================================================= */
+
+    function getCartKey() {
+
+        return `store_cart_${storeSlug}`;
+    }
+
+
+    function loadCart() {
+
+        try {
+
+            const saved =
+                localStorage.getItem(
+                    getCartKey()
+                );
+
+
+            cart =
+                saved
+                    ? JSON.parse(saved)
+                    : [];
+
+
+            if (!Array.isArray(cart)) {
+
+                cart = [];
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Cart load error:",
+                error
+            );
+
+            cart = [];
+        }
+
+
+        renderCart();
+    }
+
+
+    function saveCart() {
+
+        try {
+
+            localStorage.setItem(
+                getCartKey(),
+                JSON.stringify(cart)
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Cart save error:",
+                error
+            );
+        }
+    }
+
+
+    /* =========================================================
+       ADD TO CART
+    ========================================================= */
+
+    function addToCart(productId) {
+
+        const product =
+            products.find(
+                item =>
+                    String(item.id) ===
+                    String(productId)
+            );
+
+
+        if (!product) {
+
+            showToast(
+                "Product could not be found."
+            );
+
+            return;
+        }
+
+
+        const existing =
+            cart.find(
+                item =>
+                    String(item.id) ===
+                    String(productId)
+            );
+
+
+        if (existing) {
+
+            existing.quantity += 1;
+
+        } else {
+
+            cart.push({
+                id: product.id,
+                name:
+                    product.name ||
+                    "Product",
+                price:
+                    Number(
+                        product.price ||
+                        product.amount ||
+                        0
+                    ),
+                image:
+                    product.image1 ||
+                    product.image_url ||
+                    product.image ||
+                    "",
+                quantity: 1
+            });
+        }
+
+
+        saveCart();
+
+        renderCart();
+
+        openCart();
+
+        showToast(
+            "Product added to cart."
+        );
+    }
+
+
+    /* =========================================================
+       REMOVE FROM CART
+    ========================================================= */
+
+    function removeFromCart(productId) {
+
+        cart =
+            cart.filter(
+                item =>
+                    String(item.id) !==
+                    String(productId)
+            );
+
+
+        saveCart();
+
+        renderCart();
+    }
+
+
+    /* =========================================================
+       CHANGE CART QUANTITY
+    ========================================================= */
+
+    function changeCartQuantity(
+        productId,
+        amount
+    ) {
+
+        const item =
+            cart.find(
+                product =>
+                    String(product.id) ===
+                    String(productId)
+            );
+
+
+        if (!item) {
+            return;
+        }
+
+
+        item.quantity +=
+            amount;
+
+
+        if (item.quantity <= 0) {
+
+            removeFromCart(
+                productId
+            );
+
+            return;
+        }
+
+
+        saveCart();
+
+        renderCart();
+    }
+
+
+    /* =========================================================
+       RENDER CART
+    ========================================================= */
+
+    function renderCart() {
+
+        if (
+            !cartItems ||
+            !cartCount ||
+            !cartTotal
+        ) {
+            return;
+        }
+
+
+        if (!cart.length) {
+
+            cartItems.innerHTML = `
+                <div class="cart-empty">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <p>Your cart is empty.</p>
+                </div>
+            `;
+
+            cartCount.textContent =
+                "0";
+
+            cartTotal.textContent =
+                formatPrice(0);
+
+            return;
+        }
+
+
+        let total = 0;
+        let quantityTotal = 0;
+
+
+        cartItems.innerHTML =
+            cart.map(
+                item => {
+
+                    const quantity =
+                        Number(
+                            item.quantity ||
+                            1
+                        );
+
+                    const price =
+                        Number(
+                            item.price ||
+                            0
+                        );
+
+                    const subtotal =
+                        price *
+                        quantity;
+
+
+                    total +=
+                        subtotal;
+
+                    quantityTotal +=
+                        quantity;
+
+
+                    return `
+                        <div class="cart-item">
+
+                            ${
+                                item.image
+                                    ? `
+                                        <img
+                                            src="${escapeHtml(
+                                                item.image
+                                            )}"
+                                            alt="${escapeHtml(
+                                                item.name
+                                            )}"
+                                            class="cart-item-image"
+                                        >
+                                    `
+                                    : `
+                                        <div
+                                            class="cart-item-image"
+                                            style="
+                                                display:flex;
+                                                align-items:center;
+                                                justify-content:center;
+                                                color:#aaa;
+                                            "
+                                        >
+                                            <i class="fa-solid fa-box"></i>
+                                        </div>
+                                    `
+                            }
+
+
+                            <div>
+
+                                <h4>
+                                    ${escapeHtml(
+                                        item.name
+                                    )}
+                                </h4>
+
+                                <p>
+                                    ${formatPrice(price)}
+                                </p>
+
+
+                                <div
+                                    style="
+                                        display:flex;
+                                        align-items:center;
+                                        gap:8px;
+                                        margin-top:8px;
+                                    "
+                                >
+
+                                    <button
+                                        type="button"
+                                        class="quantity-btn"
+                                        data-quantity-minus="${escapeHtml(
+                                            item.id
+                                        )}"
+                                        style="
+                                            width:26px;
+                                            height:26px;
+                                            border:1px solid #e9e6e1;
+                                            background:white;
+                                            border-radius:7px;
+                                        "
+                                    >
+                                        −
+                                    </button>
+
+
+                                    <span
+                                        style="
+                                            min-width:18px;
+                                            text-align:center;
+                                            font-size:12px;
+                                        "
+                                    >
+                                        ${quantity}
+                                    </span>
+
+
+                                    <button
+                                        type="button"
+                                        class="quantity-btn"
+                                        data-quantity-plus="${escapeHtml(
+                                            item.id
+                                        )}"
+                                        style="
+                                            width:26px;
+                                            height:26px;
+                                            border:1px solid #e9e6e1;
+                                            background:white;
+                                            border-radius:7px;
+                                        "
+                                    >
+                                        +
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                class="remove-cart-item"
+                                data-remove-cart="${escapeHtml(
+                                    item.id
+                                )}"
+                                aria-label="Remove product"
+                            >
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+
+                        </div>
+                    `;
+                }
+            ).join("");
+
+
+        cartCount.textContent =
+            String(quantityTotal);
+
+        cartTotal.textContent =
+            formatPrice(total);
+
+
+        document
+            .querySelectorAll(
+                "[data-remove-cart]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        removeFromCart(
+                            button.dataset.removeCart
+                        );
+                    }
+                );
+            });
+
+
+        document
+            .querySelectorAll(
+                "[data-quantity-minus]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        changeCartQuantity(
+                            button.dataset.quantityMinus,
+                            -1
+                        );
+                    }
+                );
+            });
+
+
+        document
+            .querySelectorAll(
+                "[data-quantity-plus]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        changeCartQuantity(
+                            button.dataset.quantityPlus,
+                            1
+                        );
+                    }
+                );
+            });
+    }
+
+
+    /* =========================================================
+       CART OPEN / CLOSE
+    ========================================================= */
+
+    function openCart() {
+
+        if (cartDrawer) {
+
+            cartDrawer.classList.add(
+                "open"
+            );
+        }
+
+        if (cartOverlay) {
+
+            cartOverlay.classList.add(
+                "open"
+            );
+        }
+    }
+
+
+    function closeCart() {
+
+        if (cartDrawer) {
+
+            cartDrawer.classList.remove(
+                "open"
+            );
+        }
+
+        if (cartOverlay) {
+
+            cartOverlay.classList.remove(
+                "open"
+            );
+        }
+    }
+
+
+    const cartBtn =
+        document.getElementById(
+            "cartBtn"
+        );
+
+    if (cartBtn) {
+
+        cartBtn.addEventListener(
+            "click",
+            openCart
+        );
+    }
+
+
+    const closeCartBtn =
+        document.getElementById(
+            "closeCart"
+        );
+
+    if (closeCartBtn) {
+
+        closeCartBtn.addEventListener(
+            "click",
+            closeCart
+        );
+    }
+
+
+    if (cartOverlay) {
+
+        cartOverlay.addEventListener(
+            "click",
+            closeCart
+        );
+    }
+
+
+    /* =========================================================
+       SEARCH OVERLAY
+    ========================================================= */
+
+    const searchBtn =
+        document.getElementById(
+            "searchBtn"
+        );
+
+    const searchOverlay =
+        document.getElementById(
+            "searchOverlay"
+        );
+
+    const closeSearch =
+        document.getElementById(
+            "closeSearch"
+        );
+
+    const globalSearch =
+        document.getElementById(
+            "globalSearch"
+        );
+
+
+    function openSearch() {
+
+        if (!searchOverlay) {
+            return;
+        }
+
+        searchOverlay.classList.add(
+            "open"
+        );
+
+        setTimeout(
+            () => {
+                globalSearch?.focus();
+            },
+            100
+        );
+    }
+
+
+    function closeSearchOverlay() {
+
+        if (!searchOverlay) {
+            return;
+        }
+
+        searchOverlay.classList.remove(
+            "open"
+        );
+    }
+
+
+    if (searchBtn) {
+
+        searchBtn.addEventListener(
+            "click",
+            openSearch
+        );
+    }
+
+
+    if (closeSearch) {
+
+        closeSearch.addEventListener(
+            "click",
+            closeSearchOverlay
+        );
+    }
+
+
+    if (searchOverlay) {
+
+        searchOverlay.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    searchOverlay
+                ) {
+                    closeSearchOverlay();
+                }
+            }
+        );
+    }
+
+
+    if (globalSearch) {
+
+        globalSearch.addEventListener(
+            "input",
+            () => {
+
+                if (productSearch) {
+
+                    productSearch.value =
+                        globalSearch.value;
+                }
+
+                filterProducts();
+            }
+        );
+    }
+
+
+    /* =========================================================
+       MOBILE MENU
+    ========================================================= */
+
+    const mobileMenuBtn =
+        document.getElementById(
+            "mobileMenuBtn"
+        );
+
+    const mobileNav =
+        document.getElementById(
+            "mobileNav"
+        );
+
+
+    if (mobileMenuBtn) {
+
+        mobileMenuBtn.addEventListener(
+            "click",
+            () => {
+
+                if (!mobileNav) {
+                    return;
+                }
+
+                mobileNav.classList.toggle(
+                    "open"
+                );
+            }
+        );
+    }
+
+
+    if (mobileNav) {
+
+        mobileNav
+            .querySelectorAll("a")
+            .forEach(link => {
+
+                link.addEventListener(
+                    "click",
+                    () => {
+
+                        mobileNav.classList.remove(
+                            "open"
+                        );
+                    }
+                );
+            });
+    }
+
+
+    /* =========================================================
+       CHECKOUT
+    ========================================================= */
+
+    const checkoutBtn =
+        document.getElementById(
+            "checkoutBtn"
+        );
+
+
+    if (checkoutBtn) {
+
+        checkoutBtn.addEventListener(
+            "click",
+            () => {
+
+                if (!cart.length) {
+
+                    showToast(
+                        "Your cart is empty."
+                    );
+
+                    return;
+                }
+
+
+                showToast(
+                    "Customer ordering will be connected next."
+                );
+            }
+        );
+    }
+
+
+    /* =========================================================
+       POLICY LINKS
+    ========================================================= */
+
+    const privacyLink =
+        document.getElementById(
+            "privacyLink"
+        );
+
+    const termsLink =
+        document.getElementById(
+            "termsLink"
+        );
+
+
+    if (privacyLink) {
+
+        privacyLink.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                const text =
+                    currentStore?.privacy_policy;
+
+
+                showToast(
+                    text
+                        ? text.slice(
+                            0,
+                            180
+                        )
+                        : "Privacy policy has not been added yet."
+                );
+            }
+        );
+    }
+
+
+    if (termsLink) {
+
+        termsLink.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                const text =
+                    currentStore?.terms_policy;
+
+
+                showToast(
+                    text
+                        ? text.slice(
+                            0,
+                            180
+                        )
+                        : "Terms and conditions have not been added yet."
+                );
+            }
+        );
+    }
+
+
+    /* =========================================================
+       INITIALIZE
+    ========================================================= */
+
+    loadCart();
+
+    loadStore();
+
+
+    /*
+       Safety fallback:
+       Never leave the customer staring at
+       "Loading store..." forever.
+    */
+
+    window.setTimeout(
+        () => {
+
+            if (
+                loadingScreen &&
+                !loadingScreen.classList.contains(
+                    "hidden"
+                )
+            ) {
+
+                showUnavailable(
+                    "The store took too long to load. Please refresh and try again."
+                );
+            }
+
+        },
+        12000
+    );
+
+</script>
+
+</body>
+</html>

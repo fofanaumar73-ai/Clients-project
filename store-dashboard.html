@@ -2925,6 +2925,565 @@
 
 
     /* =====================================================
+   STORE SETTINGS
+   ===================================================== */
+
+const storeSettingsBtn =
+    document.getElementById("storeSettingsBtn");
+
+const settingsPanel =
+    document.getElementById("settingsPanel");
+
+const saveStoreSettings =
+    document.getElementById("saveStoreSettings");
+
+
+/* -----------------------------------------------------
+   LOAD STORE SETTINGS INTO FORM
+   ----------------------------------------------------- */
+
+async function loadStoreSettings(storeId) {
+
+    const {
+        data: store,
+        error
+    } = await supabaseClient
+
+        .from("stores")
+
+        .select(`
+            id,
+            name,
+            slug,
+            description,
+            tagline,
+            logo_url,
+            primary_color,
+            secondary_color,
+            hero_title,
+            hero_description,
+            hero_image_url,
+            announcement_text,
+            announcement_enabled,
+            contact_email,
+            contact_phone,
+            address,
+            privacy_policy,
+            terms_policy,
+            return_policy,
+            shipping_policy,
+            cookie_policy
+        `)
+
+        .eq(
+            "id",
+            storeId
+        )
+
+        .single();
+
+
+    if (error) {
+
+        console.error(
+            "Store settings loading error:",
+            error
+        );
+
+        showToast(
+            "Unable to load store settings."
+        );
+
+        return;
+
+    }
+
+
+    /* -------------------------------------------------
+       STORE INFORMATION
+       ------------------------------------------------- */
+
+    document
+        .getElementById("settingsStoreName")
+        .value =
+            store.name || "";
+
+    document
+        .getElementById("settingsStoreSlug")
+        .value =
+            store.slug || "";
+
+    document
+        .getElementById("settingsDescription")
+        .value =
+            store.description || "";
+
+
+    /* -------------------------------------------------
+       BRANDING
+       ------------------------------------------------- */
+
+    document
+        .getElementById("settingsTagline")
+        .value =
+            store.tagline || "";
+
+    document
+        .getElementById("settingsLogoUrl")
+        .value =
+            store.logo_url || "";
+
+    document
+        .getElementById("settingsPrimaryColor")
+        .value =
+            store.primary_color || "#ff5a1f";
+
+    document
+        .getElementById("settingsSecondaryColor")
+        .value =
+            store.secondary_color || "#111111";
+
+
+    /* -------------------------------------------------
+       HERO
+       ------------------------------------------------- */
+
+    document
+        .getElementById("settingsHeroTitle")
+        .value =
+            store.hero_title || "";
+
+    document
+        .getElementById("settingsHeroDescription")
+        .value =
+            store.hero_description || "";
+
+    document
+        .getElementById("settingsHeroImage")
+        .value =
+            store.hero_image_url || "";
+
+
+    /* -------------------------------------------------
+       PROMOTIONAL BANNER
+       ------------------------------------------------- */
+
+    document
+        .getElementById("settingsAnnouncement")
+        .value =
+            store.announcement_text || "";
+
+    document
+        .getElementById("settingsAnnouncementEnabled")
+        .checked =
+            store.announcement_enabled === true;
+
+
+    /* -------------------------------------------------
+       CONTACT
+       ------------------------------------------------- */
+
+    document
+        .getElementById("settingsContactEmail")
+        .value =
+            store.contact_email || "";
+
+    document
+        .getElementById("settingsContactPhone")
+        .value =
+            store.contact_phone || "";
+
+    document
+        .getElementById("settingsAddress")
+        .value =
+            store.address || "";
+
+
+    /* -------------------------------------------------
+       POLICIES
+       ------------------------------------------------- */
+
+    document
+        .getElementById("settingsPrivacy")
+        .value =
+            store.privacy_policy || "";
+
+    document
+        .getElementById("settingsTerms")
+        .value =
+            store.terms_policy || "";
+
+    document
+        .getElementById("settingsReturn")
+        .value =
+            store.return_policy || "";
+
+    document
+        .getElementById("settingsShipping")
+        .value =
+            store.shipping_policy || "";
+
+    document
+        .getElementById("settingsCookie")
+        .value =
+            store.cookie_policy || "";
+
+}
+
+
+/* -----------------------------------------------------
+   OPEN STORE SETTINGS
+   ----------------------------------------------------- */
+
+if (storeSettingsBtn) {
+
+    storeSettingsBtn.addEventListener(
+        "click",
+        async () => {
+
+            /* Hide dashboard sections */
+
+            document
+                .querySelectorAll(
+                    ".welcome, .store-card, .stats-grid, .section-header, .table-card"
+                )
+                .forEach(
+                    element => {
+                        element.style.display = "none";
+                    }
+                );
+
+
+            /* Show settings */
+
+            settingsPanel.style.display =
+                "block";
+
+
+            /* Update active navigation */
+
+            document
+                .querySelectorAll(
+                    ".nav-item"
+                )
+                .forEach(
+                    item => {
+                        item.classList.remove(
+                            "active"
+                        );
+                    }
+                );
+
+            storeSettingsBtn.classList.add(
+                "active"
+            );
+
+
+            /* Update page title */
+
+            document
+                .querySelector(
+                    ".page-title h1"
+                )
+                .textContent =
+                    "Store Settings";
+
+            document
+                .getElementById(
+                    "pageSubtitle"
+                )
+                .textContent =
+                    "Customize your storefront";
+
+
+            /* Load current store */
+
+            const access =
+                await checkStoreAdminAccess();
+
+            if (!access) return;
+
+            await loadStoreSettings(
+                access.profile.store_id
+            );
+
+        }
+    );
+
+}
+
+
+/* -----------------------------------------------------
+   SAVE STORE SETTINGS
+   ----------------------------------------------------- */
+
+if (saveStoreSettings) {
+
+    saveStoreSettings.addEventListener(
+        "click",
+        async () => {
+
+            const access =
+                await checkStoreAdminAccess();
+
+            if (!access) return;
+
+
+            const storeId =
+                access.profile.store_id;
+
+
+            /* Button loading state */
+
+            saveStoreSettings.disabled =
+                true;
+
+            saveStoreSettings.innerHTML = `
+                <span class="spinner"></span>
+                Saving...
+            `;
+
+
+            /* Collect form data */
+
+            const updates = {
+
+                name:
+                    document
+                        .getElementById(
+                            "settingsStoreName"
+                        )
+                        .value
+                        .trim(),
+
+                description:
+                    document
+                        .getElementById(
+                            "settingsDescription"
+                        )
+                        .value
+                        .trim(),
+
+                tagline:
+                    document
+                        .getElementById(
+                            "settingsTagline"
+                        )
+                        .value
+                        .trim(),
+
+                logo_url:
+                    document
+                        .getElementById(
+                            "settingsLogoUrl"
+                        )
+                        .value
+                        .trim(),
+
+                primary_color:
+                    document
+                        .getElementById(
+                            "settingsPrimaryColor"
+                        )
+                        .value
+                        .trim(),
+
+                secondary_color:
+                    document
+                        .getElementById(
+                            "settingsSecondaryColor"
+                        )
+                        .value
+                        .trim(),
+
+                hero_title:
+                    document
+                        .getElementById(
+                            "settingsHeroTitle"
+                        )
+                        .value
+                        .trim(),
+
+                hero_description:
+                    document
+                        .getElementById(
+                            "settingsHeroDescription"
+                        )
+                        .value
+                        .trim(),
+
+                hero_image_url:
+                    document
+                        .getElementById(
+                            "settingsHeroImage"
+                        )
+                        .value
+                        .trim(),
+
+                announcement_text:
+                    document
+                        .getElementById(
+                            "settingsAnnouncement"
+                        )
+                        .value
+                        .trim(),
+
+                announcement_enabled:
+                    document
+                        .getElementById(
+                            "settingsAnnouncementEnabled"
+                        )
+                        .checked,
+
+                contact_email:
+                    document
+                        .getElementById(
+                            "settingsContactEmail"
+                        )
+                        .value
+                        .trim(),
+
+                contact_phone:
+                    document
+                        .getElementById(
+                            "settingsContactPhone"
+                        )
+                        .value
+                        .trim(),
+
+                address:
+                    document
+                        .getElementById(
+                            "settingsAddress"
+                        )
+                        .value
+                        .trim(),
+
+                privacy_policy:
+                    document
+                        .getElementById(
+                            "settingsPrivacy"
+                        )
+                        .value
+                        .trim(),
+
+                terms_policy:
+                    document
+                        .getElementById(
+                            "settingsTerms"
+                        )
+                        .value
+                        .trim(),
+
+                return_policy:
+                    document
+                        .getElementById(
+                            "settingsReturn"
+                        )
+                        .value
+                        .trim(),
+
+                shipping_policy:
+                    document
+                        .getElementById(
+                            "settingsShipping"
+                        )
+                        .value
+                        .trim(),
+
+                cookie_policy:
+                    document
+                        .getElementById(
+                            "settingsCookie"
+                        )
+                        .value
+                        .trim()
+
+            };
+
+
+            /* Basic validation */
+
+            if (!updates.name) {
+
+                showToast(
+                    "Store name is required."
+                );
+
+                saveStoreSettings.disabled =
+                    false;
+
+                saveStoreSettings.innerHTML = `
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Store Settings
+                `;
+
+                return;
+
+            }
+
+
+            /* Save to Supabase */
+
+            const {
+                error
+            } = await supabaseClient
+
+                .from("stores")
+
+                .update(updates)
+
+                .eq(
+                    "id",
+                    storeId
+                );
+
+
+            /* Restore button */
+
+            saveStoreSettings.disabled =
+                false;
+
+            saveStoreSettings.innerHTML = `
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Store Settings
+            `;
+
+
+            if (error) {
+
+                console.error(
+                    "Store settings save error:",
+                    error
+                );
+
+                showToast(
+                    "Unable to save store settings."
+                );
+
+                return;
+
+            }
+
+
+            /* Update dashboard */
+
+            await loadStore(
+                storeId
+            );
+
+
+            showToast(
+                "Store settings saved successfully."
+            );
+
+        }
+    );
+
+}
+    
+
+    /* =====================================================
        LOAD PRODUCTS
        ===================================================== */
 

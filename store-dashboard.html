@@ -3446,41 +3446,57 @@ if (saveStoreSettings) {
 
             /* Restore button */
 
-            saveStoreSettings.disabled =
-                false;
+saveStoreSettings.disabled = false;
 
-            saveStoreSettings.innerHTML = `
-                <i class="fa-solid fa-floppy-disk"></i>
-                Save Store Settings
-            `;
-
-
-            if (error) {
-
-                console.error(
-                    "Store settings save error:",
-                    error
-                );
-
-                showToast(
-                    "Unable to save store settings."
-                );
-
-                return;
-
-            }
+saveStoreSettings.innerHTML = `
+    <i class="fa-solid fa-floppy-disk"></i>
+    Save Store Settings
+`;
 
 
-            /* Update dashboard */
+if (error) {
 
-            await loadStore(
-                storeId
-            );
+    console.error(
+        "Store settings save error:",
+        error
+    );
+
+    showToast(
+        "Unable to save store settings: " +
+        error.message
+    );
+
+    return;
+
+}
 
 
-            showToast(
-                "Store settings saved successfully."
-            );
+if (!updatedStore) {
+
+    console.error(
+        "Store settings update returned no row."
+    );
+
+    showToast(
+        "Nothing was updated. Please check your store access."
+    );
+
+    return;
+
+}
+
+
+console.log(
+    "UPDATED STORE:",
+    updatedStore
+);
+
+
+/* Update dashboard */
+
+await loadStore(
+    storeId
+);
 
         }
     );

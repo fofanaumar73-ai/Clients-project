@@ -4497,52 +4497,136 @@ footer {
 
     if (privacyLink) {
 
-        privacyLink.addEventListener(
-            "click",
-            event => {
+    privacyLink.addEventListener(
+        "click",
+        async event => {
 
-                event.preventDefault();
+            event.preventDefault();
 
-                const text =
-                    currentStore?.privacy_policy;
-
+            if (!currentStore?.id) {
 
                 showToast(
-                    text
-                        ? text.slice(
-                            0,
-                            180
-                        )
-                        : "Privacy policy has not been added yet."
+                    "Store information is not available."
                 );
+
+                return;
             }
-        );
-    }
 
 
-    if (termsLink) {
+            const {
+                data,
+                error
+            } = await supabaseClient
 
-        termsLink.addEventListener(
-            "click",
-            event => {
+                .from("stores")
 
-                event.preventDefault();
+                .select(
+                    "privacy_policy"
+                )
 
-                const text =
-                    currentStore?.terms_policy;
+                .eq(
+                    "id",
+                    currentStore.id
+                )
 
+                .maybeSingle();
+
+
+            if (error) {
+
+                console.error(
+                    "Privacy policy loading error:",
+                    error
+                );
 
                 showToast(
-                    text
-                        ? text.slice(
-                            0,
-                            180
-                        )
-                        : "Terms and conditions have not been added yet."
+                    "Unable to load the privacy policy."
                 );
+
+                return;
             }
-        );
-    }
+
+
+            const text =
+                data?.privacy_policy?.trim();
+
+
+            showToast(
+                text ||
+                "Privacy policy has not been added yet."
+            );
+
+        }
+    );
+
+}
+
+
+   if (termsLink) {
+
+    termsLink.addEventListener(
+        "click",
+        async event => {
+
+            event.preventDefault();
+
+            if (!currentStore?.id) {
+
+                showToast(
+                    "Store information is not available."
+                );
+
+                return;
+            }
+
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+
+                .from("stores")
+
+                .select(
+                    "terms_policy"
+                )
+
+                .eq(
+                    "id",
+                    currentStore.id
+                )
+
+                .maybeSingle();
+
+
+            if (error) {
+
+                console.error(
+                    "Terms loading error:",
+                    error
+                );
+
+                showToast(
+                    "Unable to load the terms and conditions."
+                );
+
+                return;
+            }
+
+
+            const text =
+                data?.terms_policy?.trim();
+
+
+            showToast(
+                text ||
+                "Terms and conditions have not been added yet."
+            );
+
+        }
+    );
+
+}
 
 
     /* =========================================================

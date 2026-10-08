@@ -5135,11 +5135,11 @@ if (categoryForm) {
             await loadProducts(currentStoreId);
 
             showToast(
-                editingCategoryId
-                    ? "Category updated successfully."
-                    : "Category saved successfully.",
-                "success"
-            );
+    wasEditing
+        ? "Category updated successfully."
+        : "Category saved successfully.",
+    "success"
+);
 
         } catch (error) {
             console.error("Category save error:", error);
@@ -5150,9 +5150,7 @@ if (categoryForm) {
         } finally {
             saveCategoryBtn.disabled = false;
 
-            if (!editingCategoryId) {
-                saveCategoryBtn.textContent = "Save Category";
-            }
+            saveCategoryBtn.textContent = "Save Category";
         }
     });
 }

@@ -3030,9 +3030,12 @@ footer {
     ========================================================= */
 
     let currentStore = null;
-    let products = [];
-    let categories = [];
-    let cart = [];
+let products = [];
+let categories = [];
+let benefits = [];
+let testimonials = [];
+let faqs = [];
+let cart = [];
 
     const storeSlug =
         new URLSearchParams(window.location.search).get("store");
@@ -3684,6 +3687,126 @@ footer {
     }
 
 
+        /* =========================================================
+   LOAD STORE BENEFITS
+========================================================= */
+
+async function loadBenefits(storeId) {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("store_benefits")
+        .select(`
+            id,
+            icon,
+            title,
+            description,
+            sort_order,
+            is_active
+        `)
+        .eq("store_id", storeId)
+        .eq("is_active", true)
+        .order("sort_order", {
+            ascending: true
+        });
+
+    if (error) {
+
+        console.error(
+            "Benefits error:",
+            error
+        );
+
+        benefits = [];
+        return;
+    }
+
+    benefits = data || [];
+}
+
+
+/* =========================================================
+   LOAD TESTIMONIALS
+========================================================= */
+
+async function loadTestimonials(storeId) {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("store_testimonials")
+        .select(`
+            id,
+            customer_name,
+            rating,
+            testimonial,
+            location,
+            sort_order,
+            is_active
+        `)
+        .eq("store_id", storeId)
+        .eq("is_active", true)
+        .order("sort_order", {
+            ascending: true
+        });
+
+    if (error) {
+
+        console.error(
+            "Testimonials error:",
+            error
+        );
+
+        testimonials = [];
+        return;
+    }
+
+    testimonials = data || [];
+}
+
+
+/* =========================================================
+   LOAD FAQS
+========================================================= */
+
+async function loadFaqs(storeId) {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("store_faqs")
+        .select(`
+            id,
+            question,
+            answer,
+            sort_order,
+            is_active
+        `)
+        .eq("store_id", storeId)
+        .eq("is_active", true)
+        .order("sort_order", {
+            ascending: true
+        });
+
+    if (error) {
+
+        console.error(
+            "FAQ error:",
+            error
+        );
+
+        faqs = [];
+        return;
+    }
+
+    faqs = data || [];
+}
+        
+
     /* =========================================================
        RENDER CATEGORIES
     ========================================================= */
@@ -3959,6 +4082,236 @@ footer {
             });
     }
 
+
+        /* =========================================================
+   RENDER BENEFITS
+========================================================= */
+
+function renderBenefits() {
+
+    const grid =
+        document.getElementById("benefitsGrid");
+
+    if (!grid) return;
+
+    if (!benefits.length) {
+
+        grid.innerHTML = `
+            <div class="empty-products">
+                <p>
+                    Store benefits will appear here.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+    grid.innerHTML =
+        benefits.map(benefit => {
+
+            return `
+                <article class="benefit-card">
+
+                    <div class="benefit-icon">
+                        <i class="fa-solid ${
+                            escapeHtml(
+                                benefit.icon ||
+                                "fa-star"
+                            )
+                        }"></i>
+                    </div>
+
+                    <h3>
+                        ${escapeHtml(
+                            benefit.title ||
+                            "Why choose us"
+                        )}
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(
+                            benefit.description ||
+                            ""
+                        )}
+                    </p>
+
+                </article>
+            `;
+
+        }).join("");
+}
+
+
+/* =========================================================
+   RENDER TESTIMONIALS
+========================================================= */
+
+function renderTestimonials() {
+
+    const grid =
+        document.getElementById(
+            "testimonialsGrid"
+        );
+
+    if (!grid) return;
+
+    if (!testimonials.length) {
+
+        grid.innerHTML = `
+            <div class="empty-products">
+                <p>
+                    Customer testimonials will appear here.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+    grid.innerHTML =
+        testimonials.map(testimonial => {
+
+            const rating =
+                Math.max(
+                    1,
+                    Math.min(
+                        5,
+                        Number(
+                            testimonial.rating || 5
+                        )
+                    )
+                );
+
+            const stars =
+                "★".repeat(rating) +
+                "☆".repeat(5 - rating);
+
+            return `
+                <article class="testimonial-card">
+
+                    <div class="testimonial-stars">
+                        ${stars}
+                    </div>
+
+                    <p class="testimonial-text">
+                        “${escapeHtml(
+                            testimonial.testimonial ||
+                            ""
+                        )}”
+                    </p>
+
+                    <div class="testimonial-name">
+                        ${escapeHtml(
+                            testimonial.customer_name ||
+                            "Customer"
+                        )}
+                    </div>
+
+                    ${
+                        testimonial.location
+                        ? `
+                            <span class="testimonial-location">
+                                ${escapeHtml(
+                                    testimonial.location
+                                )}
+                            </span>
+                        `
+                        : ""
+                    }
+
+                </article>
+            `;
+
+        }).join("");
+}
+
+
+/* =========================================================
+   RENDER FAQ
+========================================================= */
+
+function renderFaqs() {
+
+    const list =
+        document.getElementById("faqList");
+
+    if (!list) return;
+
+    if (!faqs.length) {
+
+        list.innerHTML = `
+            <div class="empty-products">
+                <p>
+                    Frequently asked questions will appear here.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+    list.innerHTML =
+        faqs.map((faq, index) => {
+
+            return `
+                <div
+                    class="faq-item"
+                    data-faq-index="${index}"
+                >
+
+                    <button
+                        type="button"
+                        class="faq-question"
+                    >
+
+                        <span>
+                            ${escapeHtml(
+                                faq.question ||
+                                "Question"
+                            )}
+                        </span>
+
+                        <i class="fa-solid fa-plus"></i>
+
+                    </button>
+
+                    <div class="faq-answer">
+                        ${escapeHtml(
+                            faq.answer ||
+                            ""
+                        )}
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+
+
+    list
+        .querySelectorAll(".faq-question")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const item =
+                        button.closest(
+                            ".faq-item"
+                        );
+
+                    item.classList.toggle(
+                        "open"
+                    );
+
+                }
+            );
+
+        });
+}
+        
 
     /* =========================================================
        FILTER PRODUCTS

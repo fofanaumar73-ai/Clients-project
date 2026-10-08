@@ -2537,6 +2537,154 @@
     id="toast"
 ></div>
 
+    <!-- =====================================================
+     PRODUCT MODAL
+     ===================================================== -->
+
+<div
+    class="modal-overlay"
+    id="productModal"
+>
+
+    <div class="modal-card">
+
+        <div class="modal-header">
+
+            <div>
+
+                <small id="productModalLabel">
+                    NEW PRODUCT
+                </small>
+
+                <h2 id="productModalTitle">
+                    Add Product
+                </h2>
+
+                <p>
+                    Add a product to your store.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeProductModal"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form id="productForm">
+
+            <input
+                type="hidden"
+                id="productId"
+            >
+
+
+            <div class="form-group">
+
+                <label for="productName">
+                    Product Name
+                </label>
+
+                <input
+                    type="text"
+                    id="productName"
+                    placeholder="e.g. iPhone 17 Pro Max"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="productCategory">
+                    Category
+                </label>
+
+                <select
+                    id="productCategory"
+                    required
+                >
+
+                    <option value="">
+                        Select category
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Product Status
+                </label>
+
+                <label
+                    style="
+                        display:flex;
+                        align-items:center;
+                        gap:10px;
+                        cursor:pointer;
+                    "
+                >
+
+                    <input
+                        type="checkbox"
+                        id="productActive"
+                        checked
+                        style="width:auto;"
+                    >
+
+                    <span>
+                        Active
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <div
+                style="
+                    display:flex;
+                    gap:12px;
+                    justify-content:flex-end;
+                    margin-top:24px;
+                "
+            >
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="cancelProductBtn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                    id="saveProductBtn"
+                >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Product
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 
 <script>
 
@@ -4484,154 +4632,7 @@ if (viewStoreBtn) {
 
 
     initializeDashboard();
-<!-- =====================================================
-     PRODUCT MODAL
-     ===================================================== -->
 
-<div
-    class="modal-overlay"
-    id="productModal"
->
-
-    <div class="modal-card">
-
-        <div class="modal-header">
-
-            <div>
-
-                <small id="productModalLabel">
-                    NEW PRODUCT
-                </small>
-
-                <h2 id="productModalTitle">
-                    Add Product
-                </h2>
-
-                <p>
-                    Add a product to your store.
-                </p>
-
-            </div>
-
-            <button
-                type="button"
-                class="modal-close"
-                id="closeProductModal"
-            >
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-        </div>
-
-
-        <form id="productForm">
-
-            <input
-                type="hidden"
-                id="productId"
-            >
-
-
-            <div class="form-group">
-
-                <label for="productName">
-                    Product Name
-                </label>
-
-                <input
-                    type="text"
-                    id="productName"
-                    placeholder="e.g. iPhone 17 Pro Max"
-                    required
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="productCategory">
-                    Category
-                </label>
-
-                <select
-                    id="productCategory"
-                    required
-                >
-
-                    <option value="">
-                        Select category
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Product Status
-                </label>
-
-                <label
-                    style="
-                        display:flex;
-                        align-items:center;
-                        gap:10px;
-                        cursor:pointer;
-                    "
-                >
-
-                    <input
-                        type="checkbox"
-                        id="productActive"
-                        checked
-                        style="width:auto;"
-                    >
-
-                    <span>
-                        Active
-                    </span>
-
-                </label>
-
-            </div>
-
-
-            <div
-                style="
-                    display:flex;
-                    gap:12px;
-                    justify-content:flex-end;
-                    margin-top:24px;
-                "
-            >
-
-                <button
-                    type="button"
-                    class="secondary-btn"
-                    id="cancelProductBtn"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="submit"
-                    class="primary-btn"
-                    id="saveProductBtn"
-                >
-                    <i class="fa-solid fa-floppy-disk"></i>
-                    Save Product
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
     
 </script>
 

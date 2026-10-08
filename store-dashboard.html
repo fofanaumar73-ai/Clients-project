@@ -5107,6 +5107,8 @@ if (categoryForm) {
         try {
             let result;
 
+            const wasEditing = Boolean(editingCategoryId);
+
             if (editingCategoryId) {
                 result = await supabaseClient
                     .from("categories")

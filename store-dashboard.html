@@ -2764,7 +2764,8 @@
     const toast =
         document.getElementById("toast");
 
-    let currentStoreSlug = null;
+    let currentStoreId = null;
+let currentStoreSlug = null;
 
 
     /* =====================================================
@@ -2932,6 +2933,7 @@
     async function loadStore(
         storeId
     ) {
+        currentStoreId = storeId;
 
         const {
             data: store,

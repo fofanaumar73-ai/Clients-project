@@ -3727,6 +3727,68 @@ if (storeSettingsBtn) {
 }
 
 
+    
+/* =====================================================
+   CATEGORIES NAVIGATION
+   ===================================================== */
+
+if (categoriesNavBtn) {
+    categoriesNavBtn.addEventListener("click", async () => {
+
+        /* Hide the existing dashboard sections */
+        document.querySelectorAll(
+            ".welcome, .store-card, .stats-grid"
+        ).forEach(element => {
+            element.style.display = "none";
+        });
+
+        /* Hide the Products section headers and table */
+        document.querySelectorAll(
+            ".section-header, .table-card"
+        ).forEach(element => {
+            element.style.display = "none";
+        });
+
+        /* Hide Store Settings */
+        if (settingsPanel) {
+            settingsPanel.style.display = "none";
+        }
+
+        /* Show Categories panel */
+        categoriesPanel.style.display = "block";
+
+        /* Restore elements inside Categories panel */
+        categoriesPanel.querySelectorAll(
+            ".section-header, .table-card"
+        ).forEach(element => {
+            element.style.display = "";
+        });
+
+        /* Update active navigation */
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        categoriesNavBtn.classList.add("active");
+
+        /* Update page title */
+        document.querySelector(".page-title h1").textContent =
+            "Categories";
+
+        document.getElementById("pageSubtitle").textContent =
+            "Manage your store product categories";
+
+        /* Load categories for the current store */
+        const access = await checkStoreAdminAccess();
+
+        if (!access) return;
+
+        await loadCategories(access.profile.store_id);
+    });
+}
+
+
+
 /* -----------------------------------------------------
    SAVE STORE SETTINGS
    ----------------------------------------------------- */

@@ -4912,6 +4912,18 @@ const categoriesPanel =
 
 const categoriesNavBtn =
     document.getElementById("categoriesNavBtn");
+
+    
+function resetCategoryForm() {
+    editingCategoryId = null;
+
+    categoryForm.reset();
+
+    categoryFormTitle.textContent = "Add New Category";
+    saveCategoryBtn.textContent = "Save Category";
+    cancelCategoryEditBtn.style.display = "none";
+}
+
     
 
     /* =====================================================

@@ -5110,13 +5110,22 @@ if (categoryForm) {
                     .eq("id", editingCategoryId)
                     .eq("store_id", currentStoreId);
             } else {
-                result = await supabaseClient
-                    .from("categories")
-                    .insert({
-                        store_id: currentStoreId,
-                        name: categoryName,
-                        is_active: true
-                    });
+                
+const categorySlug = categoryName
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+result = await supabaseClient
+    .from("categories")
+    .insert({
+        store_id: currentStoreId,
+        name: categoryName,
+        slug: categorySlug,
+        is_active: true
+    });
+
             }
 
             if (result.error) {

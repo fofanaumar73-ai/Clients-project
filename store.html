@@ -2441,6 +2441,22 @@ footer {
                     <a href="#shop">Shop</a>
                     <a href="#about">About</a>
                     <a href="#contact">Contact</a>
+                    <a
+    href="#"
+    class="nav-link"
+    id="customerAccountLink"
+>
+    <i class="fa-regular fa-user"></i>
+    <span>Customer Account</span>
+</a>
+
+<a
+    href="admin-login.html"
+    class="nav-link"
+>
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Admin Login</span>
+</a>
                 </nav>
 
                 <div class="header-actions">
@@ -2479,6 +2495,22 @@ footer {
                 <a href="#shop">Shop</a>
                 <a href="#about">About</a>
                 <a href="#contact">Contact</a>
+                <a
+    href="#"
+    class="mobile-nav-link"
+    id="mobileCustomerAccountLink"
+>
+    <i class="fa-regular fa-user"></i>
+    <span>Customer Account</span>
+</a>
+
+<a
+    href="admin-login.html"
+    class="mobile-nav-link"
+>
+    <i class="fa-solid fa-user-shield"></i>
+    <span>Admin Login</span>
+</a>
             </nav>
         </header>
 
@@ -5316,6 +5348,77 @@ Object.entries(policyLinks).forEach(
         },
         12000
     );
+
+
+        /* =====================================================
+   CUSTOMER ACCOUNT
+   ===================================================== */
+
+const customerAccountLink =
+    document.getElementById(
+        "customerAccountLink"
+    );
+
+const mobileCustomerAccountLink =
+    document.getElementById(
+        "mobileCustomerAccountLink"
+    );
+
+
+function openCustomerLogin() {
+
+    if (!currentStore || !currentStore.slug) {
+
+        console.error(
+            "Store slug is unavailable."
+        );
+
+        return;
+    }
+
+
+    const loginUrl =
+        `customer-login.html?store=${encodeURIComponent(
+            currentStore.slug
+        )}`;
+
+
+    window.location.href =
+        loginUrl;
+
+}
+
+
+if (customerAccountLink) {
+
+    customerAccountLink.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            openCustomerLogin();
+
+        }
+    );
+
+}
+
+
+if (mobileCustomerAccountLink) {
+
+    mobileCustomerAccountLink.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            openCustomerLogin();
+
+        }
+    );
+
+}
 
 </script>
 

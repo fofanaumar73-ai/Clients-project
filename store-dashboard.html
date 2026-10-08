@@ -5155,6 +5155,109 @@ if (categoryForm) {
     });
 }
 
+    
+/* =====================================================
+   EDIT AND DELETE CATEGORIES
+   ===================================================== */
+
+if (categoriesTableBody) {
+    categoriesTableBody.addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-action][data-id]");
+
+        if (!button) return;
+
+        const action = button.dataset.action;
+        const categoryId = button.dataset.id;
+
+        const category = categories.find(
+            item => String(item.id) === String(categoryId)
+        );
+
+        if (!category) {
+            showToast("Category not found. Please refresh.", "error");
+            return;
+        }
+
+        /* EDIT CATEGORY */
+        if (action === "edit") {
+            editingCategoryId = category.id;
+
+            categoryNameInput.value = category.name;
+            categoryFormTitle.textContent = "Edit Category";
+            saveCategoryBtn.textContent = "Update Category";
+            cancelCategoryEditBtn.style.display = "inline-block";
+
+            categoryNameInput.focus();
+
+            categoryForm.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+            return;
+        }
+
+        /* DELETE CATEGORY */
+        if (action === "delete") {
+            const confirmed = window.confirm(
+                `Are you sure you want to delete "${category.name}"?`
+            );
+
+            if (!confirmed) return;
+
+            button.disabled = true;
+            button.textContent = "Deleting...";
+
+            try {
+                const usage = await supabaseClient
+                    .from("products")
+                    .select("id", { count: "exact", head: true })
+                    .eq("store_id", currentStoreId)
+                    .eq("category_id", category.id);
+
+                if (usage.error) {
+                    throw usage.error;
+                }
+
+                if (usage.count > 0) {
+                    showToast(
+                        "This category contains products. Reassign or remove those products before deleting it.",
+                        "error"
+                    );
+                    return;
+                }
+
+                const result = await supabaseClient
+                    .from("categories")
+                    .delete()
+                    .eq("id", category.id)
+                    .eq("store_id", currentStoreId);
+
+                if (result.error) {
+                    throw result.error;
+                }
+
+                await loadCategories(currentStoreId);
+
+                showToast("Category deleted successfully.", "success");
+
+            } catch (error) {
+                console.error("Category delete error:", error);
+
+                showToast(
+                    error.message || "Unable to delete category.",
+                    "error"
+                );
+
+            } finally {
+                button.disabled = false;
+                button.textContent = "Delete";
+            }
+        }
+    });
+}
+
+
  
 
     /* =====================================================

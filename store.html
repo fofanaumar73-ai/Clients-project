@@ -3293,9 +3293,12 @@ let cart = [];
 
 
             await Promise.all([
-                loadCategories(data.id),
-                loadProducts(data.id)
-            ]);
+    loadCategories(data.id),
+    loadProducts(data.id),
+    loadBenefits(data.id),
+    loadTestimonials(data.id),
+    loadFaqs(data.id)
+]);
 
 
             renderCategories();

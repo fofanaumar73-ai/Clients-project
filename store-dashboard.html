@@ -3505,9 +3505,7 @@ await loadStore(
    LOAD PRODUCTS
    ===================================================== */
 
-async function loadProducts(
-    storeId
-) {
+async function loadProducts(storeId) {
 
     productsLoading.style.display =
         "block";
@@ -3563,13 +3561,8 @@ async function loadProducts(
             "block";
 
         emptyProducts.innerHTML = `
-
             <i class="fa-solid fa-triangle-exclamation"></i>
-
-            <p>
-                Unable to load products.
-            </p>
-
+            <p>Unable to load products.</p>
         `;
 
         return;
@@ -3589,6 +3582,9 @@ async function loadProducts(
         emptyProducts.style.display =
             "block";
 
+        productsTableWrapper.style.display =
+            "none";
+
         return;
 
     }
@@ -3596,7 +3592,6 @@ async function loadProducts(
 
     productsTableWrapper.style.display =
         "block";
-
 
     productsTableBody.innerHTML =
         "";
@@ -3615,6 +3610,19 @@ async function loadProducts(
                 product.is_active !== false;
 
 
+            const category =
+                categories.find(
+                    item =>
+                        String(item.id) ===
+                        String(product.category_id)
+                );
+
+
+            const categoryName =
+                category?.name ||
+                "Uncategorized";
+
+
             row.innerHTML = `
 
                 <td>
@@ -3626,7 +3634,6 @@ async function loadProducts(
                             <i class="fa-solid fa-box"></i>
 
                         </div>
-
 
                         <div>
 
@@ -3649,10 +3656,11 @@ async function loadProducts(
 
 
                 <td>
+
                     ${escapeHtml(
-                        product.category_id ||
-                        "—"
+                        categoryName
                     )}
+
                 </td>
 
 
@@ -3676,6 +3684,36 @@ async function loadProducts(
 
                 </td>
 
+
+                <td>
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:8px;
+                        "
+                    >
+
+                        <button
+                            type="button"
+                            class="table-action-btn edit-product-btn"
+                            data-product-id="${product.id}"
+                        >
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="table-action-btn delete-product-btn"
+                            data-product-id="${product.id}"
+                        >
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+
+                    </div>
+
+                </td>
+
             `;
 
 
@@ -3685,6 +3723,138 @@ async function loadProducts(
 
         }
     );
+
+
+    /* EDIT */
+
+    document
+        .querySelectorAll(
+            ".edit-product-btn"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const product =
+                            data.find(
+                                item =>
+                                    String(
+                                        item.id
+                                    ) ===
+                                    String(
+                                        button.dataset.productId
+                                    )
+                            );
+
+
+                        if (product) {
+
+                            openProductModal(
+                                product
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* DELETE */
+
+    document
+        .querySelectorAll(
+            ".delete-product-btn"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        const product =
+                            data.find(
+                                item =>
+                                    String(
+                                        item.id
+                                    ) ===
+                                    String(
+                                        button.dataset.productId
+                                    )
+                            );
+
+
+                        if (!product) {
+                            return;
+                        }
+
+
+                        const confirmed =
+                            confirm(
+                                `Delete "${product.name}"?`
+                            );
+
+
+                        if (!confirmed) {
+                            return;
+                        }
+
+
+                        const {
+                            error:
+                                deleteError
+                        } =
+                            await supabaseClient
+                                .from(
+                                    "products"
+                                )
+                                .delete()
+                                .eq(
+                                    "id",
+                                    product.id
+                                )
+                                .eq(
+                                    "store_id",
+                                    currentStoreId
+                                );
+
+
+                        if (deleteError) {
+
+                            console.error(
+                                "Product delete error:",
+                                deleteError
+                            );
+
+                            showToast(
+                                "Unable to delete product."
+                            );
+
+                            return;
+
+                        }
+
+
+                        await loadProducts(
+                            currentStoreId
+                        );
+
+
+                        showToast(
+                            "Product deleted successfully."
+                        );
+
+                    }
+                );
+
+            }
+        );
 
 }
 
@@ -4310,9 +4480,7 @@ if (viewStoreBtn) {
 
 
     initializeDashboard();
-
-
-    <!-- =====================================================
+<!-- =====================================================
      PRODUCT MODAL
      ===================================================== -->
 
@@ -4462,6 +4630,8 @@ if (viewStoreBtn) {
 </div>
     
 </script>
+
+    
 
 
 </body>

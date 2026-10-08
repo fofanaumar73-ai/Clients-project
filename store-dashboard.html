@@ -3655,17 +3655,20 @@ if (storeSettingsBtn) {
         "click",
         async () => {
 
-            /* Hide dashboard sections */
+            
+/* Hide dashboard sections */
 
-            document
-                .querySelectorAll(
-                    ".welcome, .store-card, .stats-grid, .section-header, .table-card"
-                )
-                .forEach(
-                    element => {
-                        element.style.display = "none";
-                    }
-                );
+document.querySelectorAll(
+    ".welcome, .store-card, .stats-grid, .section-header, .table-card"
+).forEach(element => {
+    element.style.display = "none";
+});
+
+/* Hide Categories */
+if (categoriesPanel) {
+    categoriesPanel.style.display = "none";
+}
+
 
 
             /* Show settings */

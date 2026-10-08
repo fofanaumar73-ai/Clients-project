@@ -1575,6 +1575,204 @@
 
         }
 
+        /* =====================================================
+   PRODUCT MODAL
+   ===================================================== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, .55);
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 2000;
+
+    backdrop-filter: blur(5px);
+}
+
+
+.modal-overlay.show {
+    display: flex;
+}
+
+
+.modal-card {
+    width: 100%;
+    max-width: 520px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 26px;
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, .25);
+
+    animation: productModalIn .2s ease;
+}
+
+
+@keyframes productModalIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+.modal-header {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 24px;
+}
+
+
+.modal-header small {
+    display: block;
+
+    color: var(--primary);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.4px;
+}
+
+
+.modal-header h2 {
+    font-size: 20px;
+
+    margin-top: 5px;
+}
+
+
+.modal-header p {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    margin-top: 5px;
+}
+
+
+.modal-close {
+    width: 34px;
+    height: 34px;
+
+    border: none;
+
+    background: #f5f2ed;
+
+    color: #555;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.modal-close:hover {
+    background: #eee9e1;
+
+    color: #111;
+}
+
+
+.modal-card select,
+.modal-card input[type="text"] {
+
+    width: 100%;
+
+    border: 1px solid var(--border);
+
+    background: #fcfbf8;
+
+    border-radius: 9px;
+
+    padding: 12px 13px;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    color: var(--text);
+
+    outline: none;
+}
+
+
+.modal-card select:focus,
+.modal-card input[type="text"]:focus {
+
+    border-color: var(--primary);
+
+    background: white;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255, 90, 31, .08);
+}
+
+
+.secondary-btn {
+
+    border: 1px solid var(--border);
+
+    background: white;
+
+    color: #555;
+
+    padding: 11px 16px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.secondary-btn:hover {
+    background: #f7f4ef;
+}
+
+
+@media (max-width: 560px) {
+
+    .modal-card {
+        padding: 21px;
+
+        border-radius: 15px;
+    }
+
+}
+
     </style>
 
 </head>
@@ -1617,13 +1815,13 @@
 
 
             <button
-                type="button"
-                class="nav-item"
-                data-coming-soon="Products"
-            >
-                <i class="fa-solid fa-box"></i>
-                <span>Products</span>
-            </button>
+    type="button"
+    class="nav-item"
+    id="productsNavBtn"
+>
+    <i class="fa-solid fa-box"></i>
+    <span>Products</span>
+</button>
 
 
             <button
@@ -4020,6 +4218,96 @@ async function loadProducts(storeId) {
 let editingProductId = null;
 
 
+    /* =====================================================
+   PRODUCTS NAVIGATION
+   ===================================================== */
+
+const productsNavBtn =
+    document.getElementById(
+        "productsNavBtn"
+    );
+
+
+if (productsNavBtn) {
+
+    productsNavBtn.addEventListener(
+        "click",
+        () => {
+
+            /*
+             * Make Products active.
+             */
+
+            document
+                .querySelectorAll(
+                    ".nav-item"
+                )
+                .forEach(
+                    item => {
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+            productsNavBtn.classList.add(
+                "active"
+            );
+
+
+            /*
+             * Make sure the product dashboard
+             * is visible.
+             */
+
+            document
+                .querySelectorAll(
+                    ".welcome, .store-card, .stats-grid, .section-header, .table-card"
+                )
+                .forEach(
+                    element => {
+
+                        element.style.display =
+                            "";
+
+                    }
+                );
+
+
+            /*
+             * Hide Store Settings.
+             */
+
+            if (settingsPanel) {
+
+                settingsPanel.style.display =
+                    "none";
+
+            }
+
+
+            /*
+             * Scroll to Products.
+             */
+
+            document
+                .querySelector(
+                    ".section-header"
+                )
+                ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+        }
+    );
+
+}
+    
+
 /* -----------------------------------------------------
    OPEN PRODUCT MODAL
 ----------------------------------------------------- */
@@ -4420,72 +4708,62 @@ if (productForm) {
        LOAD CATEGORIES
        ===================================================== */
 
-    async function loadCategories(
-        storeId
-    ) {
+   async function loadCategories(storeId) {
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
 
-                .from("categories")
+            .from("categories")
 
-                .select("id")
+            .select(`
+                id,
+                name,
+                is_active,
+                created_at
+            `)
 
-                .eq(
-                    "store_id",
-                    storeId
-                );
+            .eq(
+                "store_id",
+                storeId
+            )
 
-
-        if (error) {
-
-            console.error(
-                "Categories loading error:",
-                error
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
             );
 
-            totalCategories.textContent =
-                "—";
 
-            return;
+    if (error) {
 
-        }
+        console.error(
+            "Categories loading error:",
+            error
+        );
 
+        categories = [];
 
         totalCategories.textContent =
-            data?.length || 0;
+            "—";
+
+        return;
 
     }
 
 
-    /* =====================================================
-       SIDEBAR PLACEHOLDERS
-       ===================================================== */
+    categories =
+        data || [];
 
-    document
-        .querySelectorAll(
-            "[data-coming-soon]"
-        )
-        .forEach(
-            element => {
 
-                element.addEventListener(
-                    "click",
-                    () => {
+    totalCategories.textContent =
+        categories.length;
 
-                        showToast(
-                            element.dataset.comingSoon +
-                            " management is coming next."
-                        );
+}
 
-                    }
-                );
-
-            }
-        );
 
 
     /* =====================================================

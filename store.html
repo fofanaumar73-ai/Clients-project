@@ -1174,6 +1174,169 @@
             opacity: 1;
         }
 
+
+        /* =========================================================
+   WHY CHOOSE US / BENEFITS
+========================================================= */
+
+#benefitsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.benefit-card {
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: white;
+    transition: .25s ease;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.benefit-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--cream);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    margin-bottom: 20px;
+}
+
+.benefit-card h3 {
+    font-family: "Manrope", sans-serif;
+    font-size: 17px;
+    margin-bottom: 8px;
+}
+
+.benefit-card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   TESTIMONIALS
+========================================================= */
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.testimonial-card {
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--cream);
+}
+
+.testimonial-stars {
+    color: var(--primary);
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 18px;
+}
+
+.testimonial-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #444;
+    margin-bottom: 22px;
+}
+
+.testimonial-name {
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.testimonial-location {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+
+/* =========================================================
+   FAQ
+========================================================= */
+
+.faq-list {
+    max-width: 900px;
+    margin: auto;
+}
+
+.faq-item {
+    border-bottom: 1px solid var(--border);
+}
+
+.faq-question {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 22px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+}
+
+.faq-question i {
+    color: var(--primary);
+    transition: transform .25s ease;
+}
+
+.faq-answer {
+    display: none;
+    padding: 0 35px 22px 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.faq-item.open .faq-answer {
+    display: block;
+}
+
+.faq-item.open .faq-question i {
+    transform: rotate(45deg);
+}
+
+
+@media (max-width: 800px) {
+
+    #benefitsGrid,
+    .testimonials-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    #benefitsGrid,
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+        
         /* =========================
            RESPONSIVE
         ========================= */
@@ -2244,9 +2407,9 @@ footer {
     <main id="storeApp">
 
         <!-- ANNOUNCEMENT -->
-        <div class="announcement" id="announcementBar">
-            Welcome to our store
-        </div>
+        <div class="announcement" id="announcementBar" style="display:none;">
+    Welcome to our store
+</div>
 
         <!-- HEADER -->
         <header class="header">
@@ -2545,6 +2708,88 @@ footer {
 
         </section>
 
+
+        <!-- =========================================================
+     WHY CHOOSE US
+========================================================= -->
+
+<section class="section" id="why-us">
+
+    <div class="section-heading">
+        <div>
+            <small>Why us</small>
+            <h2>Why choose us</h2>
+        </div>
+
+        <p>
+            We are committed to making every part of your shopping
+            experience simple, reliable and worthwhile.
+        </p>
+    </div>
+
+    <div
+        class="brand-features"
+        id="benefitsGrid"
+    >
+        <!-- Benefits injected by JS -->
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     TESTIMONIALS
+========================================================= -->
+
+<section class="section" id="testimonials">
+
+    <div class="section-heading">
+        <div>
+            <small>Customer love</small>
+            <h2>What our customers say</h2>
+        </div>
+
+        <p>
+            Real experiences from customers who have shopped with us.
+        </p>
+    </div>
+
+    <div
+        class="testimonials-grid"
+        id="testimonialsGrid"
+    >
+        <!-- Testimonials injected by JS -->
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FAQ
+========================================================= -->
+
+<section class="section faq-section" id="faq">
+
+    <div class="section-heading">
+        <div>
+            <small>Need help?</small>
+            <h2>Frequently asked questions</h2>
+        </div>
+
+        <p>
+            Find answers to some of the questions our customers ask most.
+        </p>
+    </div>
+
+    <div
+        class="faq-list"
+        id="faqList"
+    >
+        <!-- FAQ injected by JS -->
+    </div>
+
+</section>
+        
         <!-- CONTACT -->
         <section class="section" id="contact">
 
@@ -2616,12 +2861,48 @@ footer {
                     </div>
 
                     <div class="footer-column">
-                        <h4>Information</h4>
+    <h4>Information</h4>
 
-                        <a href="#contact">Contact</a>
-                        <a href="#" id="privacyLink">Privacy Policy</a>
-                        <a href="#" id="termsLink">Terms & Conditions</a>
-                    </div>
+    <a href="#contact">Contact</a>
+    <a href="#why-us">Why Choose Us</a>
+    <a href="#testimonials">Customer Reviews</a>
+    <a href="#faq">FAQ</a>
+
+    <a
+        href="#"
+        id="privacyLink"
+    >
+        Privacy Policy
+    </a>
+
+    <a
+        href="#"
+        id="termsLink"
+    >
+        Terms & Conditions
+    </a>
+
+    <a
+        href="#"
+        id="returnLink"
+    >
+        Return & Refund Policy
+    </a>
+
+    <a
+        href="#"
+        id="shippingLink"
+    >
+        Shipping Policy
+    </a>
+
+    <a
+        href="#"
+        id="cookieLink"
+    >
+        Cookie Policy
+    </a>
+</div>
 
                 </div>
 

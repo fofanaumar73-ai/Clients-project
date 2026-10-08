@@ -1773,6 +1773,77 @@
 
 }
 
+        .categories-panel {
+    animation: settingsFade .25s ease;
+    margin-top: 4px;
+}
+
+.categories-form {
+    display: flex;
+    gap: 10px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+.categories-form .form-group {
+    flex: 1 1 240px;
+    margin: 0;
+}
+
+.categories-form input {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: #fcfbf8;
+    border-radius: 9px;
+    padding: 12px 13px;
+    font: inherit;
+    font-size: 12px;
+    outline: none;
+}
+
+.categories-form input:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255, 90, 31, .08);
+}
+
+.category-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.category-action-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: #333;
+    border-radius: 7px;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.category-action-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary-dark);
+}
+
+.category-action-btn.delete {
+    color: var(--danger);
+}
+
+.categories-panel .settings-card {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 560px) {
+    .categories-form .primary-btn {
+        width: 100%;
+    }
+}
+
     </style>
 
 </head>
@@ -2230,6 +2301,101 @@
 
             </div>
 
+
+            <!-- =====================================================
+     CATEGORY MANAGEMENT
+     ===================================================== -->
+
+<section
+    class="categories-panel"
+    id="categoriesPanel"
+    style="display:none;"
+>
+    <div class="section-header">
+        <div>
+            <h2>Categories</h2>
+            <p>Create and manage the categories used by your products.</p>
+        </div>
+    </div>
+
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <div>
+                <h3 id="categoryFormTitle">Add a Category</h3>
+                <p>Categories belong only to this store.</p>
+            </div>
+
+            <i class="fa-solid fa-layer-group"></i>
+        </div>
+
+        <form id="categoryForm" class="categories-form">
+            <div class="form-group">
+                <label for="categoryNameInput">Category Name</label>
+
+                <input
+                    type="text"
+                    id="categoryNameInput"
+                    maxlength="80"
+                    placeholder="e.g. Phones, Shoes, Accessories"
+                    autocomplete="off"
+                    required
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="primary-btn"
+                id="saveCategoryBtn"
+            >
+                <i class="fa-solid fa-plus"></i>
+                Add Category
+            </button>
+
+            <button
+                type="button"
+                class="secondary-btn"
+                id="cancelCategoryEditBtn"
+                style="display:none;"
+            >
+                Cancel Edit
+            </button>
+        </form>
+    </div>
+
+    <div class="table-card">
+        <div
+            class="table-wrapper"
+            id="categoriesTableWrapper"
+            style="display:none;"
+        >
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Created</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="categoriesTableBody"></tbody>
+            </table>
+        </div>
+
+        <div
+            class="loading"
+            id="categoriesLoading"
+            style="display:none;"
+        >
+            <span class="spinner"></span>
+            Loading categories...
+        </div>
+
+        <div class="empty-state" id="emptyCategories">
+            <i class="fa-solid fa-layer-group"></i>
+            <p>No categories yet. Add your first category above.</p>
+        </div>
+    </div>
+</section>
 
                     <!-- =====================================================
              STORE SETTINGS

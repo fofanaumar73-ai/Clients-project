@@ -3425,14 +3425,40 @@ storeApp.style.display =
 
 
         const announcementBar =
-            document.getElementById(
-                "announcementBar"
-            );
+    document.getElementById(
+        "announcementBar"
+    );
 
-        if (announcementBar) {
-            announcementBar.textContent =
-                tagline;
-        }
+if (announcementBar) {
+
+    const announcementText =
+        String(
+            store.announcement_text || ""
+        ).trim();
+
+    const announcementEnabled =
+        store.announcement_enabled === true;
+
+    if (
+        announcementEnabled &&
+        announcementText
+    ) {
+
+        announcementBar.textContent =
+            announcementText;
+
+        announcementBar.style.display =
+            "block";
+
+    } else {
+
+        announcementBar.textContent =
+            "";
+
+        announcementBar.style.display =
+            "none";
+    }
+}
 
 
         if (store.hero_title) {

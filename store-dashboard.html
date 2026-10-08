@@ -5304,21 +5304,21 @@ if (cancelCategoryEditBtn) {
             );
 
 
-    if (error) {
+   
+if (error) {
+    console.error("Categories loading error:", error);
 
-        console.error(
-            "Categories loading error:",
-            error
-        );
+    categories = [];
 
-        categories = [];
+    renderCategories();
 
-        totalCategories.textContent =
-            "—";
+    totalCategories.textContent = "—";
 
-        return;
+    showToast("Unable to load categories. Please try again.", "error");
 
-    }
+    return;
+}
+
 
 
     categories =

@@ -4925,6 +4925,70 @@ function resetCategoryForm() {
 }
 
     
+function renderCategories() {
+    if (!categoriesTableBody) return;
+
+    categoriesTableBody.innerHTML = "";
+
+    if (categoriesLoading) {
+        categoriesLoading.style.display = "none";
+    }
+
+    if (!categories || categories.length === 0) {
+        if (categoriesTableWrapper) {
+            categoriesTableWrapper.style.display = "none";
+        }
+
+        if (emptyCategories) {
+            emptyCategories.style.display = "block";
+        }
+
+        return;
+    }
+
+    if (categoriesTableWrapper) {
+        categoriesTableWrapper.style.display = "block";
+    }
+
+    if (emptyCategories) {
+        emptyCategories.style.display = "none";
+    }
+
+    categories.forEach((category) => {
+        const row = document.createElement("tr");
+
+        const createdDate = category.created_at
+            ? new Date(category.created_at).toLocaleDateString()
+            : "—";
+
+        row.innerHTML = `
+            <td>${escapeHtml(category.name)}</td>
+            <td>${createdDate}</td>
+            <td>
+                <div class="category-actions">
+                    <button
+                        type="button"
+                        class="category-action-btn"
+                        data-action="edit"
+                        data-id="${escapeHtml(category.id)}">
+                        Edit
+                    </button>
+
+                    <button
+                        type="button"
+                        class="category-action-btn"
+                        data-action="delete"
+                        data-id="${escapeHtml(category.id)}">
+                        Delete
+                    </button>
+                </div>
+            </td>
+        `;
+
+        categoriesTableBody.appendChild(row);
+    });
+}
+ 
 
     /* =====================================================
        LOAD CATEGORIES

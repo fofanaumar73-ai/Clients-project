@@ -4391,11 +4391,24 @@ function renderFaqs() {
                             ""
                         ).toLowerCase();
 
-                    const category =
-                        String(
-                            product.category ||
-                            ""
-                        ).toLowerCase();
+                    const categoryId =
+    String(
+        product.category_id ||
+        ""
+    );
+
+const categoryObject =
+    categories.find(
+        category =>
+            String(category.id) ===
+            categoryId
+    );
+
+const category =
+    String(
+        categoryObject?.name ||
+        ""
+    ).toLowerCase();
 
                     const description =
                         String(
@@ -5152,152 +5165,122 @@ function renderFaqs() {
 
 
     /* =========================================================
-       POLICY LINKS
-    ========================================================= */
+   POLICY LINKS
+========================================================= */
 
-    const privacyLink =
-        document.getElementById(
-            "privacyLink"
-        );
+const policyLinks = {
 
-    const termsLink =
-        document.getElementById(
-            "termsLink"
-        );
+    privacyLink: {
+        field: "privacy_policy",
+        title: "Privacy Policy",
+        emptyMessage:
+            "Privacy policy has not been added yet."
+    },
 
+    termsLink: {
+        field: "terms_policy",
+        title: "Terms & Conditions",
+        emptyMessage:
+            "Terms and conditions have not been added yet."
+    },
 
-    if (privacyLink) {
+    returnLink: {
+        field: "return_policy",
+        title: "Return & Refund Policy",
+        emptyMessage:
+            "Return and refund policy has not been added yet."
+    },
 
-    privacyLink.addEventListener(
-        "click",
-        async event => {
+    shippingLink: {
+        field: "shipping_policy",
+        title: "Shipping Policy",
+        emptyMessage:
+            "Shipping policy has not been added yet."
+    },
 
-            event.preventDefault();
+    cookieLink: {
+        field: "cookie_policy",
+        title: "Cookie Policy",
+        emptyMessage:
+            "Cookie policy has not been added yet."
+    }
 
-            if (!currentStore?.id) {
-
-                showToast(
-                    "Store information is not available."
-                );
-
-                return;
-            }
-
-
-            const {
-                data,
-                error
-            } = await supabaseClient
-
-                .from("stores")
-
-                .select(
-                    "privacy_policy"
-                )
-
-                .eq(
-                    "id",
-                    currentStore.id
-                )
-
-                .maybeSingle();
+};
 
 
-            if (error) {
+Object.entries(policyLinks).forEach(
+    ([linkId, config]) => {
 
-                console.error(
-                    "Privacy policy loading error:",
-                    error
-                );
+        const link =
+            document.getElementById(linkId);
 
-                showToast(
-                    "Unable to load the privacy policy."
-                );
-
-                return;
-            }
-
-
-            const text =
-                data?.privacy_policy?.trim();
-
-
-            showToast(
-                text ||
-                "Privacy policy has not been added yet."
-            );
-
+        if (!link) {
+            return;
         }
-    );
 
-}
+        link.addEventListener(
+            "click",
+            async event => {
 
+                event.preventDefault();
 
-   if (termsLink) {
+                if (!currentStore?.id) {
 
-    termsLink.addEventListener(
-        "click",
-        async event => {
+                    showToast(
+                        "Store information is not available."
+                    );
 
-            event.preventDefault();
-
-            if (!currentStore?.id) {
-
-                showToast(
-                    "Store information is not available."
-                );
-
-                return;
-            }
+                    return;
+                }
 
 
-            const {
-                data,
-                error
-            } = await supabaseClient
-
-                .from("stores")
-
-                .select(
-                    "terms_policy"
-                )
-
-                .eq(
-                    "id",
-                    currentStore.id
-                )
-
-                .maybeSingle();
-
-
-            if (error) {
-
-                console.error(
-                    "Terms loading error:",
+                const {
+                    data,
                     error
-                );
+                } = await supabaseClient
+
+                    .from("stores")
+
+                    .select(
+                        config.field
+                    )
+
+                    .eq(
+                        "id",
+                        currentStore.id
+                    )
+
+                    .maybeSingle();
+
+
+                if (error) {
+
+                    console.error(
+                        `${config.title} loading error:`,
+                        error
+                    );
+
+                    showToast(
+                        `Unable to load the ${config.title.toLowerCase()}.`
+                    );
+
+                    return;
+                }
+
+
+                const text =
+                    data?.[config.field]?.trim();
+
 
                 showToast(
-                    "Unable to load the terms and conditions."
+                    text ||
+                    config.emptyMessage
                 );
 
-                return;
             }
-
-
-            const text =
-                data?.terms_policy?.trim();
-
-
-            showToast(
-                text ||
-                "Terms and conditions have not been added yet."
-            );
-
-        }
-    );
-
-}
+        );
+    }
+);
 
 
     /* =========================================================

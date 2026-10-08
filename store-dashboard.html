@@ -5066,6 +5066,95 @@ function renderCategories() {
         categoriesTableBody.appendChild(row);
     });
 }
+
+    
+/* =====================================================
+   SAVE CATEGORY
+   ===================================================== */
+
+if (categoryForm) {
+    categoryForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const categoryName = categoryNameInput.value.trim();
+
+        if (!categoryName) {
+            showToast("Please enter a category name.", "error");
+            return;
+        }
+
+        if (!currentStoreId) {
+            showToast("Store not found. Please refresh and try again.", "error");
+            return;
+        }
+
+        /* Prevent duplicate category names */
+        const duplicate = categories.some(category =>
+            category.name.trim().toLowerCase() === categoryName.toLowerCase() &&
+            category.id !== editingCategoryId
+        );
+
+        if (duplicate) {
+            showToast("This category already exists.", "error");
+            return;
+        }
+
+        saveCategoryBtn.disabled = true;
+        saveCategoryBtn.textContent = editingCategoryId
+            ? "Updating..."
+            : "Saving...";
+
+        try {
+            let result;
+
+            if (editingCategoryId) {
+                result = await supabaseClient
+                    .from("categories")
+                    .update({ name: categoryName })
+                    .eq("id", editingCategoryId)
+                    .eq("store_id", currentStoreId);
+            } else {
+                result = await supabaseClient
+                    .from("categories")
+                    .insert({
+                        store_id: currentStoreId,
+                        name: categoryName,
+                        is_active: true
+                    });
+            }
+
+            if (result.error) {
+                throw result.error;
+            }
+
+            resetCategoryForm();
+
+            await loadCategories(currentStoreId);
+            await loadProducts(currentStoreId);
+
+            showToast(
+                editingCategoryId
+                    ? "Category updated successfully."
+                    : "Category saved successfully.",
+                "success"
+            );
+
+        } catch (error) {
+            console.error("Category save error:", error);
+            showToast(
+                error.message || "Unable to save category.",
+                "error"
+            );
+        } finally {
+            saveCategoryBtn.disabled = false;
+
+            if (!editingCategoryId) {
+                saveCategoryBtn.textContent = "Save Category";
+            }
+        }
+    });
+}
+
  
 
     /* =====================================================

@@ -4198,11 +4198,10 @@ console.log(
 );
 
 
-/* Update dashboard */
+/* Update dashboard and refresh image previews */
 
-await loadStore(
-    storeId
-);
+await loadStore(storeId);
+await loadStoreSettings(storeId);
 
         }
     );

@@ -3471,6 +3471,19 @@ if (store.logo_url) {
     }
 
 
+    /* =====================================================
+   STORE SETTINGS
+   ===================================================== */
+
+const storeSettingsBtn =
+    document.getElementById("storeSettingsBtn");
+
+const settingsPanel =
+    document.getElementById("settingsPanel");
+
+const saveStoreSettings =
+    document.getElementById("saveStoreSettings");
+
     
 async function uploadStoreImage(file, storeId, imageType) {
     if (!file) return null;
@@ -3499,7 +3512,7 @@ async function uploadStoreImage(file, storeId, imageType) {
         .from("store-assets")
         .upload(filePath, file, {
             cacheControl: "3600",
-            upsert: true,
+            upsert: false,
             contentType: file.type
         });
 
@@ -3515,19 +3528,6 @@ async function uploadStoreImage(file, storeId, imageType) {
     return publicData.publicUrl;
 }
 
-
-    /* =====================================================
-   STORE SETTINGS
-   ===================================================== */
-
-const storeSettingsBtn =
-    document.getElementById("storeSettingsBtn");
-
-const settingsPanel =
-    document.getElementById("settingsPanel");
-
-const saveStoreSettings =
-    document.getElementById("saveStoreSettings");
 
 
 /* -----------------------------------------------------

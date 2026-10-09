@@ -4807,137 +4807,64 @@ if (categoriesPanel) {
    OPEN PRODUCT MODAL
 ----------------------------------------------------- */
 
+
 function openProductModal(product = null) {
-
-    const modal =
-        document.getElementById(
-            "productModal"
-        );
-
-    const form =
-        document.getElementById(
-            "productForm"
-        );
-
-    const title =
-        document.getElementById(
-            "productModalTitle"
-        );
-
-    const label =
-        document.getElementById(
-            "productModalLabel"
-        );
-
-    const productId =
-        document.getElementById(
-            "productId"
-        );
-
-    const productName =
-        document.getElementById(
-            "productName"
-        );
-
-    const productCategory =
-        document.getElementById(
-            "productCategory"
-        );
-
-    const productActive =
-        document.getElementById(
-            "productActive"
-        );
-
+    const modal = document.getElementById("productModal");
+    const form = document.getElementById("productForm");
+    const title = document.getElementById("productModalTitle");
+    const label = document.getElementById("productModalLabel");
 
     form.reset();
+    clearProductImagePreview();
 
     editingProductId = null;
+    editingProductImageUrl = null;
+    selectedProductImage = null;
 
-    productId.value = "";
+    document.getElementById("productId").value = "";
 
-
-    /* Load categories into dropdown */
+    const productCategory = document.getElementById("productCategory");
 
     productCategory.innerHTML = `
-        <option value="">
-            Select category
-        </option>
+        <option value="">Select category</option>
     `;
 
-
-    categories.forEach(
-        category => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                category.id;
-
-            option.textContent =
-                category.name ||
-                "Unnamed Category";
-
-            productCategory.appendChild(
-                option
-            );
-
-        }
-    );
-
-
-    /* ADD */
+    categories.forEach(category => {
+        const option = document.createElement("option");
+        option.value = category.id;
+        option.textContent = category.name || "Unnamed Category";
+        productCategory.appendChild(option);
+    });
 
     if (!product) {
+        label.textContent = "NEW PRODUCT";
+        title.textContent = "Add Product";
+        document.getElementById("productActive").checked = true;
+    } else {
+        editingProductId = product.id;
+        editingProductImageUrl = product.image_url || null;
 
-        label.textContent =
-            "NEW PRODUCT";
-
-        title.textContent =
-            "Add Product";
-
-        productActive.checked =
-            true;
-
-    }
-
-
-    /* EDIT */
-
-    else {
-
-        editingProductId =
-            product.id;
-
-        productId.value =
-            product.id;
-
-        label.textContent =
-            "EDIT PRODUCT";
-
-        title.textContent =
-            "Edit Product";
-
-        productName.value =
-            product.name || "";
-
-        productCategory.value =
-            product.category_id || "";
-
-        productActive.checked =
+        document.getElementById("productId").value = product.id;
+        document.getElementById("productName").value = product.name || "";
+        productCategory.value = product.category_id || "";
+        document.getElementById("productActive").checked =
             product.is_active !== false;
 
+        label.textContent = "EDIT PRODUCT";
+        title.textContent = "Edit Product";
+
+        if (editingProductImageUrl) {
+            showProductImagePreview(editingProductImageUrl);
+            uploadStatus.textContent =
+                "Current image. Select another to replace it.";
+        } else {
+            uploadStatus.textContent = "No image uploaded yet.";
+        }
     }
 
-
-    modal.classList.add(
-        "show"
-    );
-
+    modal.classList.add("show");
 }
+
 
 
 /* -----------------------------------------------------

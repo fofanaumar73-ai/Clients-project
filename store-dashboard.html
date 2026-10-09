@@ -3471,6 +3471,51 @@ if (store.logo_url) {
     }
 
 
+    
+async function uploadStoreImage(file, storeId, imageType) {
+    if (!file) return null;
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/svg+xml"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+        throw new Error("Please select a PNG, JPG, WebP, or SVG image.");
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        throw new Error("Image must be 5 MB or smaller.");
+    }
+
+    const extension = file.name.split(".").pop().toLowerCase();
+    const filePath =
+        `${storeId}/${imageType}-${Date.now()}.${extension}`;
+
+    const { data, error } = await supabaseClient
+        .storage
+        .from("store-assets")
+        .upload(filePath, file, {
+            cacheControl: "3600",
+            upsert: true,
+            contentType: file.type
+        });
+
+    if (error) {
+        throw error;
+    }
+
+    const { data: publicData } = supabaseClient
+        .storage
+        .from("store-assets")
+        .getPublicUrl(data.path);
+
+    return publicData.publicUrl;
+}
+
+
     /* =====================================================
    STORE SETTINGS
    ===================================================== */

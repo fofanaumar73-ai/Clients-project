@@ -4936,6 +4936,7 @@ if (cancelProductBtn) {
    SAVE PRODUCT
 ----------------------------------------------------- */
 
+
 const productForm = document.getElementById("productForm");
 
 if (productForm) {
@@ -4947,6 +4948,14 @@ if (productForm) {
         const isActive = document.getElementById("productActive").checked;
         const saveButton = document.getElementById("saveProductBtn");
         const wasEditing = Boolean(editingProductId);
+
+        const priceInput = document.getElementById("productPrice").value;
+        const comparePriceInput = document.getElementById("productComparePrice").value;
+
+        const price = Number(priceInput);
+        const comparePrice = comparePriceInput.trim() === ""
+            ? null
+            : Number(comparePriceInput);
 
         if (!currentStoreId) {
             showToast("Store not found. Please refresh and try again.");
@@ -4960,6 +4969,19 @@ if (productForm) {
 
         if (!categoryId) {
             showToast("Please select a category.");
+            return;
+        }
+
+        if (priceInput.trim() === "" || !Number.isFinite(price) || price <= 0) {
+            showToast("Enter a valid selling price greater than zero.");
+            return;
+        }
+
+        if (
+            comparePrice !== null &&
+            (!Number.isFinite(comparePrice) || comparePrice <= price)
+        ) {
+            showToast("The old price must be greater than the selling price.");
             return;
         }
 
@@ -4983,21 +5005,21 @@ if (productForm) {
                 throw new Error("Please select a product image.");
             }
 
-            
-const productSlug = name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+            const productSlug = name
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
 
-const productData = {
-    name,
-    slug: productSlug,
-    category_id: categoryId,
-    is_active: isActive,
-    image_url: imageUrl
-};
-
+            const productData = {
+                name,
+                slug: productSlug,
+                category_id: categoryId,
+                price,
+                compare_price: comparePrice,
+                is_active: isActive,
+                image_url: imageUrl
+            };
 
             let result;
 
@@ -5038,6 +5060,7 @@ const productData = {
         }
     });
 }
+
 
 
 

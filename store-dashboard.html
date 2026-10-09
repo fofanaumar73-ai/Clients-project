@@ -3972,13 +3972,14 @@ try {
                         .value
                         .trim(),
 
-                logo_url:
-                    document
-                        .getElementById(
-                            "settingsLogoUrl"
-                        )
-                        .value
-                        .trim(),
+               logo_url:
+    uploadedLogoUrl ||
+    (await supabaseClient
+        .from("stores")
+        .select("logo_url")
+        .eq("id", storeId)
+        .single()).data?.logo_url ||
+    null,
 
                 primary_color:
                     document

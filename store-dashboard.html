@@ -5522,31 +5522,33 @@ if (viewStoreBtn) {
     
 
     /* =====================================================
-       MOBILE MENU
-       ===================================================== */
+   MOBILE MENU
+   ===================================================== */
 
-    const sidebar =
-        document.getElementById(
-            "sidebar"
-        );
+const sidebar = document.getElementById("sidebar");
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
 
+function closeMobileMenu() {
+    sidebar.classList.remove("mobile-open");
+    sidebarOverlay.classList.remove("mobile-open");
+}
 
-    const mobileMenuBtn =
-        document.getElementById(
-            "mobileMenuBtn"
-        );
+mobileMenuBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
 
+    const isOpen = sidebar.classList.toggle("mobile-open");
 
-    mobileMenuBtn.addEventListener(
-        "click",
-        () => {
+    sidebarOverlay.classList.toggle("mobile-open", isOpen);
+});
 
-            sidebar.classList.toggle(
-                "mobile-open"
-            );
+/* Close sidebar when tapping outside */
+sidebarOverlay.addEventListener("click", closeMobileMenu);
 
-        }
-    );
+/* Close sidebar after selecting a navigation item */
+sidebar.querySelectorAll(".nav-item").forEach((item) => {
+    item.addEventListener("click", closeMobileMenu);
+});
 
 
     /* =====================================================

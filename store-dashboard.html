@@ -4543,6 +4543,60 @@ async function loadProducts(storeId) {
 
 let editingProductId = null;
 
+    
+/* PRODUCT IMAGE PREVIEW */
+
+const productImagesInput = document.getElementById("productImages");
+const imagePreview = document.getElementById("imagePreview");
+const uploadStatus = document.getElementById("uploadStatus");
+
+let selectedProductImage = null;
+let productImagePreviewUrl = null;
+
+productImagesInput.addEventListener("change", () => {
+    const file = productImagesInput.files[0];
+
+    selectedProductImage = file || null;
+    imagePreview.innerHTML = "";
+    uploadStatus.textContent = "";
+
+    if (productImagePreviewUrl) {
+        URL.revokeObjectURL(productImagePreviewUrl);
+        productImagePreviewUrl = null;
+    }
+
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        selectedProductImage = null;
+        productImagesInput.value = "";
+        uploadStatus.textContent = "Choose a JPG, PNG, or WebP image.";
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        selectedProductImage = null;
+        productImagesInput.value = "";
+        uploadStatus.textContent = "Image must be 5 MB or smaller.";
+        return;
+    }
+
+    productImagePreviewUrl = URL.createObjectURL(file);
+
+    const preview = document.createElement("img");
+    preview.src = productImagePreviewUrl;
+    preview.alt = "Product image preview";
+    preview.style.width = "120px";
+    preview.style.height = "120px";
+    preview.style.objectFit = "cover";
+    preview.style.borderRadius = "10px";
+    preview.style.border = "1px solid #ddd";
+
+    imagePreview.appendChild(preview);
+    uploadStatus.textContent = "Image selected successfully.";
+});
+
+
 
     /* =====================================================
    PRODUCTS NAVIGATION

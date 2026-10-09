@@ -4014,12 +4014,13 @@ try {
                         .trim(),
 
                 hero_image_url:
-                    document
-                        .getElementById(
-                            "settingsHeroImage"
-                        )
-                        .value
-                        .trim(),
+    uploadedHeroUrl ||
+    (await supabaseClient
+        .from("stores")
+        .select("hero_image_url")
+        .eq("id", storeId)
+        .single()).data?.hero_image_url ||
+    null,
 
                 announcement_text:
                     document

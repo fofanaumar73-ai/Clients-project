@@ -3654,10 +3654,14 @@ document.getElementById("settingsLogoFile").value = "";
         .value =
             store.hero_description || "";
 
-    document
-        .getElementById("settingsHeroImage")
-        .value =
-            store.hero_image_url || "";
+    const heroPreview = document.getElementById("settingsHeroImagePreview");
+
+heroPreview.innerHTML = store.hero_image_url
+    ? `<img src="${store.hero_image_url}" alt="Hero image preview"
+         style="width:100%; max-width:400px; max-height:180px; object-fit:cover;">`
+    : "<p>No hero image uploaded yet.</p>";
+
+document.getElementById("settingsHeroImageFile").value = "";
 
 
     /* -------------------------------------------------

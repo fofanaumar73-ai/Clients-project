@@ -4309,11 +4309,19 @@ async function loadProducts(storeId) {
 
                     <div class="product-cell">
 
-                        <div class="product-image">
+                        
+<div class="product-image">
+    ${
+        product.image_url
+            ? `<img
+                src="${escapeHtml(product.image_url)}"
+                alt="${escapeHtml(product.name || "Product")}"
+                style="width:100%;height:100%;object-fit:cover;border-radius:8px;"
+              >`
+            : '<i class="fa-solid fa-box"></i>'
+    }
+</div>
 
-                            <i class="fa-solid fa-box"></i>
-
-                        </div>
 
                         <div>
 

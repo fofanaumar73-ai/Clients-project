@@ -4542,7 +4542,108 @@ async function loadProducts(storeId) {
    PRODUCT MANAGEMENT
    ===================================================== */
 
+
 let editingProductId = null;
+let editingProductImageUrl = null;
+let selectedProductImage = null;
+let productImagePreviewUrl = null;
+
+const productImagesInput = document.getElementById("productImages");
+const imagePreview = document.getElementById("imagePreview");
+const uploadStatus = document.getElementById("uploadStatus");
+
+function clearProductImagePreview() {
+    if (productImagePreviewUrl) {
+        URL.revokeObjectURL(productImagePreviewUrl);
+        productImagePreviewUrl = null;
+    }
+
+    imagePreview.innerHTML = "";
+    uploadStatus.textContent = "";
+}
+
+function showProductImagePreview(url, alt = "Product image preview") {
+    imagePreview.innerHTML = "";
+
+    if (!url) return;
+
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = alt;
+    img.style.width = "140px";
+    img.style.height = "140px";
+    img.style.objectFit = "cover";
+    img.style.borderRadius = "10px";
+    img.style.border = "1px solid #ddd";
+
+    imagePreview.appendChild(img);
+}
+
+productImagesInput.addEventListener("change", () => {
+    const file = productImagesInput.files[0];
+
+    selectedProductImage = file || null;
+    clearProductImagePreview();
+
+    if (!file) {
+        showProductImagePreview(editingProductImageUrl);
+        return;
+    }
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        selectedProductImage = null;
+        productImagesInput.value = "";
+        uploadStatus.textContent = "Choose a JPG, PNG, or WebP image.";
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        selectedProductImage = null;
+        productImagesInput.value = "";
+        uploadStatus.textContent = "Image must be 5 MB or smaller.";
+        return;
+    }
+
+    productImagePreviewUrl = URL.createObjectURL(file);
+    showProductImagePreview(productImagePreviewUrl);
+
+    uploadStatus.textContent = "Image selected successfully.";
+});
+
+async function uploadProductImage(file, storeId) {
+    if (!file) return null;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        throw new Error("Choose a JPG, PNG, or WebP image.");
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        throw new Error("Image must be 5 MB or smaller.");
+    }
+
+    const extension = file.name.split(".").pop().toLowerCase();
+    const filePath =
+        `${storeId}/products/${crypto.randomUUID()}.${extension}`;
+
+    const { data, error } = await supabaseClient
+        .storage
+        .from("store-assets")
+        .upload(filePath, file, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type
+        });
+
+    if (error) throw error;
+
+    const { data: publicData } = supabaseClient
+        .storage
+        .from("store-assets")
+        .getPublicUrl(data.path);
+
+    return publicData.publicUrl;
+}
+
 
     
 /* PRODUCT IMAGE PREVIEW */

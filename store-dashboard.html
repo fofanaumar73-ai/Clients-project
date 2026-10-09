@@ -3401,36 +3401,36 @@ let products = [];
         }
 
 
-        if (
-            store.logo_url
-        ) {
+        
+if (store.logo_url) {
+    const logo = document.createElement("img");
 
-            const logo =
-                document.createElement(
-                    "img"
-                );
+    logo.src = store.logo_url;
+    logo.alt = store.name || "Store";
+    logo.style.maxWidth = "100%";
+    logo.style.maxHeight = "100%";
+    logo.style.objectFit = "contain";
 
-            logo.src =
-                store.logo_url;
+    logo.onload = () => {
+        console.log("Store logo loaded successfully:", logo.src);
+    };
 
-            logo.alt =
-                store.name || "Store";
+    logo.onerror = () => {
+        console.error("Store logo failed to load:", logo.src);
+    };
 
-            document
-                .getElementById(
-                    "storeLogo"
-                )
-                .innerHTML = "";
+    const logoContainer = document.getElementById("storeLogo");
 
-            document
-                .getElementById(
-                    "storeLogo"
-                )
-                .appendChild(
-                    logo
-                );
+    if (logoContainer) {
+        logoContainer.innerHTML = "";
+        logoContainer.appendChild(logo);
+    } else {
+        console.error("Element #storeLogo was not found.");
+    }
+} else {
+    console.warn("No store.logo_url was found:", store);
+}
 
-        }
 
 
         const status =

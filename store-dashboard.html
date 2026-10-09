@@ -4951,12 +4951,21 @@ if (productForm) {
                 throw new Error("Please select a product image.");
             }
 
-            const productData = {
-                name,
-                category_id: categoryId,
-                is_active: isActive,
-                image_url: imageUrl
-            };
+            
+const productSlug = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const productData = {
+    name,
+    slug: productSlug,
+    category_id: categoryId,
+    is_active: isActive,
+    image_url: imageUrl
+};
+
 
             let result;
 

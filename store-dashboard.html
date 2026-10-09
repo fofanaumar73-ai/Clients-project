@@ -3909,6 +3909,41 @@ if (saveStoreSettings) {
             `;
 
 
+            /* Upload selected store images */
+let uploadedLogoUrl = null;
+let uploadedHeroUrl = null;
+
+try {
+    const logoFile = document.getElementById("settingsLogoFile").files[0];
+    const heroFile = document.getElementById("settingsHeroImageFile").files[0];
+
+    if (logoFile) {
+        uploadedLogoUrl = await uploadStoreImage(
+            logoFile,
+            storeId,
+            "logo"
+        );
+    }
+
+    if (heroFile) {
+        uploadedHeroUrl = await uploadStoreImage(
+            heroFile,
+            storeId,
+            "hero"
+        );
+    }
+
+} catch (uploadError) {
+    console.error("Store image upload error:", uploadError);
+    showToast("Image upload failed: " + uploadError.message);
+    saveStoreSettings.disabled = false;
+    saveStoreSettings.innerHTML = `
+        <i class="fa-solid fa-floppy-disk"></i>
+        Save Store Settings
+    `;
+    return;
+}
+
             /* Collect form data */
 
             const updates = {

@@ -4835,6 +4835,11 @@ function openProductModal(product = null) {
         productCategory.value = product.category_id || "";
         document.getElementById("productActive").checked =
             product.is_active !== false;
+        document.getElementById("productPrice").value =
+    product.price ?? "";
+
+document.getElementById("productComparePrice").value =
+    product.compare_price ?? "";
 
         label.textContent = "EDIT PRODUCT";
         title.textContent = "Edit Product";

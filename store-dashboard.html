@@ -3620,10 +3620,14 @@ async function loadStoreSettings(storeId) {
         .value =
             store.tagline || "";
 
-    document
-        .getElementById("settingsLogoUrl")
-        .value =
-            store.logo_url || "";
+    const logoPreview = document.getElementById("settingsLogoPreview");
+
+logoPreview.innerHTML = store.logo_url
+    ? `<img src="${store.logo_url}" alt="Store logo preview"
+         style="max-width:150px; max-height:100px; object-fit:contain;">`
+    : "<p>No logo uploaded yet.</p>";
+
+document.getElementById("settingsLogoFile").value = "";
 
     document
         .getElementById("settingsPrimaryColor")

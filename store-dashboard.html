@@ -1447,25 +1447,27 @@
 }
         
 
-        /* =====================================================
-           MOBILE
-           ===================================================== */
+        
+/* =====================================================
+   MOBILE
+   ===================================================== */
 
-        @media (max-width: 850px) {
-
-            .sidebar {
-
-                transform: translateX(-100%);
-
-                transition: .25s ease;
-
-            }
-
-            #sidebarOverlay {
+#sidebarOverlay {
     display: none;
 }
 
 @media (max-width: 850px) {
+
+    .sidebar {
+        transform: translateX(-100%);
+        transition: .25s ease;
+        z-index: 1000;
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
     #sidebarOverlay {
         position: fixed;
         inset: 0;
@@ -1477,124 +1479,69 @@
         display: block;
     }
 
-    .sidebar {
-        z-index: 1000;
+    .main {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+        margin-right: 15px;
+        position: relative;
+        z-index: 1001;
+    }
+
+    .topbar {
+        justify-content: flex-start;
+    }
+
+    .admin-profile {
+        margin-left: auto;
+    }
+
+    .profile-info {
+        display: none;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
     }
 }
 
+@media (max-width: 560px) {
 
-            .sidebar.mobile-open {
+    .topbar {
+        padding: 0 18px;
+    }
 
-                transform: translateX(0);
+    .welcome {
+        padding: 23px;
+    }
 
-            }
+    .welcome h2 {
+        font-size: 22px;
+    }
 
+    .welcome-icon {
+        display: none;
+    }
 
-            .main {
+    .store-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 
-                width: 100%;
+    .section-header {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+    }
+}
 
-                margin-left: 0;
-
-            }
-
-
-            .mobile-menu-btn {
-
-                display: block;
-
-                margin-right: 15px;
-
-            }
-
-
-            .topbar {
-
-                justify-content: flex-start;
-
-            }
-
-
-            .admin-profile {
-
-                margin-left: auto;
-
-            }
-
-
-            .profile-info {
-
-                display: none;
-
-            }
-
-
-            .content {
-
-                padding: 20px;
-
-            }
-
-
-            .stats-grid {
-
-                grid-template-columns: 1fr;
-
-            }
-
-        }
-
-
-        @media (max-width: 560px) {
-
-            .topbar {
-
-                padding: 0 18px;
-
-            }
-
-
-            .welcome {
-
-                padding: 23px;
-
-            }
-
-
-            .welcome h2 {
-
-                font-size: 22px;
-
-            }
-
-
-            .welcome-icon {
-
-                display: none;
-
-            }
-
-
-            .store-card {
-
-                align-items: flex-start;
-
-                flex-direction: column;
-
-            }
-
-
-            .section-header {
-
-                align-items: flex-start;
-
-                gap: 15px;
-
-                flex-direction: column;
-
-            }
-
-        }
 
         /* =====================================================
    PRODUCT MODAL

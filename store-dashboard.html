@@ -2378,6 +2378,175 @@
     </div>
 </section>
 
+
+            
+<!-- WHY CHOOSE US MANAGEMENT -->
+<section
+    class="categories-panel"
+    id="benefitsPanel"
+    style="display: none;"
+>
+    <div class="section-header">
+        <div>
+            <h2>Why Choose Us</h2>
+            <p>
+                Manage the benefits customers see on your storefront.
+            </p>
+        </div>
+    </div>
+
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <div>
+                <h3 id="benefitFormTitle">Add a Benefit</h3>
+                <p>
+                    Explain why customers should shop with your store.
+                </p>
+            </div>
+            <i class="fa-solid fa-star"></i>
+        </div>
+
+        <form id="benefitForm">
+            <input type="hidden" id="benefitId">
+
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label for="benefitTitle">Benefit Title</label>
+                    <input
+                        type="text"
+                        id="benefitTitle"
+                        maxlength="100"
+                        placeholder="e.g. Quality Products"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="benefitIcon">Font Awesome Icon</label>
+                    <input
+                        type="text"
+                        id="benefitIcon"
+                        maxlength="60"
+                        placeholder="e.g. fa-truck-fast"
+                        value="fa-star"
+                        required
+                    >
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="benefitDescription">
+                        Description
+                    </label>
+                    <textarea
+                        id="benefitDescription"
+                        maxlength="500"
+                        rows="3"
+                        placeholder="Describe this benefit to your customers..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="benefitSortOrder">Display Order</label>
+                    <input
+                        type="number"
+                        id="benefitSortOrder"
+                        min="0"
+                        step="1"
+                        value="0"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="benefitActive">Status</label>
+                    <label class="toggle-row">
+                        <input
+                            type="checkbox"
+                            id="benefitActive"
+                            checked
+                        >
+                        <span class="toggle-switch"></span>
+                        <span>Show on storefront</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="cancelBenefitEditBtn"
+                    style="display: none;"
+                >
+                    Cancel Edit
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                    id="saveBenefitBtn"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                    Save Benefit
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="section-header">
+        <div>
+            <h2>Your Store Benefits</h2>
+            <p>
+                Edit, activate, deactivate, or delete benefits.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div
+            class="loading"
+            id="benefitsLoading"
+            style="display: none;"
+        >
+            <span class="spinner"></span>
+            Loading benefits...
+        </div>
+
+        <div
+            class="table-wrapper"
+            id="benefitsTableWrapper"
+            style="display: none;"
+        >
+            <table>
+                <thead>
+                    <tr>
+                        <th>Icon</th>
+                        <th>Benefit</th>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="benefitsTableBody"></tbody>
+            </table>
+        </div>
+
+        <div
+            class="empty-state"
+            id="emptyBenefits"
+        >
+            <i class="fa-solid fa-star"></i>
+            <p>
+                No benefits yet. Add your first benefit above.
+            </p>
+        </div>
+    </div>
+</section>
+<!-- END WHY CHOOSE US MANAGEMENT -->
+
+            
+
                     <!-- =====================================================
              STORE SETTINGS
              ===================================================== -->

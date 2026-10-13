@@ -4305,6 +4305,75 @@ await loadBenefits(access.profile.store_id);
     });
 }
 
+    
+const testimonialsNavBtn = document.getElementById("testimonialsNavBtn");
+const testimonialsPanel = document.getElementById("testimonialsPanel");
+
+if (testimonialsNavBtn) {
+    testimonialsNavBtn.addEventListener("click", async () => {
+
+        // Hide the main dashboard overview
+        document.querySelectorAll(
+            ".welcome, .store-card, .stats-grid"
+        ).forEach(element => {
+            element.style.display = "none";
+        });
+
+        // Hide section headers and tables in other panels
+        document.querySelectorAll(
+            ".section-header, .table-card"
+        ).forEach(element => {
+            element.style.display = "none";
+        });
+
+        // Hide other management panels
+        if (settingsPanel) {
+            settingsPanel.style.display = "none";
+        }
+
+        if (categoriesPanel) {
+            categoriesPanel.style.display = "none";
+        }
+
+        if (benefitsPanel) {
+            benefitsPanel.style.display = "none";
+        }
+
+        // Show Testimonials
+        if (testimonialsPanel) {
+            testimonialsPanel.style.display = "block";
+
+            // Restore elements inside this panel
+            testimonialsPanel.querySelectorAll(
+                ".section-header, .table-card"
+            ).forEach(element => {
+                element.style.display = "";
+            });
+        }
+
+        // Update active sidebar item
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        testimonialsNavBtn.classList.add("active");
+
+        // Update page heading
+        document.querySelector(".page-title h1").textContent =
+            "Testimonials & Reviews";
+
+        document.getElementById("pageSubtitle").textContent =
+            "Manage store testimonials and customer reviews";
+
+        // Check access to this store
+        const access = await checkStoreAdminAccess();
+
+        if (!access) return;
+
+        // We'll connect testimonial loading here in a later step.
+    });
+}
+
 
 
 /* -----------------------------------------------------

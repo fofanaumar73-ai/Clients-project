@@ -5966,7 +5966,7 @@ function renderBenefits() {
    EDIT WHY CHOOSE US BENEFIT
    ===================================================== */
 
-benefitsTableBody.addEventListener("click", event => {
+benefitsTableBody.addEventListener("click", async event => {
     const editButton = event.target.closest("[data-edit-benefit]");
 
     // Handle Delete button clicks

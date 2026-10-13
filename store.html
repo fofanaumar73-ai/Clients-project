@@ -3820,11 +3820,11 @@ async function loadTestimonials(storeId) {
     updated_at
 `)
         .eq("store_id", storeId)
-        .eq("is_active", true)
-        .order("sort_order", {
-            ascending: true
-        });
-
+.eq("is_active", true)
+.or("review_source.eq.admin,approval_status.eq.approved")
+.order("sort_order", {
+    ascending: true
+});
     if (error) {
 
         console.error(

@@ -5448,9 +5448,29 @@ if (benefitForm) {
             is_active: isActive
         };
 
-        const { error } = await supabaseClient
-            .from("store_benefits")
-            .insert(benefitData);
+        let result;
+
+if (editingBenefitId) {
+    // Update the existing benefit
+    result = await supabaseClient
+        .from("store_benefits")
+        .update({
+            title,
+            icon,
+            description,
+            sort_order: sortOrder,
+            is_active: isActive
+        })
+        .eq("id", editingBenefitId)
+        .eq("store_id", storeId);
+} else {
+    // Create a new benefit
+    result = await supabaseClient
+        .from("store_benefits")
+        .insert(benefitData);
+}
+
+const { error } = result;
 
         if (error) {
             console.error("Saving benefit error:", error);
@@ -5458,13 +5478,28 @@ if (benefitForm) {
             return;
         }
 
-        benefitForm.reset();
-        benefitIconInput.value = "fa-star";
-        benefitSortOrderInput.value = "0";
-        benefitActiveInput.checked = true;
+       const wasEditing = Boolean(editingBenefitId);
 
-        showToast("Benefit saved successfully!");
-        await loadBenefits(storeId);
+editingBenefitId = null;
+benefitIdInput.value = "";
+
+benefitForm.reset();
+benefitIconInput.value = "fa-star";
+benefitSortOrderInput.value = "0";
+benefitActiveInput.checked = true;
+
+benefitFormTitle.textContent = "Add a Benefit";
+saveBenefitBtn.innerHTML =
+    '<i class="fa-solid fa-plus"></i> Save Benefit';
+cancelBenefitEditBtn.style.display = "none";
+
+showToast(
+    wasEditing
+        ? "Benefit updated successfully!"
+        : "Benefit saved successfully!"
+);
+
+await loadBenefits(storeId);
     });
 }
     

@@ -3804,14 +3804,21 @@ async function loadTestimonials(storeId) {
     } = await supabaseClient
         .from("store_testimonials")
         .select(`
-            id,
-            customer_name,
-            rating,
-            testimonial,
-            location,
-            sort_order,
-            is_active
-        `)
+    id,
+    store_id,
+    customer_id,
+    order_id,
+    customer_name,
+    rating,
+    testimonial,
+    location,
+    sort_order,
+    is_active,
+    review_source,
+    approval_status,
+    created_at,
+    updated_at
+`)
         .eq("store_id", storeId)
         .eq("is_active", true)
         .order("sort_order", {

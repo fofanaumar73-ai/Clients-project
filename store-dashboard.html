@@ -5419,11 +5419,54 @@ const emptyBenefits =
    ===================================================== */
 
 if (benefitForm) {
-    benefitForm.addEventListener("submit", event => {
+    benefitForm.addEventListener("submit", async event => {
         event.preventDefault();
+
+        const title = benefitTitleInput.value.trim();
+        const icon = benefitIconInput.value.trim();
+        const description = benefitDescriptionInput.value.trim();
+        const sortOrder = Number(benefitSortOrderInput.value) || 0;
+        const isActive = benefitActiveInput.checked;
+
+        if (!title || !icon || !description) {
+            showToast("Please fill in all required fields.");
+            return;
+        }
+
+        const access = await checkStoreAdminAccess();
+
+        if (!access) return;
+
+        const storeId = access.profile.store_id;
+
+        const benefitData = {
+            store_id: storeId,
+            title,
+            icon,
+            description,
+            sort_order: sortOrder,
+            is_active: isActive
+        };
+
+        const { error } = await supabaseClient
+            .from("store_benefits")
+            .insert(benefitData);
+
+        if (error) {
+            console.error("Saving benefit error:", error);
+            showToast("Unable to save benefit. Check the console.");
+            return;
+        }
+
+        benefitForm.reset();
+        benefitIconInput.value = "fa-star";
+        benefitSortOrderInput.value = "0";
+        benefitActiveInput.checked = true;
+
+        showToast("Benefit saved successfully!");
+        await loadBenefits(storeId);
     });
 }
-
     
 function resetCategoryForm() {
     editingCategoryId = null;

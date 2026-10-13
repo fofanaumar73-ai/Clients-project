@@ -5414,6 +5414,16 @@ const benefitsLoading =
 const emptyBenefits =
     document.getElementById("emptyBenefits");
 
+    /* =====================================================
+   PREVENT DEFAULT BENEFIT FORM SUBMISSION
+   ===================================================== */
+
+if (benefitForm) {
+    benefitForm.addEventListener("submit", event => {
+        event.preventDefault();
+    });
+}
+
     
 function resetCategoryForm() {
     editingCategoryId = null;

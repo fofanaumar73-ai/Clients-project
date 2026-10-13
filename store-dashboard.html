@@ -5969,7 +5969,68 @@ function renderBenefits() {
 benefitsTableBody.addEventListener("click", event => {
     const editButton = event.target.closest("[data-edit-benefit]");
 
-    if (!editButton) return;
+    // Handle Delete button clicks
+const deleteButton = event.target.closest("[data-delete-benefit]");
+
+if (deleteButton) {
+    const benefitId = deleteButton.dataset.deleteBenefit;
+
+    const benefit = benefits.find(
+        item => String(item.id) === String(benefitId)
+    );
+
+    if (!benefit) {
+        showToast("Benefit not found. Please refresh and try again.");
+        return;
+    }
+
+    const confirmed = confirm(
+        `Are you sure you want to delete "${benefit.title}"? This cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    const access = await checkStoreAdminAccess();
+
+    if (!access) return;
+
+    const storeId = access.profile.store_id;
+
+    const { error } = await supabaseClient
+        .from("store_benefits")
+        .delete()
+        .eq("id", benefitId)
+        .eq("store_id", storeId);
+
+    if (error) {
+        console.error("Delete benefit error:", error);
+        showToast("Unable to delete benefit. Please try again.");
+        return;
+    }
+
+    // Reset the form if the deleted benefit was being edited
+    if (String(editingBenefitId) === String(benefitId)) {
+        editingBenefitId = null;
+        benefitIdInput.value = "";
+        benefitForm.reset();
+
+        benefitIconInput.value = "fa-star";
+        benefitSortOrderInput.value = "0";
+        benefitActiveInput.checked = true;
+
+        benefitFormTitle.textContent = "Add a Benefit";
+        saveBenefitBtn.innerHTML =
+            '<i class="fa-solid fa-plus"></i> Save Benefit';
+
+        cancelBenefitEditBtn.style.display = "none";
+    }
+
+    showToast("Benefit deleted successfully!");
+    await loadBenefits(storeId);
+    return;
+}
+
+if (!editButton) return;
 
     const benefitId = editButton.dataset.editBenefit;
 

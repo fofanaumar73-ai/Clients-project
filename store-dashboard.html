@@ -5917,6 +5917,51 @@ function renderBenefits() {
     });
 }
 
+    /* =====================================================
+   EDIT WHY CHOOSE US BENEFIT
+   ===================================================== */
+
+benefitsTableBody.addEventListener("click", event => {
+    const editButton = event.target.closest("[data-edit-benefit]");
+
+    if (!editButton) return;
+
+    const benefitId = editButton.dataset.editBenefit;
+
+    const benefit = benefits.find(
+        item => String(item.id) === String(benefitId)
+    );
+
+    if (!benefit) {
+        showToast("Benefit not found. Please refresh and try again.");
+        return;
+    }
+
+    // Remember which benefit is being edited
+    editingBenefitId = benefit.id;
+
+    // Fill the form with the existing benefit
+    benefitIdInput.value = benefit.id;
+    benefitTitleInput.value = benefit.title || "";
+    benefitIconInput.value = benefit.icon || "fa-star";
+    benefitDescriptionInput.value = benefit.description || "";
+    benefitSortOrderInput.value = benefit.sort_order ?? 0;
+    benefitActiveInput.checked = Boolean(benefit.is_active);
+
+    // Update the form heading and button
+    benefitFormTitle.textContent = "Edit Benefit";
+    saveBenefitBtn.innerHTML =
+        '<i class="fa-solid fa-floppy-disk"></i> Update Benefit';
+
+    cancelBenefitEditBtn.style.display = "inline-block";
+
+    // Bring the form into view
+    benefitForm.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+});
+
 
 
     /* =====================================================

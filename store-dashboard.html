@@ -4068,6 +4068,65 @@ if (benefitsPanel) {
     });
 }
 
+    /* =====================================================
+   WHY CHOOSE US NAVIGATION
+   ===================================================== */
+
+if (benefitsNavBtn) {
+    benefitsNavBtn.addEventListener("click", () => {
+
+        // Hide the main dashboard overview
+        document.querySelectorAll(
+            ".welcome, .store-card, .stats-grid"
+        ).forEach(element => {
+            element.style.display = "none";
+        });
+
+        // Hide all section headers and tables first
+        document.querySelectorAll(
+            ".section-header, .table-card"
+        ).forEach(element => {
+            element.style.display = "none";
+        });
+
+        // Hide other management panels
+        if (settingsPanel) {
+            settingsPanel.style.display = "none";
+        }
+
+        if (categoriesPanel) {
+            categoriesPanel.style.display = "none";
+        }
+
+        // Show Why Choose Us
+        if (benefitsPanel) {
+            benefitsPanel.style.display = "block";
+
+            // Restore the elements inside this panel
+            benefitsPanel.querySelectorAll(
+                ".section-header, .table-card"
+            ).forEach(element => {
+                element.style.display = "";
+            });
+        }
+
+        // Update the active sidebar item
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        benefitsNavBtn.classList.add("active");
+
+        // Update the page heading
+        document.querySelector(".page-title h1").textContent =
+            "Why Choose Us";
+
+        document.getElementById("pageSubtitle").textContent =
+            "Manage the benefits displayed on your storefront";
+
+    });
+}
+
 
 
 /* -----------------------------------------------------

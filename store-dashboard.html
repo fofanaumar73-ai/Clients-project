@@ -5757,6 +5757,97 @@ if (error) {
 
 }
 
+    /* =====================================================
+   LOAD WHY CHOOSE US BENEFITS
+   ===================================================== */
+
+async function loadBenefits(storeId) {
+    if (!storeId) {
+        showToast("Store ID is missing.");
+        return;
+    }
+
+    benefitsLoading.style.display = "flex";
+    benefitsTableWrapper.style.display = "none";
+    emptyBenefits.style.display = "none";
+
+    const { data, error } = await supabaseClient
+        .from("store_benefits")
+        .select(`
+            id,
+            store_id,
+            icon,
+            title,
+            description,
+            sort_order,
+            is_active
+        `)
+        .eq("store_id", storeId)
+        .order("sort_order", { ascending: true });
+
+    benefitsLoading.style.display = "none";
+
+    if (error) {
+        console.error("Benefits loading error:", error);
+        benefits = [];
+        benefitsTableBody.innerHTML = "";
+        emptyBenefits.style.display = "block";
+        showToast("Unable to load benefits. Please try again.");
+        return;
+    }
+
+    benefits = data || [];
+
+    renderBenefits();
+}
+
+
+/* =====================================================
+   RENDER WHY CHOOSE US BENEFITS
+   ===================================================== */
+
+function renderBenefits() {
+    benefitsTableBody.innerHTML = "";
+
+    if (benefits.length === 0) {
+        benefitsTableWrapper.style.display = "none";
+        emptyBenefits.style.display = "block";
+        return;
+    }
+
+    emptyBenefits.style.display = "none";
+    benefitsTableWrapper.style.display = "block";
+
+    benefits.forEach(benefit => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>
+                <i class="fa-solid ${escapeHtml(benefit.icon || "fa-star")}"></i>
+            </td>
+
+            <td>
+                <strong>${escapeHtml(benefit.title)}</strong>
+                <p>${escapeHtml(benefit.description)}</p>
+            </td>
+
+            <td>${Number(benefit.sort_order) || 0}</td>
+
+            <td>
+                <span class="status-badge ${
+                    benefit.is_active ? "active" : "inactive"
+                }">
+                    ${benefit.is_active ? "Active" : "Inactive"}
+                </span>
+            </td>
+
+            <td>Actions coming next</td>
+        `;
+
+        benefitsTableBody.appendChild(row);
+    });
+}
+
 
 
     /* =====================================================

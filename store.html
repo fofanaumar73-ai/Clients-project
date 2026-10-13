@@ -3776,10 +3776,9 @@ async function loadBenefits(storeId) {
             is_active
         `)
         .eq("store_id", storeId)
-        .eq("is_active", true)
-        .order("sort_order", {
-            ascending: true
-        });
+.order("sort_order", {
+    ascending: true
+});
 
     if (error) {
 

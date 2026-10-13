@@ -5901,7 +5901,16 @@ function renderBenefits() {
                 </span>
             </td>
 
-            <td>Actions coming next</td>
+            <td>
+    <button
+        type="button"
+        class="secondary-btn"
+        data-edit-benefit="${escapeHtml(benefit.id)}"
+    >
+        <i class="fa-solid fa-pen-to-square"></i>
+        Edit
+    </button>
+</td>
         `;
 
         benefitsTableBody.appendChild(row);

@@ -4417,84 +4417,178 @@ function renderBenefits() {
    RENDER TESTIMONIALS
 ========================================================= */
 
+
+let testimonialSlideIndex = 0;
+let testimonialAutoplayTimer = null;
+
 function renderTestimonials() {
+    const track = document.getElementById("testimonialsGrid");
+    const dotsContainer = document.getElementById("testimonialDots");
+    const prevButton = document.getElementById("testimonialPrev");
+    const nextButton = document.getElementById("testimonialNext");
+    const viewport = document.getElementById("testimonialsViewport");
 
-    const grid =
-        document.getElementById(
-            "testimonialsGrid"
-        );
+    if (!track) return;
 
-    if (!grid) return;
+    // Stop any previous autoplay timer before rebuilding slides.
+    if (testimonialAutoplayTimer) {
+        clearInterval(testimonialAutoplayTimer);
+        testimonialAutoplayTimer = null;
+    }
 
-    if (!testimonials.length) {
+    const existingTestimonials = testimonials || [];
 
-        grid.innerHTML = `
-            <div class="empty-products">
-                <p>
-                    Customer testimonials will appear here.
-                </p>
-            </div>
+    if (!existingTestimonials.length) {
+        track.innerHTML = `
+            <article class="testimonial-card">
+                <p>Customer testimonials will appear here.</p>
+            </article>
         `;
 
+        track.style.transform = "translateX(0)";
+        if (dotsContainer) dotsContainer.innerHTML = "";
+        if (prevButton) prevButton.style.display = "none";
+        if (nextButton) nextButton.style.display = "none";
+        testimonialSlideIndex = 0;
         return;
     }
 
-    grid.innerHTML =
-        testimonials.map(testimonial => {
+    track.innerHTML = existingTestimonials.map(testimonial => {
+        const rating = Math.max(
+            1,
+            Math.min(5, Number(testimonial.rating) || 5)
+        );
 
-            const rating =
-                Math.max(
-                    1,
-                    Math.min(
-                        5,
-                        Number(
-                            testimonial.rating || 5
-                        )
-                    )
-                );
+        const stars = Array.from({ length: 5 }, (_, index) =>
+            `<span aria-hidden="true">${index < rating ? "★" : "☆"}</span>`
+        ).join("");
 
-            const stars =
-                "★".repeat(rating) +
-                "☆".repeat(5 - rating);
+        return `
+            <article class="testimonial-card">
+                <div class="testimonial-stars"
+                     aria-label="${rating} out of 5 stars">
+                    ${stars}
+                </div>
 
-            return `
-                <article class="testimonial-card">
+                <blockquote>
+                    “${escapeHtml(testimonial.testimonial || "")}”
+                </blockquote>
 
-                    <div class="testimonial-stars">
-                        ${stars}
-                    </div>
+                <p class="testimonial-name">
+                    — ${escapeHtml(testimonial.customer_name || "Customer")}
+                </p>
+            </article>
+        `;
+    }).join("");
 
-                    <p class="testimonial-text">
-                        “${escapeHtml(
-                            testimonial.testimonial ||
-                            ""
-                        )}”
-                    </p>
+    const total = existingTestimonials.length;
+    testimonialSlideIndex = ((testimonialSlideIndex % total) + total) % total;
 
-                    <div class="testimonial-name">
-                        ${escapeHtml(
-                            testimonial.customer_name ||
-                            "Customer"
-                        )}
-                    </div>
+    if (dotsContainer) {
+        dotsContainer.innerHTML = existingTestimonials.map((_, index) => `
+            <button
+                type="button"
+                class="testimonial-dot${index === testimonialSlideIndex ? " active" : ""}"
+                data-testimonial-index="${index}"
+                aria-label="Show testimonial ${index + 1}"
+                aria-current="${index === testimonialSlideIndex ? "true" : "false"}"
+            ></button>
+        `).join("");
+    }
 
-                    ${
-                        testimonial.location
-                        ? `
-                            <span class="testimonial-location">
-                                ${escapeHtml(
-                                    testimonial.location
-                                )}
-                            </span>
-                        `
-                        : ""
-                    }
+    const showArrows = total > 1;
 
-                </article>
-            `;
+    if (prevButton) prevButton.style.display = showArrows ? "" : "none";
+    if (nextButton) nextButton.style.display = showArrows ? "" : "none";
+    if (dotsContainer) dotsContainer.style.display = showArrows ? "" : "none";
 
-        }).join("");
+    function showSlide(index) {
+        testimonialSlideIndex = (index + total) % total;
+
+        track.style.transform =
+            `translateX(-${testimonialSlideIndex * 100}%)`;
+
+        if (dotsContainer) {
+            dotsContainer.querySelectorAll(".testimonial-dot").forEach((dot, i) => {
+                const active = i === testimonialSlideIndex;
+                dot.classList.toggle("active", active);
+                dot.setAttribute("aria-current", active ? "true" : "false");
+            });
+        }
+    }
+
+    function restartAutoplay() {
+        if (testimonialAutoplayTimer) {
+            clearInterval(testimonialAutoplayTimer);
+            testimonialAutoplayTimer = null;
+        }
+
+        if (total > 1) {
+            testimonialAutoplayTimer = setInterval(() => {
+                showSlide(testimonialSlideIndex + 1);
+            }, 5000);
+        }
+    }
+
+    // Register the controls only once.
+    if (prevButton && prevButton.dataset.sliderReady !== "true") {
+        prevButton.addEventListener("click", () => {
+            showSlide(testimonialSlideIndex - 1);
+            restartAutoplay();
+        });
+        prevButton.dataset.sliderReady = "true";
+    }
+
+    if (nextButton && nextButton.dataset.sliderReady !== "true") {
+        nextButton.addEventListener("click", () => {
+            showSlide(testimonialSlideIndex + 1);
+            restartAutoplay();
+        });
+        nextButton.dataset.sliderReady = "true";
+    }
+
+    if (dotsContainer && dotsContainer.dataset.sliderReady !== "true") {
+        dotsContainer.addEventListener("click", event => {
+            const dot = event.target.closest("[data-testimonial-index]");
+            if (!dot) return;
+
+            showSlide(Number(dot.dataset.testimonialIndex));
+            restartAutoplay();
+        });
+        dotsContainer.dataset.sliderReady = "true";
+    }
+
+    // Pause while visitors hover over or focus inside the slider.
+    if (viewport && viewport.dataset.sliderReady !== "true") {
+        viewport.addEventListener("mouseenter", () => {
+            if (testimonialAutoplayTimer) {
+                clearInterval(testimonialAutoplayTimer);
+                testimonialAutoplayTimer = null;
+            }
+        });
+
+        viewport.addEventListener("mouseleave", restartAutoplay);
+
+        viewport.addEventListener("focusin", () => {
+            if (testimonialAutoplayTimer) {
+                clearInterval(testimonialAutoplayTimer);
+                testimonialAutoplayTimer = null;
+            }
+        });
+
+        viewport.addEventListener("focusout", event => {
+            if (!viewport.contains(event.relatedTarget)) {
+                restartAutoplay();
+            }
+        });
+
+        viewport.dataset.sliderReady = "true";
+    }
+
+    showSlide(testimonialSlideIndex);
+    restartAutoplay();
 }
+
 
 
 /* =========================================================

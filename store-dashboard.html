@@ -4077,7 +4077,7 @@ if (benefitsPanel) {
    ===================================================== */
 
 if (benefitsNavBtn) {
-    benefitsNavBtn.addEventListener("click", () => {
+    benefitsNavBtn.addEventListener("click", async () => {
 
         // Hide the main dashboard overview
         document.querySelectorAll(
@@ -4127,6 +4127,13 @@ if (benefitsNavBtn) {
 
         document.getElementById("pageSubtitle").textContent =
             "Manage the benefits displayed on your storefront";
+        
+        // Load benefits belonging to this store
+const access = await checkStoreAdminAccess();
+
+if (!access) return;
+
+await loadBenefits(access.profile.store_id);
 
     });
 }

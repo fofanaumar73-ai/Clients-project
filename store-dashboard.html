@@ -6132,6 +6132,60 @@ async function loadBenefits(storeId) {
     renderBenefits();
 }
 
+    
+/* =====================================================
+   LOAD TESTIMONIALS & CUSTOMER REVIEWS
+   ===================================================== */
+
+async function loadTestimonials(storeId) {
+    if (!storeId) {
+        showToast("Store ID is missing.");
+        return;
+    }
+
+    const loading = document.getElementById("testimonialsLoading");
+    const tableWrapper = document.getElementById("testimonialsTableWrapper");
+    const emptyState = document.getElementById("emptyTestimonials");
+    const tableBody = document.getElementById("testimonialsTableBody");
+
+    if (loading) loading.style.display = "flex";
+    if (tableWrapper) tableWrapper.style.display = "none";
+    if (emptyState) emptyState.style.display = "none";
+
+    const { data, error } = await supabaseClient
+        .from("store_testimonials")
+        .select(`
+            id,
+            store_id,
+            customer_name,
+            rating,
+            testimonial,
+            review_source,
+            approval_status,
+            is_active,
+            sort_order,
+            created_at
+        `)
+        .eq("store_id", storeId)
+        .order("created_at", { ascending: false });
+
+    if (loading) loading.style.display = "none";
+
+    if (error) {
+        console.error("Testimonials loading error:", error);
+
+        if (tableBody) tableBody.innerHTML = "";
+        if (emptyState) emptyState.style.display = "block";
+
+        showToast("Unable to load testimonials. Please try again.");
+        return;
+    }
+
+    testimonials = data || [];
+
+    renderTestimonialsTable();
+}
+
 
 /* =====================================================
    RENDER WHY CHOOSE US BENEFITS

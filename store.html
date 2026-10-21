@@ -2723,6 +2723,72 @@ footer {
 }
 
         
+/* ==========================================
+   FINAL TESTIMONIAL WIDTH OVERRIDE
+   ========================================== */
+
+#testimonials,
+#testimonials .testimonials-slider,
+#testimonials .testimonials-viewport,
+#testimonials .testimonials-track {
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+}
+
+#testimonials .testimonials-slider {
+    display: grid !important;
+    grid-template-columns: 48px minmax(0, 1fr) 48px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+#testimonials .testimonials-viewport {
+    grid-column: 2 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+
+#testimonials .testimonials-track {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: none !important;
+}
+
+#testimonials .testimonial-card {
+    display: block !important;
+    position: relative !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+}
+
+#testimonials .testimonial-card blockquote {
+    display: block !important;
+    width: 100% !important;
+    max-width: 720px !important;
+    min-width: 0 !important;
+    margin: 0 auto 22px !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Small screens */
+@media (max-width: 600px) {
+    #testimonials .testimonials-slider {
+        grid-template-columns: 36px minmax(0, 1fr) 36px !important;
+        gap: 8px !important;
+    }
+}
+
+        
     </style>
 </head>
 

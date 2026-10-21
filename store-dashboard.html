@@ -6186,6 +6186,19 @@ async function loadTestimonials(storeId) {
 
     testimonials = data || [];
 
+    console.log("Testimonials loaded:", testimonials);
+console.log(
+    "Testimonials table body found:",
+    !!document.getElementById("testimonialsTableBody")
+);
+
+renderTestimonialsTable();
+
+console.log(
+    "Testimonials table rows:",
+    document.getElementById("testimonialsTableBody")?.children.length
+);
+
     renderTestimonialsTable();
 }
 

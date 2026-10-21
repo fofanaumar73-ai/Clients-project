@@ -502,6 +502,10 @@
     const backToStore =
         document.getElementById("backToStore");
 
+    const resendConfirmationButton = document.getElementById(
+    "resendConfirmationButton"
+);
+
 
     /* =====================================================
        MESSAGE
@@ -1099,11 +1103,6 @@ const {
         await checkExistingSession();
 
     }
-
-    
-const resendConfirmationButton = document.getElementById(
-    "resendConfirmationButton"
-);
 
 resendConfirmationButton.addEventListener("click", async () => {
     clearMessage();

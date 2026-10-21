@@ -589,17 +589,16 @@
         }
 
 
-        currentStore = data;
+       currentStore = data;
 
-        storeName.textContent =
-            data.name;
+storeName.textContent = data.name;
 
-       window.location.href =
+backToStore.href =
     `store.html?store=${encodeURIComponent(
-        currentStore.slug
+        data.slug
     )}`;
 
-        return true;
+return true;
 
     }
 

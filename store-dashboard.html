@@ -4365,12 +4365,15 @@ if (testimonialsNavBtn) {
         document.getElementById("pageSubtitle").textContent =
             "Manage store testimonials and customer reviews";
 
+        
         // Check access to this store
         const access = await checkStoreAdminAccess();
 
         if (!access) return;
 
-        // We'll connect testimonial loading here in a later step.
+        // Load testimonials for this store and render the table
+        await loadTestimonials(access.profile.store_id);
+
     });
 }
 

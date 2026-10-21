@@ -876,16 +876,24 @@ return true;
              * Create Supabase Auth account.
              */
 
-            const {
-                data,
-                error
-            } =
-                await supabaseClient.auth.signUp(
-                    {
-                        email,
-                        password
-                    }
-                );
+           
+const {
+    data,
+    error
+} = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+        data: {
+            full_name: fullName,
+            phone: phone,
+            address: address
+        },
+        emailRedirectTo:
+            `${window.location.origin}${window.location.pathname}?store=${encodeURIComponent(currentStore.slug)}`
+    }
+});
+
 
 
             if (error) {

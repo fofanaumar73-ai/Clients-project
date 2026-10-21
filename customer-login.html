@@ -594,10 +594,10 @@
         storeName.textContent =
             data.name;
 
-        backToStore.href =
-            `store.html?store=${encodeURIComponent(
-                data.slug
-            )}`;
+        window.location.href =
+    `customer-dashboard.html?store=${encodeURIComponent(
+        currentStore.slug
+    )}`;
 
         return true;
 

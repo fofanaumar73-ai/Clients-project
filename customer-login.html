@@ -307,6 +307,15 @@
 
         </form>
 
+        
+<button
+    type="button"
+    id="resendConfirmationButton"
+    style="display:none; width:100%; margin-top:12px; padding:12px; border:1px solid #ddd; border-radius:12px; background:#fff; cursor:pointer;"
+>
+    Resend Confirmation Email
+</button>
+
 
         <!-- SIGN UP -->
 
@@ -730,16 +739,27 @@ return true;
 
 
             if (error) {
+    console.error("Login error:", error);
 
-                console.error(
-                    "Login error:",
-                    error
-                );
+    const needsConfirmation =
+        error.code === "email_not_confirmed" ||
+        error.message?.toLowerCase().includes("email not confirmed");
 
-                showMessage(
-                    error.message ||
-                    "Login failed."
-                );
+    if (needsConfirmation) {
+        resendConfirmationButton.style.display = "block";
+
+        showMessage(
+            "Your email is not confirmed yet. Click below to receive a new confirmation email."
+        );
+    } else {
+        showMessage(error.message || "Login failed.");
+        resendConfirmationButton.style.display = "none";
+    }
+
+    loginButton.disabled = false;
+    loginButton.textContent = "Login";
+    return;
+}
 
                 loginButton.disabled = false;
 
@@ -1087,6 +1107,58 @@ const {
         await checkExistingSession();
 
     }
+
+    
+const resendConfirmationButton = document.getElementById(
+    "resendConfirmationButton"
+);
+
+resendConfirmationButton.addEventListener("click", async () => {
+    clearMessage();
+
+    const email = document.getElementById("loginEmail").value.trim();
+
+    if (!email) {
+        showMessage("Enter your email in the Login form first.");
+        document.getElementById("loginEmail").focus();
+        return;
+    }
+
+    if (!currentStore) {
+        showMessage("Store information is not available. Please refresh the page.");
+        return;
+    }
+
+    resendConfirmationButton.disabled = true;
+    resendConfirmationButton.textContent = "Sending...";
+
+    try {
+        const { error } = await supabaseClient.auth.resend({
+            type: "signup",
+            email,
+            options: {
+                emailRedirectTo:
+                    `${window.location.origin}${window.location.pathname}?store=${encodeURIComponent(currentStore.slug)}`
+            }
+        });
+
+        if (error) {
+            console.error("Resend confirmation error:", error);
+            showMessage(error.message || "Unable to resend the confirmation email.");
+        } else {
+            showMessage(
+                "If this account is awaiting confirmation, a new confirmation email has been requested. Please check your inbox and spam folder.",
+                "success"
+            );
+        }
+    } catch (error) {
+        console.error("Resend confirmation error:", error);
+        showMessage("Something went wrong. Please try again.");
+    } finally {
+        resendConfirmationButton.disabled = false;
+        resendConfirmationButton.textContent = "Resend Confirmation Email";
+    }
+});
 
 
     initialize();

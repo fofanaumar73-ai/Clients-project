@@ -738,7 +738,8 @@ return true;
                 );
 
 
-            if (error) {
+            
+if (error) {
     console.error("Login error:", error);
 
     const needsConfirmation =
@@ -747,13 +748,12 @@ return true;
 
     if (needsConfirmation) {
         resendConfirmationButton.style.display = "block";
-
         showMessage(
             "Your email is not confirmed yet. Click below to receive a new confirmation email."
         );
     } else {
-        showMessage(error.message || "Login failed.");
         resendConfirmationButton.style.display = "none";
+        showMessage(error.message || "Login failed.");
     }
 
     loginButton.disabled = false;
@@ -761,14 +761,6 @@ return true;
     return;
 }
 
-                loginButton.disabled = false;
-
-                loginButton.textContent =
-                    "Login";
-
-                return;
-
-            }
 
 
             /*

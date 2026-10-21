@@ -6186,6 +6186,104 @@ async function loadTestimonials(storeId) {
     renderTestimonialsTable();
 }
 
+    
+/* =====================================================
+   RENDER TESTIMONIALS TABLE
+   ===================================================== */
+
+function renderTestimonialsTable() {
+    const tableBody = document.getElementById("testimonialsTableBody");
+    const tableWrapper = document.getElementById("testimonialsTableWrapper");
+    const emptyState = document.getElementById("emptyTestimonials");
+
+    if (!tableBody || !tableWrapper || !emptyState) return;
+
+    tableBody.innerHTML = "";
+
+    if (!testimonials || testimonials.length === 0) {
+        tableWrapper.style.display = "none";
+        emptyState.style.display = "block";
+        return;
+    }
+
+    emptyState.style.display = "none";
+    tableWrapper.style.display = "block";
+
+    testimonials.forEach(item => {
+        const row = document.createElement("tr");
+
+        const source = item.review_source || "admin";
+        const status = item.approval_status || "approved";
+
+        const statusClass =
+            status === "approved" ? "active" :
+            status === "rejected" ? "inactive" : "";
+
+        row.innerHTML = `
+            <td><strong>${escapeHtml(item.customer_name || "Customer")}</strong></td>
+
+            <td>
+                <span aria-label="${Number(item.rating) || 5} out of 5 stars">
+                    ${"★".repeat(Math.max(0, Math.min(5, Number(item.rating) || 5)))}
+                </span>
+            </td>
+
+            <td>${escapeHtml(item.testimonial || "")}</td>
+
+            <td>${source === "customer" ? "Customer" : "Admin"}</td>
+
+            <td>
+                <span class="status-badge ${statusClass}">
+                    ${escapeHtml(status.charAt(0).toUpperCase() + status.slice(1))}
+                </span>
+            </td>
+
+            <td>
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    data-edit-testimonial="${escapeHtml(item.id)}"
+                >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    Edit
+                </button>
+
+                ${
+                    source === "customer"
+                    ? `
+                        <button
+                            type="button"
+                            class="secondary-btn"
+                            data-approve-testimonial="${escapeHtml(item.id)}"
+                            ${status === "approved" ? "disabled" : ""}
+                        >Approve</button>
+
+                        <button
+                            type="button"
+                            class="secondary-btn"
+                            data-reject-testimonial="${escapeHtml(item.id)}"
+                            ${status === "rejected" ? "disabled" : ""}
+                        >Reject</button>
+                    `
+                    : ""
+                }
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    data-delete-testimonial="${escapeHtml(item.id)}"
+                    style="color:#dc2626; margin-left:6px;"
+                >
+                    <i class="fa-solid fa-trash"></i>
+                    Delete
+                </button>
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+}
+
 
 /* =====================================================
    RENDER WHY CHOOSE US BENEFITS

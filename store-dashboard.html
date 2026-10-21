@@ -6441,6 +6441,113 @@ await loadProducts(profile.store_id);
 
     }
 
+    
+/* =====================================================
+   SAVE ADMIN TESTIMONIAL
+   ===================================================== */
+
+const testimonialForm = document.getElementById("testimonialForm");
+
+if (testimonialForm) {
+    testimonialForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const saveButton = document.getElementById("saveTestimonialBtn");
+        const testimonialId = document.getElementById("testimonialId")?.value.trim();
+        const customerName = document.getElementById("testimonialCustomerName")?.value.trim();
+        const rating = Number(document.getElementById("testimonialRating")?.value);
+        const testimonialText = document.getElementById("testimonialText")?.value.trim();
+        const sortOrder = Number(document.getElementById("testimonialSortOrder")?.value || 0);
+
+        if (!customerName || !testimonialText || rating < 1 || rating > 5) {
+            alert("Please enter a name, a review, and a rating from 1 to 5.");
+            return;
+        }
+
+        const originalButtonHTML = saveButton?.innerHTML;
+
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = "Saving...";
+        }
+
+        try {
+            const access = await checkStoreAdminAccess();
+
+            if (!access) return;
+
+            const storeId = access.profile.store_id;
+
+            const testimonialData = {
+                store_id: storeId,
+                customer_name: customerName,
+                rating,
+                testimonial: testimonialText,
+                sort_order: sortOrder,
+                is_active: true,
+                review_source: "admin",
+                approval_status: "approved",
+                customer_id: null,
+                order_id: null
+            };
+
+            let result;
+
+            if (testimonialId) {
+                result = await supabaseClient
+                    .from("store_testimonials")
+                    .update(testimonialData)
+                    .eq("id", testimonialId)
+                    .eq("store_id", storeId);
+            } else {
+                result = await supabaseClient
+                    .from("store_testimonials")
+                    .insert(testimonialData);
+            }
+
+            if (result.error) {
+                throw result.error;
+            }
+
+            alert(
+                testimonialId
+                    ? "Testimonial updated successfully."
+                    : "Testimonial saved successfully."
+            );
+
+            testimonialForm.reset();
+
+            const hiddenId = document.getElementById("testimonialId");
+            if (hiddenId) hiddenId.value = "";
+
+            const formTitle = document.getElementById("testimonialFormTitle");
+            if (formTitle) formTitle.textContent = "Add a Testimonial";
+
+            if (saveButton) {
+                saveButton.innerHTML =
+                    '<i class="fa-solid fa-plus"></i> Save Testimonial';
+            }
+
+            const cancelButton = document.getElementById("cancelTestimonialEditBtn");
+            if (cancelButton) cancelButton.style.display = "none";
+
+            // Refresh the dashboard list after the loader is connected.
+        } catch (error) {
+            console.error("Save testimonial error:", error);
+            alert("Unable to save the testimonial. Check the browser console for details.");
+        } finally {
+            if (saveButton) {
+                saveButton.disabled = false;
+
+                if (saveButton.textContent === "Saving...") {
+                    saveButton.innerHTML = originalButtonHTML ||
+                        '<i class="fa-solid fa-plus"></i> Save Testimonial';
+                }
+            }
+        }
+    });
+}
+
 
     initializeDashboard();
 

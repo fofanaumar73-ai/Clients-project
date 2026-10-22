@@ -770,6 +770,16 @@ if (loginFullNameGroup.style.display === "block") {
 
     }
 
+    
+showMessage("Your name has been saved. Opening your customer dashboard...", "success");
+
+setTimeout(() => {
+    window.location.href =
+        `customer-dashboard.html?store=${encodeURIComponent(currentStore.slug)}`;
+}, 700);
+
+return;
+
 
     /* =====================================================
        LOGIN

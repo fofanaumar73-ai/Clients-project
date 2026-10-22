@@ -1099,12 +1099,14 @@
             return false;
         }
 
-        if (profile && profile.role && profile.role !== "CUSTOMER") {
-            showStatus("This dashboard is for customer accounts only.", "error");
-            await supabaseClient.auth.signOut();
-            redirectToLogin();
-            return false;
-        }
+       if (profile && profile.role && profile.role !== "CUSTOMER") {
+    showStatus(
+        "This dashboard is for customer accounts only. Please use the correct account portal.",
+        "error"
+    );
+
+    return false;
+}
 
         /*
          * The customer record returned by the RPC is expected

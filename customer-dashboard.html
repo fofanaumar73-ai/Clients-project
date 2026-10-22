@@ -1159,6 +1159,195 @@
         document.getElementById("accountDetails").style.display = "grid";
     }
 
+    
+/* =========================================
+   CUSTOMER ORDER HISTORY
+========================================= */
+
+let customerOrders = [];
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[character]);
+}
+
+function formatMoney(value) {
+    const amount = Number(value);
+
+    if (!Number.isFinite(amount)) return "—";
+
+    return new Intl.NumberFormat("en-NG", {
+        style: "currency",
+        currency: "NGN",
+        maximumFractionDigits: 2
+    }).format(amount);
+}
+
+function formatOrderDate(value) {
+    if (!value) return "Date unavailable";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Date unavailable";
+    }
+
+    return date.toLocaleString("en-NG", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+    });
+}
+
+function renderOrderCard(order) {
+    const orderNumber = escapeHTML(
+        String(order.id || "").slice(0, 8).toUpperCase()
+    );
+
+    const status = escapeHTML(
+        String(order.status || "PENDING").replace(/_/g, " ")
+    );
+
+    const date = escapeHTML(formatOrderDate(order.created_at));
+    const items = Array.isArray(order.order_items)
+        ? order.order_items
+        : [];
+
+    const itemHTML = items.length
+        ? items.map(item => {
+            const quantity = Number(item.quantity) || 0;
+            const subtotal = item.subtotal ??
+                (Number(item.unit_price) * quantity);
+
+            return `
+                <div>
+                    ${escapeHTML(item.product_name || "Product")}
+                    × ${quantity} — ${formatMoney(subtotal)}
+                </div>
+            `;
+        }).join("")
+        : "<div>Order items unavailable.</div>";
+
+    return `
+        <article class="order-card">
+            <div class="order-card-top">
+                <div>
+                    <div class="order-number">
+                        Order #${orderNumber}
+                    </div>
+                    <div class="order-date">${date}</div>
+                </div>
+
+                <span class="order-status">${status}</span>
+            </div>
+
+            <div class="order-items">${itemHTML}</div>
+
+            <div class="order-total-row">
+                <span>Total</span>
+                <strong>${formatMoney(order.total_amount)}</strong>
+            </div>
+        </article>
+    `;
+}
+
+function renderCustomerOrders() {
+    const ordersList = document.getElementById("ordersList");
+    const recentList = document.getElementById(
+        "recentOrdersContainer"
+    );
+
+    document.getElementById("ordersCount").textContent =
+        String(customerOrders.length);
+
+    if (!customerOrders.length) {
+        const emptyHTML = `
+            <div class="orders-empty">
+                <h4>No orders yet</h4>
+                <p>Your purchases will appear here after you place an order.</p>
+            </div>
+        `;
+
+        if (ordersList) ordersList.innerHTML = emptyHTML;
+        if (recentList) recentList.innerHTML = emptyHTML;
+
+        return;
+    }
+
+    if (ordersList) {
+        ordersList.innerHTML = customerOrders
+            .map(renderOrderCard)
+            .join("");
+    }
+
+    if (recentList) {
+        recentList.innerHTML = customerOrders
+            .slice(0, 3)
+            .map(renderOrderCard)
+            .join("");
+    }
+}
+
+async function loadCustomerOrders() {
+    if (!currentCustomer || !currentStore) return;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("orders")
+            .select(`
+                id,
+                store_id,
+                customer_id,
+                status,
+                total_amount,
+                created_at,
+                order_items (
+                    product_name,
+                    quantity,
+                    unit_price,
+                    subtotal
+                )
+            `)
+            .eq("store_id", currentStore.id)
+            .eq("customer_id", currentCustomer.id)
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        customerOrders = data || [];
+        renderCustomerOrders();
+
+    } catch (error) {
+        console.error("Customer orders loading error:", error);
+
+        const errorHTML = `
+            <div class="orders-empty">
+                We couldn't load your orders. Please refresh and try again.
+            </div>
+        `;
+
+        const ordersList = document.getElementById("ordersList");
+        const recentList = document.getElementById(
+            "recentOrdersContainer"
+        );
+
+        if (ordersList) ordersList.innerHTML = errorHTML;
+        if (recentList) recentList.innerHTML = errorHTML;
+
+        showStatus(
+            "Order history could not be retrieved. Check the browser console and Supabase RLS policies.",
+            "error"
+        );
+    }
+}
+
     function redirectToLogin() {
         const loginUrl = `customer-login.html?store=${encodeURIComponent(storeSlug || "")}`;
         window.location.replace(loginUrl);
@@ -1253,17 +1442,19 @@
     // --------------------------------------------------
 
     async function initializeDashboard() {
-        document.getElementById("currentYear").textContent =
-            new Date().getFullYear();
+    document.getElementById("currentYear").textContent =
+        new Date().getFullYear();
 
-        const storeLoaded = await loadStore();
-        if (!storeLoaded) return;
+    const storeLoaded = await loadStore();
+    if (!storeLoaded) return;
 
-        const customerLoaded = await loadCustomer();
-        if (!customerLoaded) return;
-    }
+    const customerLoaded = await loadCustomer();
+    if (!customerLoaded) return;
 
-    initializeDashboard();
+    await loadCustomerOrders();
+}
+
+initializeDashboard();
 </script>
 
 </body>

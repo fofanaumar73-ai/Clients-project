@@ -2293,6 +2293,74 @@
             </div>
 
 
+            
+<!-- CUSTOMERS MANAGEMENT -->
+<section
+    class="categories-panel"
+    id="customersPanel"
+    style="display: none;"
+>
+    <div class="section-header">
+        <div>
+            <h2>Your Customers</h2>
+            <p>View customers registered to your store.</p>
+        </div>
+    </div>
+
+    <div class="settings-card">
+        <div class="form-group">
+            <label for="customerSearch">Search Customers</label>
+            <input
+                type="search"
+                id="customerSearch"
+                placeholder="Search by name, phone or address..."
+                autocomplete="off"
+            >
+        </div>
+        <p id="customerCount">Customers: 0</p>
+    </div>
+
+    <div class="table-card">
+        <div
+            class="loading"
+            id="customersLoading"
+            style="display: none;"
+        >
+            <span class="spinner"></span>
+            Loading customers...
+        </div>
+
+        <div
+            class="table-wrapper"
+            id="customersTableWrapper"
+            style="display: none;"
+        >
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody id="customersTableBody"></tbody>
+            </table>
+        </div>
+
+        <div
+            class="empty-state"
+            id="emptyCustomers"
+            style="display: none;"
+        >
+            <i class="fa-solid fa-users"></i>
+            <p id="emptyCustomersMessage">
+                No customers found.
+            </p>
+        </div>
+    </div>
+</section>
+
+
             <!-- =====================================================
      CATEGORY MANAGEMENT
      ===================================================== -->

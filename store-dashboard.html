@@ -4449,6 +4449,162 @@ if (testimonialsNavBtn) {
 }
 
 
+    
+/* =====================================================
+   CUSTOMERS PAGE
+   ===================================================== */
+
+const customersNavBtn = document.querySelector(
+    '.nav-item[data-page="customers"]'
+);
+
+const customersPanel = document.getElementById("customersPanel");
+const customersTableBody = document.getElementById("customersTableBody");
+const customersTableWrapper = document.getElementById("customersTableWrapper");
+const customersLoading = document.getElementById("customersLoading");
+const emptyCustomers = document.getElementById("emptyCustomers");
+const emptyCustomersMessage = document.getElementById("emptyCustomersMessage");
+const customerSearch = document.getElementById("customerSearch");
+const customerCount = document.getElementById("customerCount");
+
+let storeCustomers = [];
+
+function renderStoreCustomers(searchTerm = "") {
+    if (!customersTableBody) return;
+
+    const term = searchTerm.trim().toLowerCase();
+
+    const filteredCustomers = storeCustomers.filter(customer => {
+        return [
+            customer.full_name,
+            customer.phone,
+            customer.address
+        ].some(value =>
+            String(value || "").toLowerCase().includes(term)
+        );
+    });
+
+    customersTableBody.replaceChildren();
+
+    customerCount.textContent =
+        `Customers: ${filteredCustomers.length}`;
+
+    if (filteredCustomers.length === 0) {
+        customersTableWrapper.style.display = "none";
+        emptyCustomers.style.display = "block";
+
+        emptyCustomersMessage.textContent = term
+            ? "No customers match your search."
+            : "No customers have registered to your store yet.";
+
+        return;
+    }
+
+    emptyCustomers.style.display = "none";
+    customersTableWrapper.style.display = "block";
+
+    filteredCustomers.forEach(customer => {
+        const row = document.createElement("tr");
+
+        [
+            customer.full_name || "Not provided",
+            customer.phone || "Not provided",
+            customer.address || "Not provided"
+        ].forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        customersTableBody.appendChild(row);
+    });
+}
+
+async function loadStoreCustomers(storeId) {
+    customersLoading.style.display = "flex";
+    customersTableWrapper.style.display = "none";
+    emptyCustomers.style.display = "none";
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("customers")
+            .select("id, full_name, phone, address, store_id")
+            .eq("store_id", storeId)
+            .order("full_name", { ascending: true });
+
+        if (error) throw error;
+
+        storeCustomers = data || [];
+        renderStoreCustomers(customerSearch.value);
+
+    } catch (error) {
+        console.error("Could not load store customers:", error);
+
+        storeCustomers = [];
+        customersTableWrapper.style.display = "none";
+        emptyCustomers.style.display = "block";
+        emptyCustomersMessage.textContent =
+            "Unable to load customers. Please refresh and try again.";
+
+        showToast("Could not load customers. Check the console for details.");
+
+    } finally {
+        customersLoading.style.display = "none";
+    }
+}
+
+if (customerSearch) {
+    customerSearch.addEventListener("input", () => {
+        renderStoreCustomers(customerSearch.value);
+    });
+}
+
+if (customersNavBtn) {
+    customersNavBtn.addEventListener("click", async () => {
+
+        document.querySelectorAll(
+            ".welcome, .store-card, .stats-grid, .section-header, .table-card"
+        ).forEach(element => {
+            element.style.display = "none";
+        });
+
+        [
+            settingsPanel,
+            categoriesPanel,
+            benefitsPanel,
+            testimonialsPanel
+        ].forEach(panel => {
+            if (panel) panel.style.display = "none";
+        });
+
+        customersPanel.style.display = "block";
+
+        customersPanel.querySelectorAll(
+            ".section-header, .table-card"
+        ).forEach(element => {
+            element.style.display = "";
+        });
+
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        customersNavBtn.classList.add("active");
+
+        document.querySelector(".page-title h1").textContent =
+            "Customers";
+
+        document.getElementById("pageSubtitle").textContent =
+            "View customers registered to your store";
+
+        const access = await checkStoreAdminAccess();
+
+        if (!access) return;
+
+        await loadStoreCustomers(access.profile.store_id);
+    });
+}
+
 
 /* -----------------------------------------------------
    SAVE STORE SETTINGS

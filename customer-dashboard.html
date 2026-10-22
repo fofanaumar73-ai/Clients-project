@@ -1068,12 +1068,16 @@
                 p_store_slug: currentStore.slug
             });
 
-        if (customerError || !customerRecord) {
-            console.error("Customer/store verification error:", customerError);
-            await supabaseClient.auth.signOut();
-            redirectToLogin();
-            return false;
-        }
+       if (customerError || !customerRecord) {
+    console.error("Customer/store verification error:", customerError);
+
+    showStatus(
+        "We couldn't verify your customer account for this store. Your session is still active. Please refresh or try again.",
+        "error"
+    );
+
+    return false;
+}
 
         const user = sessionData.session.user;
 

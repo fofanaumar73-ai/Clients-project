@@ -1812,6 +1812,37 @@
     }
 }
 
+        
+/* ORDERS MANAGEMENT */
+#ordersPanel .orders-items {
+    min-width: 180px;
+    max-width: 290px;
+    white-space: normal;
+    line-height: 1.5;
+}
+
+#ordersPanel .order-id {
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+#ordersPanel .order-meta {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+}
+
+#ordersPanel .order-status-select {
+    min-width: 140px;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--text);
+    font: inherit;
+}
+
     </style>
 
 </head>
@@ -1893,13 +1924,13 @@
 </button>
 
             <button
-                type="button"
-                class="nav-item"
-                data-coming-soon="Orders"
-            >
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span>Orders</span>
-            </button>
+    type="button"
+    class="nav-item"
+    id="ordersNavBtn"
+>
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>Orders</span>
+</button>
 
 
             
@@ -2292,6 +2323,63 @@
 
             </div>
 
+
+            
+<!-- ORDERS MANAGEMENT -->
+<section class="categories-panel" id="ordersPanel" style="display:none;">
+    <div class="section-header">
+        <div>
+            <h2>Store Orders</h2>
+            <p>Review customer orders and update their fulfilment status.</p>
+        </div>
+        <button type="button" class="secondary-btn" id="refreshOrdersBtn">
+            <i class="fa-solid fa-rotate"></i> Refresh
+        </button>
+    </div>
+
+    <div class="settings-card" style="margin-bottom:18px;">
+        <div class="form-group">
+            <label for="ordersSearch">Search orders</label>
+            <input
+                type="search"
+                id="ordersSearch"
+                placeholder="Search order ID, customer, phone or status..."
+                autocomplete="off"
+            >
+        </div>
+        <p id="ordersCount">Orders: 0</p>
+    </div>
+
+    <div class="table-card">
+        <div class="loading" id="ordersLoading" style="display:none;">
+            <span class="spinner"></span> Loading orders...
+        </div>
+
+        <div class="table-wrapper" id="ordersTableWrapper" style="display:none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Placed</th>
+                        <th>Status</th>
+                        <th>Update status</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" id="emptyOrders" style="display:none;">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <p id="emptyOrdersMessage">
+                No orders have been placed for this store yet.
+            </p>
+        </div>
+    </div>
+</section>
 
             
 <!-- CUSTOMERS MANAGEMENT -->
@@ -4606,6 +4694,354 @@ if (customersNavBtn) {
 }
 
 
+
+/* =====================================================
+   ORDERS MANAGEMENT
+   ===================================================== */
+
+const ordersNavBtn = document.getElementById("ordersNavBtn");
+const ordersPanel = document.getElementById("ordersPanel");
+const ordersTableBody = document.getElementById("ordersTableBody");
+const ordersTableWrapper = document.getElementById("ordersTableWrapper");
+const ordersLoading = document.getElementById("ordersLoading");
+const emptyOrders = document.getElementById("emptyOrders");
+const emptyOrdersMessage = document.getElementById("emptyOrdersMessage");
+const ordersSearch = document.getElementById("ordersSearch");
+const ordersCount = document.getElementById("ordersCount");
+const refreshOrdersBtn = document.getElementById("refreshOrdersBtn");
+
+let storeOrders = [];
+
+const ORDER_STATUSES = [
+    "PENDING",
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED"
+];
+
+function formatOrderDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    return Number.isNaN(date.getTime())
+        ? "—"
+        : date.toLocaleString(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short"
+        });
+}
+
+function formatOrderMoney(value) {
+    return Number(value || 0).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function renderStoreOrders(searchTerm = "") {
+    if (!ordersTableBody) return;
+
+    const term = String(searchTerm || "").trim().toLowerCase();
+
+    const filtered = storeOrders.filter(order => {
+        const itemText = (order.order_items || [])
+            .map(item =>
+                `${item.product_name || "Product"} x${item.quantity || 1}`
+            )
+            .join(" ");
+
+        return [
+            order.id,
+            order.customer_name,
+            order.customer_phone,
+            order.customer_address,
+            order.status,
+            itemText
+        ].some(value =>
+            String(value || "").toLowerCase().includes(term)
+        );
+    });
+
+    ordersTableBody.replaceChildren();
+
+    if (ordersCount) {
+        ordersCount.textContent = `Orders: ${filtered.length}`;
+    }
+
+    if (!filtered.length) {
+        ordersTableWrapper.style.display = "none";
+        emptyOrders.style.display = "block";
+
+        emptyOrdersMessage.textContent = term
+            ? "No orders match your search."
+            : "No orders have been placed for this store yet.";
+
+        return;
+    }
+
+    emptyOrders.style.display = "none";
+    ordersTableWrapper.style.display = "block";
+
+    filtered.forEach(order => {
+        const row = document.createElement("tr");
+
+        const orderCell = document.createElement("td");
+        orderCell.innerHTML = `
+            <div class="order-id">
+                #${escapeHtml(String(order.id || "").slice(0, 8).toUpperCase())}
+            </div>
+            <div class="order-meta">${escapeHtml(order.notes || "")}</div>
+        `;
+        row.appendChild(orderCell);
+
+        const customerCell = document.createElement("td");
+        customerCell.innerHTML = `
+            <strong>${escapeHtml(order.customer_name || "Customer")}</strong>
+            <div class="order-meta">${escapeHtml(order.customer_phone || "No phone")}</div>
+            <div class="order-meta">${escapeHtml(order.customer_address || "No address")}</div>
+        `;
+        row.appendChild(customerCell);
+
+        const itemsCell = document.createElement("td");
+        itemsCell.className = "orders-items";
+
+        const items = Array.isArray(order.order_items)
+            ? order.order_items
+            : [];
+
+        itemsCell.textContent = items.length
+            ? items.map(item =>
+                `${item.product_name || "Product"} × ${item.quantity || 1}`
+            ).join("; ")
+            : "Item details unavailable";
+
+        row.appendChild(itemsCell);
+
+        const totalCell = document.createElement("td");
+        totalCell.textContent = formatOrderMoney(order.total_amount);
+        row.appendChild(totalCell);
+
+        const dateCell = document.createElement("td");
+        dateCell.textContent = formatOrderDate(order.created_at);
+        row.appendChild(dateCell);
+
+        const statusCell = document.createElement("td");
+        const currentStatus = String(order.status || "PENDING").toUpperCase();
+
+        const badge = document.createElement("span");
+        badge.className = "status-badge";
+        badge.dataset.status = currentStatus;
+        badge.textContent = currentStatus;
+
+        statusCell.appendChild(badge);
+        row.appendChild(statusCell);
+
+        const actionCell = document.createElement("td");
+        const select = document.createElement("select");
+
+        select.className = "order-status-select";
+        select.setAttribute(
+            "aria-label",
+            `Update status for order ${String(order.id || "").slice(0, 8)}`
+        );
+
+        const statuses = [...new Set([...ORDER_STATUSES, currentStatus])];
+
+        statuses.forEach(status => {
+            const option = document.createElement("option");
+            option.value = status;
+            option.textContent =
+                status.charAt(0) + status.slice(1).toLowerCase();
+            option.selected = status === currentStatus;
+            select.appendChild(option);
+        });
+
+        select.addEventListener("change", () =>
+            updateStoreOrderStatus(order, select, badge)
+        );
+
+        actionCell.appendChild(select);
+        row.appendChild(actionCell);
+
+        ordersTableBody.appendChild(row);
+    });
+}
+
+async function loadStoreOrders(storeId) {
+    ordersLoading.style.display = "flex";
+    ordersTableWrapper.style.display = "none";
+    emptyOrders.style.display = "none";
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("orders")
+            .select(`
+                id,
+                store_id,
+                customer_id,
+                status,
+                total_amount,
+                customer_name,
+                customer_phone,
+                customer_address,
+                notes,
+                created_at,
+                updated_at,
+                order_items (
+                    id,
+                    product_id,
+                    product_name,
+                    quantity,
+                    unit_price,
+                    subtotal
+                )
+            `)
+            .eq("store_id", storeId)
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        storeOrders = data || [];
+        renderStoreOrders(ordersSearch?.value || "");
+
+    } catch (error) {
+        console.error("Could not load store orders:", error);
+
+        storeOrders = [];
+        ordersTableWrapper.style.display = "none";
+        emptyOrders.style.display = "block";
+
+        emptyOrdersMessage.textContent =
+            "Unable to load orders. Check the orders and order_items tables and their Supabase permissions.";
+
+        showToast(
+            "Could not load orders. Check the console and Supabase policies."
+        );
+
+    } finally {
+        ordersLoading.style.display = "none";
+    }
+}
+
+async function updateStoreOrderStatus(order, select, badge) {
+    const newStatus = select.value;
+    const previousStatus = String(order.status || "PENDING").toUpperCase();
+
+    if (newStatus === previousStatus) return;
+
+    select.disabled = true;
+
+    try {
+        const access = await checkStoreAdminAccess();
+        if (!access) return;
+
+        const { data, error } = await supabaseClient
+            .from("orders")
+            .update({
+                status: newStatus,
+                updated_at: new Date().toISOString()
+            })
+            .eq("id", order.id)
+            .eq("store_id", access.profile.store_id)
+            .select("id, status")
+            .single();
+
+        if (error) throw error;
+
+        order.status = data.status;
+        badge.textContent = data.status;
+        badge.dataset.status = data.status;
+
+        showToast(
+            `Order status updated to ${data.status.toLowerCase()}.`
+        );
+
+    } catch (error) {
+        console.error("Could not update order status:", error);
+
+        select.value = previousStatus;
+
+        showToast(
+            "Could not update order status. Check Supabase permissions and allowed statuses."
+        );
+
+    } finally {
+        select.disabled = false;
+    }
+}
+
+if (ordersSearch) {
+    ordersSearch.addEventListener("input", () => {
+        renderStoreOrders(ordersSearch.value);
+    });
+}
+
+if (refreshOrdersBtn) {
+    refreshOrdersBtn.addEventListener("click", async () => {
+        const access = await checkStoreAdminAccess();
+
+        if (access) {
+            await loadStoreOrders(access.profile.store_id);
+        }
+    });
+}
+
+if (ordersNavBtn) {
+    ordersNavBtn.addEventListener("click", async () => {
+        document.querySelectorAll(
+            ".welcome, .store-card, .stats-grid, .section-header, .table-card"
+        ).forEach(element => {
+            element.style.display = "none";
+        });
+
+        [
+            settingsPanel,
+            categoriesPanel,
+            benefitsPanel,
+            testimonialsPanel,
+            customersPanel
+        ].forEach(panel => {
+            if (panel) panel.style.display = "none";
+        });
+
+        if (ordersPanel) {
+            ordersPanel.style.display = "block";
+
+            ordersPanel.querySelectorAll(
+                ".section-header, .table-card"
+            ).forEach(element => {
+                element.style.display = "";
+            });
+        }
+
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        ordersNavBtn.classList.add("active");
+
+        document.querySelector(".page-title h1").textContent = "Orders";
+        document.getElementById("pageSubtitle").textContent =
+            "View orders and manage fulfilment status";
+
+        const access = await checkStoreAdminAccess();
+
+        if (access) {
+            await loadStoreOrders(access.profile.store_id);
+        }
+    });
+}
+
+/* Hide Orders when another sidebar section is selected. */
+document.querySelectorAll(".nav-item:not(#ordersNavBtn)").forEach(item => {
+    item.addEventListener("click", () => {
+        if (ordersPanel) ordersPanel.style.display = "none";
+    });
+});
+
+    
 /* -----------------------------------------------------
    SAVE STORE SETTINGS
    ----------------------------------------------------- */

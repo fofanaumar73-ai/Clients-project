@@ -5828,7 +5828,14 @@ const category =
    CHECKOUT — SAVE ORDER AND ORDER ITEMS
 ========================================================= */
 
+
 const checkoutBtn = document.getElementById("checkoutBtn");
+
+const checkoutOverlay = document.getElementById("checkoutOverlay");
+const deliveryDetailsForm = document.getElementById("deliveryDetailsForm");
+const closeCheckoutBtn = document.getElementById("closeCheckoutBtn");
+const cancelCheckoutBtn = document.getElementById("cancelCheckoutBtn");
+const confirmOrderBtn = document.getElementById("confirmOrderBtn");
 
 if (checkoutBtn) {
     checkoutBtn.addEventListener("click", async () => {
@@ -5837,10 +5844,244 @@ if (checkoutBtn) {
             return;
         }
 
-        if (!currentStore || !currentStore.id || !currentStore.slug) {
+        if (!currentStore?.id || !currentStore?.slug) {
             showToast("Store information is unavailable. Please refresh.");
             return;
         }
+
+        // Confirm the customer is signed in before opening checkout.
+        const { data: sessionData, error: sessionError } =
+            await supabaseClient.auth.getSession();
+
+        if (sessionError) {
+            showToast("Unable to verify your login. Please try again.");
+            return;
+        }
+
+        if (!sessionData.session?.user) {
+            showToast("Please sign in to place your order.");
+            openCustomerLogin();
+            return;
+        }
+
+        // Open the delivery details card.
+        if (checkoutOverlay) {
+            checkoutOverlay.style.display = "flex";
+        }
+
+        // Close the cart drawer.
+        if (cartDrawer) cartDrawer.classList.remove("open");
+        if (cartOverlay) cartOverlay.classList.remove("open");
+    });
+}
+
+function closeDeliveryCheckout() {
+    if (checkoutOverlay) {
+        checkoutOverlay.style.display = "none";
+    }
+}
+
+if (closeCheckoutBtn) {
+    closeCheckoutBtn.addEventListener("click", closeDeliveryCheckout);
+}
+
+if (cancelCheckoutBtn) {
+    cancelCheckoutBtn.addEventListener("click", closeDeliveryCheckout);
+}
+
+if (checkoutOverlay) {
+    checkoutOverlay.addEventListener("click", event => {
+        if (event.target === checkoutOverlay) {
+            closeDeliveryCheckout();
+        }
+    });
+}
+
+if (deliveryDetailsForm) {
+    deliveryDetailsForm.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        if (!cart.length) {
+            showToast("Your cart is empty.");
+            return;
+        }
+
+        if (!currentStore?.id || !currentStore?.slug) {
+            showToast("Store information is unavailable. Please refresh.");
+            return;
+        }
+
+        const customerName =
+            document.getElementById("deliveryName").value.trim();
+
+        const customerPhone =
+            document.getElementById("deliveryPhone").value.trim();
+
+        const customerAddress =
+            document.getElementById("deliveryAddress").value.trim();
+
+        if (!customerName || !customerPhone || !customerAddress) {
+            showToast("Please complete all delivery details.");
+            return;
+        }
+
+        const originalButtonText = confirmOrderBtn.textContent;
+        confirmOrderBtn.disabled = true;
+        confirmOrderBtn.textContent = "Placing order...";
+
+        try {
+            // 1. Verify the signed-in customer.
+            const {
+                data: sessionData,
+                error: sessionError
+            } = await supabaseClient.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            const user = sessionData.session?.user;
+
+            if (!user) {
+                showToast("Please sign in to place your order.");
+                closeDeliveryCheckout();
+                openCustomerLogin();
+                return;
+            }
+
+            // 2. Get this customer's record for this store.
+            const {
+                data: customerResult,
+                error: customerError
+            } = await supabaseClient.rpc("create_store_customer", {
+                p_store_slug: currentStore.slug
+            });
+
+            if (customerError) throw customerError;
+
+            const customerRecord = Array.isArray(customerResult)
+                ? customerResult[0]
+                : customerResult;
+
+            if (!customerRecord?.id) {
+                throw new Error(
+                    "Your customer record could not be verified."
+                );
+            }
+
+            // 3. Validate cart items and calculate the total.
+            const items = cart.map(item => {
+                const quantity = Number(item.quantity);
+                const unitPrice = Number(item.price);
+
+                if (
+                    !item.id ||
+                    !Number.isInteger(quantity) ||
+                    quantity < 1 ||
+                    !Number.isFinite(unitPrice) ||
+                    unitPrice < 0
+                ) {
+                    throw new Error(
+                        "A cart item has invalid information. Please refresh your cart."
+                    );
+                }
+
+                return {
+                    product_id: item.id,
+                    product_name: String(item.name || "Product"),
+                    quantity,
+                    unit_price: unitPrice,
+                    subtotal: Number(
+                        (unitPrice * quantity).toFixed(2)
+                    )
+                };
+            });
+
+            const totalAmount = Number(
+                items.reduce((sum, item) => sum + item.subtotal, 0)
+                    .toFixed(2)
+            );
+
+            // 4. Save this order's delivery details.
+            const {
+                data: order,
+                error: orderError
+            } = await supabaseClient
+                .from("orders")
+                .insert({
+                    store_id: currentStore.id,
+                    customer_id: customerRecord.id,
+                    status: "PENDING",
+                    total_amount: totalAmount,
+                    customer_name: customerName,
+                    customer_phone: customerPhone,
+                    customer_address: customerAddress
+                })
+                .select("id")
+                .single();
+
+            if (orderError) throw orderError;
+
+            if (!order?.id) {
+                throw new Error("The order ID was not returned.");
+            }
+
+            // 5. Save the products belonging to this order.
+            const orderItems = items.map(item => ({
+                order_id: order.id,
+                product_id: item.product_id,
+                product_name: item.product_name,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                subtotal: item.subtotal
+            }));
+
+            const { error: itemsError } = await supabaseClient
+                .from("order_items")
+                .insert(orderItems);
+
+            if (itemsError) {
+                console.error(
+                    "Order items failed to save. Order ID:",
+                    order.id,
+                    itemsError
+                );
+
+                throw new Error(
+                    `Order ${order.id} was created, but its items did not save. Contact the store before retrying.`
+                );
+            }
+
+            // 6. Clear the cart only after successful writes.
+            cart = [];
+            saveCart();
+            renderCart();
+
+            closeDeliveryCheckout();
+            showToast("Order placed successfully!");
+
+            if (cartDrawer) cartDrawer.classList.remove("open");
+            if (cartOverlay) cartOverlay.classList.remove("open");
+
+            // Open the customer's dashboard.
+            window.location.href =
+                `customer-dashboard.html?store=${
+                    encodeURIComponent(currentStore.slug)
+                }`;
+
+        } catch (error) {
+            console.error("Checkout error:", error);
+
+            showToast(
+                error.message ||
+                "We couldn't place your order. Please try again."
+            );
+
+        } finally {
+            confirmOrderBtn.disabled = false;
+            confirmOrderBtn.textContent = originalButtonText;
+        }
+    });
+}
+
 
         const originalButtonHTML = checkoutBtn.innerHTML;
 

@@ -296,6 +296,24 @@
 
             </div>
 
+            
+<div class="form-group" id="loginFullNameGroup" style="display:none;">
+
+    <label for="loginFullName">Full Name</label>
+
+    <input
+        type="text"
+        id="loginFullName"
+        placeholder="Enter your full name"
+    >
+
+    <small style="display:block; margin-top:6px; color:#777;">
+        We need your name to finish setting up your customer account.
+    </small>
+
+</div>
+
+
 
             <button
                 type="submit"
@@ -506,6 +524,10 @@
     "resendConfirmationButton"
 );
 
+    
+const loginFullNameGroup = document.getElementById("loginFullNameGroup");
+const loginFullName = document.getElementById("loginFullName");
+
 
     /* =====================================================
        MESSAGE
@@ -646,18 +668,71 @@ return true;
         }
 
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .rpc(
-                    "create_store_customer",
-                    {
-                        p_store_slug:
-                            currentStore.slug
-                    }
-                );
+       
+let customerResult = await supabaseClient
+    .rpc("create_store_customer", {
+        p_store_slug: currentStore.slug
+    });
+
+if (
+    customerResult.error &&
+    customerResult.error.message?.includes("Your name is required")
+) {
+    loginFullNameGroup.style.display = "block";
+    loginFullName.required = true;
+
+    showMessage(
+        "Please enter your full name to finish setting up your customer account."
+    );
+
+    loginButton.disabled = false;
+    loginButton.textContent = "Continue";
+    return;
+}
+
+const customerError = customerResult.error;
+
+        
+if (customerError) {
+    showMessage(
+        customerError.message || "Unable to connect your customer account."
+    );
+
+    loginButton.disabled = false;
+    loginButton.textContent = "Login";
+    return;
+}
+
+if (loginFullNameGroup.style.display === "block") {
+    const fullName = loginFullName.value.trim();
+
+    if (!fullName) {
+        showMessage("Please enter your full name.");
+        loginFullName.focus();
+        return;
+    }
+
+    loginButton.disabled = true;
+    loginButton.textContent = "Saving...";
+
+    const { error: saveNameError } = await supabaseClient
+        .rpc("create_store_customer", {
+            p_store_slug: currentStore.slug,
+            p_full_name: fullName
+        });
+
+    if (saveNameError) {
+        console.error("Saving customer name failed:", saveNameError);
+        showMessage(
+            saveNameError.message || "Unable to save your name. Please try again."
+        );
+
+        loginButton.disabled = false;
+        loginButton.textContent = "Continue";
+        return;
+    }
+}
+
 
 
         if (error) {

@@ -637,6 +637,40 @@
                 padding: 17px;
             }
         }
+
+        /* =====================================
+   FIX: STICKY CUSTOMER DASHBOARD MENU
+   MOBILE ONLY
+   ===================================== */
+
+@media (max-width: 768px) {
+    .topbar {
+        position: -webkit-sticky !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        background: #ffffff;
+        isolation: isolate;
+    }
+
+    .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .mobile-menu-btn {
+        position: relative;
+        z-index: 1001;
+        flex-shrink: 0;
+    }
+
+    #mobileMenuButton {
+        position: relative;
+        z-index: 1001;
+    }
+}
     </style>
 </head>
 

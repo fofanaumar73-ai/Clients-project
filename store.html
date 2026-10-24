@@ -4699,25 +4699,24 @@ async function loadFaqs(storeId) {
                                 </h3>
 
 
-                                <div class="product-bottom">
+                               
+<div class="product-bottom">
 
-                                    <strong class="product-price">
-                                        ${formatPrice(price)}
-                                    </strong>
+    <strong class="product-price">
+        ${formatPrice(price)}
+    </strong>
 
+</div>
 
-                                    <button
-                                        class="add-cart-btn"
-                                        type="button"
-                                        data-add-cart="${escapeHtml(
-                                            product.id
-                                        )}"
-                                        aria-label="Add to cart"
-                                    >
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
+<button
+    class="add-cart-btn"
+    type="button"
+    data-add-cart="${escapeHtml(product.id)}"
+>
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>ADD TO CART</span>
+</button>
 
-                                </div>
 
                             </div>
 

@@ -4739,17 +4739,16 @@ async function loadFaqs(storeId) {
 
                                
 <div class="product-bottom">
-
     <strong class="product-price">
         ${formatPrice(price)}
     </strong>
-
 </div>
 
 <button
     class="add-cart-btn"
     type="button"
     data-add-cart="${escapeHtml(product.id)}"
+    aria-label="Add to cart"
 >
     <i class="fa-solid fa-cart-shopping"></i>
     <span>ADD TO CART</span>
